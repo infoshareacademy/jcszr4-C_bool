@@ -9,11 +9,13 @@ namespace C_bool.ConsoleApp
         {
 
             //z googla wg podanych parametrów https://developers.google.com/maps/documentation/places/web-service/search-nearby
-            var keyword = "nocny";
+            var keyword = "nocny";              //
             var latitude = "54.3654101";        // tu Gdańsk
-            var longitude = "18.6164213";
+            var longitude = "18.6164213";       
             var radius = 10000;                 //10 kilometrów
-            var type = "club";
+            var type = "club";                  //kategoria
+
+            
 
             // tworzy zapytanie do Googla i zwraca Stream
             var webStream = C_bool.BLL.JsonUtils.GetStreamFromGoogle(keyword, latitude, longitude, radius, type);
