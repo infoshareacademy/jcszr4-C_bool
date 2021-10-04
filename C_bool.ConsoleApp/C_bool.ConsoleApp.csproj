@@ -9,4 +9,13 @@
     <ProjectReference Include="..\C_bool.BLL\C_bool.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Files\places.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -28,17 +28,17 @@ namespace C_bool.BLL
             }
             catch (FileNotFoundException ex)
             {
-                Console.WriteLine("Nie znaleziono pliku: " + ex.Message);
+                Console.WriteLine($"File {filePath} not found: {ex.Message}");
             }
             catch (IOException ex)
             {
-                Console.WriteLine("błąd dostępu do pliku: " + ex.Message);
+                Console.WriteLine($"Cannot access file {filePath}: {ex.Message}");
             }
 
             return _jsonStream;
         }
 
-        public static Stream GetStreamFromGoogle(string keyword, string latitude,string longitude, int radius, string type)
+        public static Stream GetStreamFromGoogle(string keyword, string latitude, string longitude, int radius, string type)
         {
             Console.Write("Wpisz swój apiKey: ");
             var apiKey = Console.ReadLine();
@@ -73,10 +73,76 @@ namespace C_bool.BLL
             }
             catch (IOException ex)
             {
-                Console.WriteLine("błąd dostępu do pliku: " + ex.Message);
+                Console.WriteLine($"Stream access denied: { ex.Message}");
             }
 
             return places;
+        }
+
+        public static List<Users> GetUsersFromJson(Stream reader)
+        {
+            var users = new List<Users>();
+
+            try
+            {
+                using var streamReader = new StreamReader(reader);
+                var readerData = streamReader.ReadToEnd();
+                users = JsonConvert.DeserializeObject<List<Users>>(readerData);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Stream access denied: { ex.Message}");
+            }
+
+            return users;
+        }
+
+        public static void PrintUsersInformation(List<Users> list, string Id)
+        {
+            foreach (var user in list)
+            {
+                var outputString = $"\t| Imię: {user.firstName}\n\t| Nazwisko: {user.lastName}\n\t| Płeć: {user.gender}\n\t| Wiek: {user.age}\n\t| Adres: {user.address}\n\t| E-mail: {user.email}\n\t| Telefon: {user.phone}\n\t| Firma: {user.company}\n\t------------\n\t| Aktywny: {user.isActive}\n\t| Szer. geo.: {user.latitude}\n\t| Wys. geo.: {user.longitude}\n\t| Zarejestrowany: {user.registered}\n";
+
+                if (user.Id.Equals(Id))
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"ID: {user.Id}");
+                    Console.ResetColor();
+                    Console.Write(outputString);
+                    return;
+                }
+                else if (Id.Length == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"ID: {user.Id}");
+                    Console.ResetColor();
+                    Console.Write(outputString);
+                }
+            }
+        }
+
+        public static void PrintPlacesInformation(Places places, string Id)
+        {
+            foreach (var place in places.results)
+            {
+                var outputString = $"\t| Ocena: {place.rating} (wszystkich ocen: {place.user_ratings_total})\n\t| Adres: {place.vicinity}\n\t| Szer. geo.: {place.geometry.location.lat}\n\t| Wys. geo.: {place.geometry.location.lng}\n";
+
+                if (place.place_id.Equals(Id))
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"NAZWA: {place.name}");
+                    Console.ResetColor();
+                    Console.Write(outputString);
+                    return;
+                }
+                else if (Id.Length == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"NAZWA: {place.name}");
+                    Console.ResetColor();
+                    Console.Write(outputString);
+                }
+            }
         }
 
     }
