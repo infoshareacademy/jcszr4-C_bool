@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using C_bool.BLL.Places;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Users;
 
 namespace C_bool.ConsoleApp
 {
@@ -10,13 +13,13 @@ namespace C_bool.ConsoleApp
             var placesRepository = new PlacesRepository();
             placesRepository.AddFileDataToRepository();
 
-            foreach (var place in placesRepository.Places)
-            {
-                Console.WriteLine();
-                Console.WriteLine(
-                    $"ID : {place.PlaceId},\nNAZWA: {place.Name},\nDLUGOSC GEOGRAFICZNA: {place.Geometry.Location.Latitude},\nSZEROKOSC GEOGRAFICZNA: {place.Geometry.Location.Latitude},\nSREDNIA OCENA: {place.Rating},\nILOSC OCEN: {place.UserRatingsTotal},\nTYPY: {String.Join(",", place.Types)}");
-                Console.WriteLine();
-            }
+            var usersRepository = new UsersRepository();
+            usersRepository.AddFileDataToRepository();
+
+            User.PrintInformation(usersRepository.Users, "");
+
+            Place.PrintInformation(placesRepository.Places, "");
+
         }
     }
 }

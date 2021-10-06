@@ -2,28 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
-using C_bool.BLL.Places;
+using C_bool.BLL.Users;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public class PlacesRepository : IRepository<Place>
+    public class UsersRepository : IRepository<User>
     {
         [JsonProperty(PropertyName = "results")]
-        public List<Place> Places { get; private set; }
+        public List<User> Users { get; private set; }
 
-        public PlacesRepository()
+        public UsersRepository()
         {
-            Places = new List<Place>();
+            Users = new List<User>();
         }
 
         public void AddFileDataToRepository()
         {
             try
             {
-                var jsonStream = new StreamReader("places.json").BaseStream;
+                var jsonStream = new StreamReader("users.json").BaseStream;
                 var streamReader = new StreamReader(jsonStream);
-                var repository = JsonConvert.DeserializeObject<PlacesRepository>(streamReader.ReadToEnd());
+                var repository = JsonConvert.DeserializeObject<List<User>>(streamReader.ReadToEnd());
 
                 if (repository == null)
                 {
@@ -31,10 +32,7 @@ namespace C_bool.BLL.Repositories
                 }
                 else
                 {
-                    foreach (var place in repository.Places)
-                    {
-                        Places.Add(place);
-                    }
+                    Users = repository;
                 }
             }
             catch (FileNotFoundException ex)
@@ -47,27 +45,27 @@ namespace C_bool.BLL.Repositories
             }
         }
 
-        public IEnumerable<Place> GetAll()
+        public IEnumerable<User> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Place> Find(Expression<Func<Place, bool>> predicate)
+        public IEnumerable<User> Find(Expression<Func<User, bool>> condition)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Place entity)
+        public void Add(User entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Remove(Place entity)
+        public void Remove(User entity)
         {
             throw new NotImplementedException();
         }
 
-        IEnumerable<Place> IRepository<Place>.GetAll()
+        IEnumerable<User> IRepository<User>.GetAll()
         {
             throw new NotImplementedException();
         }
