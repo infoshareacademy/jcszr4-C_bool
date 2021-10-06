@@ -24,11 +24,14 @@ namespace C_bool.BLL.Places
         [JsonProperty(PropertyName = "user_ratings_total")]
         public int UserRatingsTotal { get; set; }
 
+        [JsonProperty(PropertyName = "vicinity")]
+        public string Address { get; set; }
+
         static public void PrintInformation(List<Place> places, string Id)
         {
             foreach (var place in places)
             {
-                var outputString = $"\t| Ocena: {place.Rating} (wszystkich ocen: {place.UserRatingsTotal})\n\t| Adres: {place.Name}\n\t| Szer. geo.: {place.Geometry.Location.Latitude}\n\t| Wys. geo.: {place.Geometry.Location.Longitude}\n";
+                var outputString = $"\t| Ocena: {place.Rating} (wszystkich ocen: {place.UserRatingsTotal})\n\t| Adres: {place.Address}\n\t| Szer. geo.: {place.Geometry.Location.Latitude}\n\t| Wys. geo.: {place.Geometry.Location.Longitude}\n";
 
                 if (place.PlaceId.Equals(Id))
                 {
