@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
-using C_bool.BLL.Users;
-using Microsoft.EntityFrameworkCore;
+using C_bool.BLL.Models.Users;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories

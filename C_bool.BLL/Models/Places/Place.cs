@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace C_bool.BLL.Places
+namespace C_bool.BLL.Models.Places
 {
     public class Place
     {
@@ -27,13 +27,18 @@ namespace C_bool.BLL.Places
         [JsonProperty(PropertyName = "vicinity")]
         public string Address { get; set; }
 
-        static public void PrintInformation(List<Place> places, string Id)
+        /// <summary>
+        /// prints basic information about place based on PlaceId, PlaceId might be empty
+        /// </summary>
+        /// <param name="places">input List of Place objects</param>
+        /// <param name="id">Id number of place, if empty - prints all places</param>
+        public static void PrintInformation(List<Place> places, string id)
         {
             foreach (var place in places)
             {
                 var outputString = $"\t| Ocena: {place.Rating} (wszystkich ocen: {place.UserRatingsTotal})\n\t| Adres: {place.Address}\n\t| Szer. geo.: {place.Geometry.Location.Latitude}\n\t| Wys. geo.: {place.Geometry.Location.Longitude}\n";
 
-                if (place.PlaceId.Equals(Id))
+                if (place.PlaceId.Equals(id))
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"NAZWA: {place.Name}");
@@ -41,7 +46,7 @@ namespace C_bool.BLL.Places
                     Console.Write(outputString);
                     return;
                 }
-                else if (Id.Length == 0)
+                else if (id.Length == 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"NAZWA: {place.Name}");

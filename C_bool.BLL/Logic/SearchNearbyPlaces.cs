@@ -1,49 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using C_bool.BLL.Places;
+using C_bool.BLL.Models.Places;
 
 namespace C_bool.BLL.Logic
 {
     public static class SearchNearbyPlaces
     {
-        const double pi = Math.PI;
-        const double earthRadius = 6371000;
+        const double Pi = Math.PI;
+        const double EarthRadius = 6371000;
 
+        /// <summary>
+        /// Returns approximate distance between two places on Earth, calculated from formula Distance, d = 3963.0 * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
+        /// </summary>
+        /// <param name="place1Latitude">First place latitude</param>
+        /// <param name="place1Longitude">First place longitude</param>
+        /// <param name="place2Latitude">Second place latitude</param>
+        /// <param name="place2Longitude">First place longitude</param>
+        /// <returns></returns>
         public static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude, double place2Latitude, double place2Longitude)
         {
-            double sin_place1Latitude = Math.Sin(Radians(place1Latitude));
-            double sin_place2Latitude = Math.Sin(Radians(place2Latitude));
-            double cos_place1Latitude = Math.Cos(Radians(place1Latitude));
-            double cos_place2Latitude = Math.Cos(Radians(place2Latitude));
+            var sinPlace1Latitude = Math.Sin(Radians(place1Latitude));
+            var sinPlace2Latitude = Math.Sin(Radians(place2Latitude));
+            var cosPlace1Latitude = Math.Cos(Radians(place1Latitude));
+            var cosPlace2Latitude = Math.Cos(Radians(place2Latitude));
 
-            double distance = earthRadius * Math.Acos(sin_place1Latitude * sin_place2Latitude + cos_place1Latitude * cos_place2Latitude * Math.Cos(Radians(place1Longitude) - Radians(place2Longitude)));
+            var distance = EarthRadius * Math.Acos(sinPlace1Latitude * sinPlace2Latitude + cosPlace1Latitude * cosPlace2Latitude * Math.Cos(Radians(place1Longitude) - Radians(place2Longitude)));
 
             return distance;
         }
 
         public static double Radians(double x)
         {
-            return x * pi / 180;
+            return x * Pi / 180;
         }
 
-        public static List<Place> GetPlaces(double lat1, double lon1, double radius, List<Place> places)
+        /// <summary>
+        /// gets places nearby according to entered coordinates and radius
+        /// </summary>
+        /// <param name="latitude">Latitude of the place from which to search for nearby locations</param>
+        /// <param name="longitude">Longitude of the place from which to search for nearby locations</param>
+        /// <param name="radius">Radius in which to search, entered as meters</param>
+        /// <param name="places">Input - list of Place object</param>
+        /// <returns>List of places nearby</returns>
+        public static List<Place> GetPlaces(double latitude, double longitude, double radius, List<Place> places)
         {
-            List<Place> outputList = new List<Place>();
+            return (from place in places let distance = DistanceBetweenPlaces(latitude, longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
+        }
 
-            foreach (var place in places)
-            {
-                var distance = DistanceBetweenPlaces(lat1, lon1, place.Geometry.Location.Latitude,
-                    place.Geometry.Location.Longitude);
-                if (distance <= radius)
-                {
-                    outputList.Add(place);
-                }
-            }
-            return outputList;
+        /// <summary>
+        /// gets places nearby according to entered coordinates and radius
+        /// </summary>
+        /// <param name="fromPlace">Place object from which to search for nearby locations</param>
+        /// <param name="radius">Radius in which to search, entered as meters</param>
+        /// <param name="places">Input - list of Place object</param>
+        /// <returns>List of places nearby</returns>
+        public static List<Place> GetPlaces(Place fromPlace, double radius, List<Place> places)
+        {
+            return fromPlace == null ? new List<Place>() : (from place in places let distance = DistanceBetweenPlaces(fromPlace.Geometry.Location.Latitude, fromPlace.Geometry.Location.Longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
         }
     }
 }
