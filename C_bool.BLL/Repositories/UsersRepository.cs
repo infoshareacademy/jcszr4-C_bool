@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 using C_bool.BLL.Models.Users;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public class UsersRepository : IRepository<User>
+    public class UsersRepository : IRepository
     {
-        [JsonProperty(PropertyName = "results")]
         public List<User> Users { get; private set; }
 
         public UsersRepository()
@@ -42,31 +40,6 @@ namespace C_bool.BLL.Repositories
             {
                 Console.WriteLine("Błąd dostępu do pliku: " + ex.Message);
             }
-        }
-
-        public IEnumerable<User> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<User> Find(Expression<Func<User, bool>> condition)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Add(User entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remove(User entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<User> IRepository<User>.GetAll()
-        {
-            throw new NotImplementedException();
         }
     }
 }

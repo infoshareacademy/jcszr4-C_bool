@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq.Expressions;
 using System.Net;
 using C_bool.BLL.Models.Places;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public class PlacesRepository : IRepository<Place>
+    public class PlacesRepository : IRepository
     {
         [JsonProperty(PropertyName = "results")]
         public List<Place> Places { get; private set; }
@@ -64,7 +63,7 @@ namespace C_bool.BLL.Repositories
             webRequest.ContentType = "application/json";
             try
             {
-                Console.WriteLine($"Wait from server response: {webRequest.RequestUri}");
+                Console.WriteLine($"Oczekiwanie na odpowiedź serwera: {webRequest.RequestUri}");
                 WebResponse response = webRequest.GetResponse();
                 Stream data = response.GetResponseStream();
                 if (data != null)
@@ -95,33 +94,9 @@ namespace C_bool.BLL.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Server response error: {ex.Message}");
+                Console.WriteLine("Błąd odpowiedzi serwera: " + ex.Message);
             }
         }
 
-        public IEnumerable<Place> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Place> Find(Expression<Func<Place, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Add(Place entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remove(Place entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<Place> IRepository<Place>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
