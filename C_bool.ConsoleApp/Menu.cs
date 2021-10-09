@@ -5,7 +5,7 @@ namespace C_bool.ConsoleApp
 {
     public class Menu
     {
-        private static readonly char _indicator = '>';
+        private static readonly char _indicator = '►';
         private static bool _isWorking = true;
         private static readonly List<string> _dataSourceList = new()
         {
@@ -55,28 +55,28 @@ namespace C_bool.ConsoleApp
 
             switch (SelectPositionFromMenu(_menuList))
             {
-                case "> Wyświetl klasyfikację użytkowników":
+                case 0:
                     _isWorking = false;
                     break;
-                case "> Dodaj nowego użytkownika":
+                case 1:
                     _isWorking = false;
                     break;
-                case "> Edytuj wybranego użytkownika":
+                case 2:
                     _isWorking = false;
                     break;
-                case "> Wyświetl wszystkie miejsca w okolicy":
+                case 3:
                     _isWorking = false;
                     break;
-                case "> Wyświetl miejsca w określonym zasięgu":
+                case 4:
                     _isWorking = false;
                     break;
-                case "> Wyświetl miejsca określonego typu":
+                case 5:
                     _isWorking = false;
                     break;
-                case "> Edytuj wybrane miejsce":
+                case 6:
                     _isWorking = false;
                     break;
-                case "> Zamknij aplikację":
+                case 7:
                     _isWorking = false;
                     break;
             }
@@ -89,19 +89,19 @@ namespace C_bool.ConsoleApp
             switch (SelectPositionFromMenu(_dataSourceList))
             {
                     
-                case ("> Plik"):
+                case 0:
                     Console.WriteLine("Wczytuje plik");
                     break;
-                case "> Czysta aplikacja":
+                case 1:
                     Console.WriteLine("Nie wczytuje pliku");
                     break;
-                case "> Zamknij aplikację":
+                case 2:
                     _isWorking = false;
                     break;
             }
         }
 
-        private static string SelectPositionFromMenu(List<string> menu)
+        private static int SelectPositionFromMenu(List<string> menu)
         {
             var index = 0;
 
@@ -116,25 +116,19 @@ namespace C_bool.ConsoleApp
 
                 if (move == ConsoleKey.DownArrow && index < menu.Count - 1)
                 {
-                    menu[index] = menu[index].Replace('>', ' ');
+                    menu[index] = menu[index].Replace(_indicator, ' ');
                     index++;
                     menu[index] = _indicator + menu[index].Substring(1);
                 }
                 else if (move == ConsoleKey.UpArrow && index > 0)
                 {
-                    menu[index] = menu[index].Replace('>', ' ');
+                    menu[index] = menu[index].Replace(_indicator, ' ');
                     index--;
                     menu[index] = _indicator + menu[index].Substring(1);
                 }
                 else if (move == ConsoleKey.Enter)
                 {
-                    foreach (var position in menu)
-                    {
-                        if (position.Contains(">"))
-                        {
-                            return position;
-                        }
-                    }
+                    return index;
                 }
             }
         }
@@ -153,7 +147,7 @@ namespace C_bool.ConsoleApp
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"\r{position}");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ResetColor();
                 }
                 else
                 {
@@ -167,7 +161,7 @@ namespace C_bool.ConsoleApp
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(
                 $"\n\n '{ConsoleKey.UpArrow}' - w górę || '{ConsoleKey.DownArrow}' - w dół || '{ConsoleKey.Enter.ToString().ToUpper()}' - wybierz ");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
         }
     }
 }
