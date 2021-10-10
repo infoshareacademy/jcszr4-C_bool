@@ -8,7 +8,9 @@ namespace C_bool.ConsoleApp
 
         static void Main(string[] args)
         {
-            Playground.TestAddToRepositoryAndPrintInfo();
+          Menu.StartProgram();
+        
+          //Playground.TestAddToRepositoryAndPrintInfo();
         }
     }
 }
