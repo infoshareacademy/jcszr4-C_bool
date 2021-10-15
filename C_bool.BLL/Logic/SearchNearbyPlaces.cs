@@ -30,7 +30,7 @@ namespace C_bool.BLL.Logic
             return distance;
         }
 
-        public static double Radians(double x)
+        private static double Radians(double x)
         {
             return x * Pi / 180;
         }

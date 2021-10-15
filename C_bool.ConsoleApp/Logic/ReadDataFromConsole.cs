@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_bool.BLL.Repositories;
 
 namespace C_bool.ConsoleApp.Logic
 {
@@ -12,7 +7,7 @@ namespace C_bool.ConsoleApp.Logic
         public static double Latitude { get; private set; }
         public static double Longitude { get; private set; }
         public static double Radius { get; private set; }
-        public static string ApiKey { get; private set; } = "AIzaSyAu7_b5Cy5_D1ulYr609G7Rjvzn-FD6dJM";
+        public static string ApiKey { get; private set; }
 
 
         private static void SetApiKeyFromConsole()
