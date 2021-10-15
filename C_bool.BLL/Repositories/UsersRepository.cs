@@ -1,45 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using C_bool.BLL.Models.Users;
-using Newtonsoft.Json;
+
 
 namespace C_bool.BLL.Repositories
 {
-    public class UsersRepository : IRepository
+    public sealed class UsersRepository : BaseRepository<User>
     {
-        public List<User> Users { get; private set; }
+        public override List<User> Repository { get; protected set; }
+        public override string FileName { get; } = "users.json";
 
         public UsersRepository()
         {
-            Users = new List<User>();
+            Repository = new List<User>();
         }
 
-        public void AddFileDataToRepository()
+        public override User SearchById(string searchId)
         {
-            try
-            {
-                var jsonStream = new StreamReader("users.json").BaseStream;
-                var streamReader = new StreamReader(jsonStream);
-                var repository = JsonConvert.DeserializeObject<List<User>>(streamReader.ReadToEnd());
+            return (from user in Repository let id = searchId where user.Id == id select user).First();
+        }
 
-                if (repository == null)
-                {
-                    Console.WriteLine("Plik jest pusty!");
-                }
-                else
-                {
-                    Users = repository;
-                }
-            }
-            catch (FileNotFoundException ex)
-            {
-                Console.WriteLine("Nie znaleziono pliku: " + ex.Message);
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine("Błąd dostępu do pliku: " + ex.Message);
-            }
+        public override List<User> SearchByName(string searchName)
+        {
+            return (from user in Repository
+                let name = searchName
+                where user.LastName == name || user.FirstName == name
+                select user).ToList();
         }
     }
 }
