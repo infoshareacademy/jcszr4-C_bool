@@ -33,8 +33,6 @@ namespace C_bool.ConsoleApp
         private PlacesRepository placesRepository = new PlacesRepository();
         private UsersRepository usersRepository = new UsersRepository();
 
-
-
         public void StartProgram()
         {
             while (_isWorking)
@@ -161,7 +159,7 @@ namespace C_bool.ConsoleApp
                 else if (move == ConsoleKey.Enter)
                 {
                     menu[index] = menu[index].Replace(_indicator, ' ');
-                    menu[0] = _indicator + menu[index].Substring(1);
+                    menu[0] = _indicator + menu[0].Substring(1);
                     return index;
                 }
             }
