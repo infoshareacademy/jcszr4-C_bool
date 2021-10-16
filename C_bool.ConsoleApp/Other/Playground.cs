@@ -59,7 +59,7 @@ namespace C_bool.ConsoleApp.Other
             var minPoints = 100;
             var maxPoints = 500;
             var sortDescending = true;
-            var usersByPoints = SearchUsers.ByPointsCount(minPoints, maxPoints, sortDescending, usersRepository.Users);
+            var usersByPoints = SearchUsers.ByPointsRange(usersRepository.Users, minPoints, maxPoints, sortDescending);
             Console.WriteLine($"\n\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO":"ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
         }
