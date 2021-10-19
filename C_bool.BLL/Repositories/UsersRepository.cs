@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using C_bool.BLL.Models.Users;
 
 
@@ -18,14 +17,13 @@ namespace C_bool.BLL.Repositories
 
         public override User SearchById(string searchId)
         {
-            return (from user in Repository let id = searchId where user.Id == id select user).First();
+            return (from user in Repository where user.Id == searchId select user).First();
         }
 
         public override List<User> SearchByName(string searchName)
         {
             return (from user in Repository
-                let name = searchName
-                where user.LastName == name || user.FirstName == name
+                where user.LastName.ToLower().Contains(searchName.ToLower()) || user.FirstName.ToLower().Contains(searchName.ToLower())
                 select user).ToList();
         }
     }

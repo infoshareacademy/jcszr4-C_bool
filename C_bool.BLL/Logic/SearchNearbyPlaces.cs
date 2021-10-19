@@ -43,7 +43,7 @@ namespace C_bool.BLL.Logic
         /// <param name="radius">Radius in which to search, entered as meters</param>
         /// <param name="places">Input - list of Place object</param>
         /// <returns>List of places nearby</returns>
-        public static List<Place> GetPlaces(double latitude, double longitude, double radius, List<Place> places)
+        public static List<Place> GetPlaces(List<Place> places, double latitude, double longitude, double radius)
         {
             return (from place in places let distance = DistanceBetweenPlaces(latitude, longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
         }

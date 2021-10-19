@@ -22,14 +22,13 @@ namespace C_bool.BLL.Repositories
 
         public override Place SearchById(string searchId)
         {
-            return (from place in Repository let id = searchId where place.PlaceId == id select place).First();
+            return (from place in Repository where place.PlaceId == searchId select place).First();
         }
 
         public override List<Place> SearchByName(string searchName)
         {
             return (from place in Repository
-                let name = searchName
-                where place.Name == name
+                where place.Name.ToLower().Contains(searchName.ToLower()) 
                 select place).ToList();
         }
 

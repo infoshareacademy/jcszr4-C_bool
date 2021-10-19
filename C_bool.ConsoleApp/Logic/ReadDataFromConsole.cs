@@ -4,67 +4,57 @@ namespace C_bool.ConsoleApp.Logic
 {
     public static class ReadDataFromConsole
     {
-        public static double Latitude { get; private set; }
-        public static double Longitude { get; private set; }
-        public static double Radius { get; private set; }
-        public static string ApiKey { get; private set; }
-
-
-        private static void SetApiKeyFromConsole()
+        public static string GetApiKeyFromConsole()
         {
             Console.WriteLine("\nPodaj klucz API");
-            ApiKey = Console.ReadLine();
+            
+            return Console.ReadLine();
         }
 
-        private static void SetLongitudeFromConsole()
+        public static double GetLongitudeFromConsole()
         {
-            Console.WriteLine("\nPodaj szerokość geograficzną Twojej lokacji:");
-            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double longitude))
+            Console.WriteLine("\nPodaj długość  geograficzną Twojej lokacji:");
+            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double longitude) && longitude >= -180 && longitude <= 180) 
             {
-                Longitude = longitude;
+                return longitude;
             }
             else
             {
-                Console.WriteLine("Nieprawidlowa wartosc, spróbuj jeszcze raz");
-                SetNearbyPlacesApiParameters();
+                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
+                
+                return GetLongitudeFromConsole();
             }
         }
 
-        private static void SetLatitudeFromConsole()
+        public static double GetLatitudeFromConsole()
         {
             Console.WriteLine("Podaj szerokość geogariczną Twojej lokacji:");
-            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double latitude))
+            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double latitude) && latitude >= -90 && latitude <= 90)
             {
-                Latitude = latitude;
+                return latitude;
             }
             else
             {
-                Console.WriteLine("Nieprawidlowa wartosc, spróbuj jeszcze raz");
-                SetNearbyPlacesApiParameters();
+                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
+
+                return GetLatitudeFromConsole();
             }
         }
 
-        public static void SetRadiusFromConsole()
+        public static double GetRadiusFromConsole()
         {
             Console.WriteLine("\nPodaj promień w jakim chcesz szukać miejsc w okolicy: [m]");
             
             if (double.TryParse(Console.ReadLine().Replace(',' , '.'), out double radius))
             {
-                Radius = radius;
+                return Math.Abs(radius);
             }
             else
             {
-                Console.WriteLine("Nieprawidlowa wartosc, spróbuj jeszcze raz");
-                SetRadiusFromConsole();
+                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
+                
+                return GetRadiusFromConsole();
             }
-        }
-
-        public static void SetNearbyPlacesApiParameters()
-        {
-            SetLatitudeFromConsole();
-            SetLongitudeFromConsole();
-            SetRadiusFromConsole();
-            SetApiKeyFromConsole();
         }
     }
 }

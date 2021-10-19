@@ -29,9 +29,8 @@ namespace C_bool.ConsoleApp
             {"  Wybierz ponownie źródło danych"},
             {"  Zamknij aplikację"}
         };
-
-        private PlacesRepository placesRepository = new PlacesRepository();
-        private UsersRepository usersRepository = new UsersRepository();
+        private PlacesRepository _placesRepository = new PlacesRepository();
+        private UsersRepository _usersRepository = new UsersRepository();
 
         public void StartProgram()
         {
@@ -75,13 +74,13 @@ namespace C_bool.ConsoleApp
                     break;
                 case 3:
                     Console.Clear();
-                    GetInfo.PlaceInformation(placesRepository.Repository, "");
+                    GetInfo.PlaceInformation(_placesRepository.Repository, "");
                     BackToMenu();
                     break;
                 case 4:
                     Console.Clear();
-                    ReadDataFromConsole.SetRadiusFromConsole();
-                    GetInfo.PlaceInformation(placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.Radius), "");
+                    ReadDataFromConsole.GetRadiusFromConsole();
+                    GetInfo.PlaceInformation(_placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole()), "");
                     BackToMenu();
                     break;
                 case 5:
@@ -113,17 +112,22 @@ namespace C_bool.ConsoleApp
             {
                 case 0:
                     Console.Clear();
-                    usersRepository.AddFileDataToRepository();
-                    placesRepository.AddFileDataToRepository();
+                    _usersRepository.AddFileDataToRepository();
+                    _placesRepository.AddFileDataToRepository();
                     break;
                 case 1:
                     Console.Clear();
-                    usersRepository.AddFileDataToRepository();
-                    placesRepository.AddApiDataToRepository(ReadDataFromConsole.Latitude, ReadDataFromConsole.Longitude, ReadDataFromConsole.Radius, ReadDataFromConsole.ApiKey);
+                    _usersRepository.AddFileDataToRepository();
+                    _placesRepository.AddApiDataToRepository(
+                        ReadDataFromConsole.GetLatitudeFromConsole(), 
+                        ReadDataFromConsole.GetLongitudeFromConsole(), 
+                        ReadDataFromConsole.GetRadiusFromConsole(), 
+                        ReadDataFromConsole.GetApiKeyFromConsole()
+                        );
                     break;
                 case 2:
-                    usersRepository = new UsersRepository();
-                    placesRepository = new PlacesRepository();
+                    _usersRepository = new UsersRepository();
+                    _placesRepository = new PlacesRepository();
                     break;
                 case 3:
                     _isWorking = false;
