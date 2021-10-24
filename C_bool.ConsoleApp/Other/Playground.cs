@@ -38,7 +38,7 @@ namespace C_bool.ConsoleApp.Other
             var longitude = 19.02468223856004;
 
             //szukanie miejsc po szerokości i długości
-            var nearbyPlaces = SearchNearbyPlaces.GetPlaces(latitude, longitude, radius, placesRepository.Repository);
+            var nearbyPlaces = SearchNearbyPlaces.GetPlaces(placesRepository.Repository, latitude, longitude, radius);
             Console.WriteLine($"\n\n\nMIEJSCA W POBLIŻU {latitude},{longitude} w promieniu {radius}m:");
             GetInfo.PlaceInformation(nearbyPlaces, "");
 
@@ -59,7 +59,7 @@ namespace C_bool.ConsoleApp.Other
             var minPoints = 100;
             var maxPoints = 500;
             var sortDescending = true;
-            var usersByPoints = SearchUsers.ByPointsRange(usersRepository.Users, minPoints, maxPoints, sortDescending);
+            var usersByPoints = SearchUsers.ByPointsRange(usersRepository.Repository, minPoints, maxPoints, sortDescending);
             Console.WriteLine($"\n\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO":"ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
         }
