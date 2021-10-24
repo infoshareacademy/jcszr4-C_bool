@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using Newtonsoft.Json;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace C_bool.ConsoleApp
@@ -15,9 +13,6 @@ namespace C_bool.ConsoleApp
 
             do
             {
-
-
-                Console.WriteLine("Hello World!");
                 List<string> menuOptions = new List<string>();
                 if (menuOptions == null) throw new ArgumentNullException(nameof(menuOptions));
                 menuOptions.Add("GROUP 1. TRANSPORT");
