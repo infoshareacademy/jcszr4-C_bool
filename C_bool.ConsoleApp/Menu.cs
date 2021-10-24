@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using C_bool.BLL.Repositories;
+using C_bool.ConsoleApp.Logic;
 
 namespace C_bool.ConsoleApp
 {
     public class Menu
     {
         private static readonly char _indicator = '►';
-        private static bool _isWorking = true;
-        private static readonly List<string> _dataSourceList = new()
+        private bool _isWorking = true;
+        private bool _isDataSourceSelected;
+        private readonly List<string> _dataSourceList = new()
         {
             {_indicator + " Plik"},
+            {"  API"},
             {"  Czysta aplikacja"},
             {"  Zamknij aplikację"}
         };
-        private static readonly List<string> _menuList = new()
+        private readonly List<string> _menuList = new()
         {
             {_indicator + " Wyświetl klasyfikację użytkowników"},
             {"  Dodaj nowego użytkownika"},
@@ -22,25 +26,23 @@ namespace C_bool.ConsoleApp
             {"  Wyświetl miejsca w określonym zasięgu"},
             {"  Wyświetl miejsca określonego typu"},
             {"  Edytuj wybrane miejsce"},
+            {"  Wybierz ponownie źródło danych"},
             {"  Zamknij aplikację"}
         };
-        
+        private PlacesRepository _placesRepository = new PlacesRepository();
+        private UsersRepository _usersRepository = new UsersRepository();
 
-        public static void StartProgram()
+        public void StartProgram()
         {
-            
-            
-            var isDataSourceSelected = false;
-            
             while (_isWorking)
             {
                 Console.Clear();
-                Console.WriteLine("+++ WITAJ W APLIKACJI C_bool +++\n");
 
-                if (!isDataSourceSelected)
+                if (!_isDataSourceSelected)
                 {
+                    Console.WriteLine("+++ WITAJ W APLIKACJI C_bool +++\n");
                     SelectDataSource();
-                    isDataSourceSelected = true;
+                    _isDataSourceSelected = true;
                 }
                 else
                 {
@@ -49,59 +51,91 @@ namespace C_bool.ConsoleApp
             }
         }
 
-        private static void SelectActionFromMenu()
+        private void SelectActionFromMenu()
         {
             Console.WriteLine("MENU:\n");
 
             switch (SelectPositionFromMenu(_menuList))
             {
                 case 0:
-                    _isWorking = false;
+                    Console.Clear();
+                    Console.WriteLine(_menuList[0]);
+                    BackToMenu();
                     break;
                 case 1:
-                    _isWorking = false;
+                    Console.Clear();
+                    Console.WriteLine(_menuList[1]);
+                    BackToMenu();
                     break;
                 case 2:
-                    _isWorking = false;
+                    Console.Clear();
+                    Console.WriteLine(_menuList[2]);
+                    BackToMenu();
                     break;
                 case 3:
-                    _isWorking = false;
+                    Console.Clear();
+                    GetInfo.PlaceInformation(_placesRepository.Repository, "");
+                    BackToMenu();
                     break;
                 case 4:
-                    _isWorking = false;
+                    Console.Clear();
+                    ReadDataFromConsole.GetRadiusFromConsole();
+                    GetInfo.PlaceInformation(_placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole()), "");
+                    BackToMenu();
                     break;
                 case 5:
-                    _isWorking = false;
+                    Console.Clear();
+                    Console.WriteLine(_menuList[5]);
+                    BackToMenu();
                     break;
                 case 6:
-                    _isWorking = false;
+                    Console.Clear();
+                    Console.WriteLine(_menuList[6]);
+                    BackToMenu();
                     break;
                 case 7:
+                    Console.Clear();
+                    _isDataSourceSelected = false;
+                    break;
+                case 8:
+                    Console.Clear();
                     _isWorking = false;
                     break;
             }
         }
 
-        private static void SelectDataSource()
+        private void SelectDataSource()
         {
             Console.WriteLine("Wybierz źródło danych dla aplikacji:\n");
 
             switch (SelectPositionFromMenu(_dataSourceList))
             {
-                    
                 case 0:
-                    Console.WriteLine("Wczytuje plik");
+                    Console.Clear();
+                    _usersRepository.AddFileDataToRepository();
+                    _placesRepository.AddFileDataToRepository();
                     break;
                 case 1:
-                    Console.WriteLine("Nie wczytuje pliku");
+                    Console.Clear();
+                    _usersRepository.AddFileDataToRepository();
+                    _placesRepository.AddApiDataToRepository(
+                        ReadDataFromConsole.GetLatitudeFromConsole(), 
+                        ReadDataFromConsole.GetLongitudeFromConsole(), 
+                        ReadDataFromConsole.GetRadiusFromConsole(), 
+                        ReadDataFromConsole.GetApiKeyFromConsole()
+                        );
                     break;
                 case 2:
+                    _usersRepository = new UsersRepository();
+                    _placesRepository = new PlacesRepository();
+                    break;
+                case 3:
                     _isWorking = false;
                     break;
             }
         }
 
-        private static int SelectPositionFromMenu(List<string> menu)
+        private int SelectPositionFromMenu(List<string> menu)
         {
             var index = 0;
 
@@ -128,17 +162,20 @@ namespace C_bool.ConsoleApp
                 }
                 else if (move == ConsoleKey.Enter)
                 {
+                    menu[index] = menu[index].Replace(_indicator, ' ');
+                    menu[0] = _indicator + menu[0].Substring(1);
                     return index;
                 }
             }
         }
 
-        private static void PrintMenuPositions(List<string> menu)
+        private void PrintMenuPositions(List<string> menu)
         {
             foreach (var position in menu)
             {
                 if (position.Contains("Zamknij aplikację") ||
-                    position.Contains("Wyświetl wszystkie miejsca w okolicy"))
+                    position.Contains("Wyświetl wszystkie miejsca w okolicy") || 
+                    position.Contains("Wybierz ponownie źródło danych"))
                 {
                     Console.WriteLine();
                 }
@@ -156,7 +193,21 @@ namespace C_bool.ConsoleApp
             }
         }
 
-        private static void PrintMoveLegend()
+        private void BackToMenu()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"\n\n '{ConsoleKey.Enter.ToString().ToUpper()}' - powrót do MENU");
+            Console.ResetColor();
+            while (true)
+            {
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void PrintMoveLegend()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(

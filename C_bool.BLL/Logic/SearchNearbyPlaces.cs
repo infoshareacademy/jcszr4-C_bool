@@ -18,7 +18,7 @@ namespace C_bool.BLL.Logic
         /// <param name="place2Latitude">Second place latitude</param>
         /// <param name="place2Longitude">First place longitude</param>
         /// <returns></returns>
-        public static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude, double place2Latitude, double place2Longitude)
+        private static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude, double place2Latitude, double place2Longitude)
         {
             var sinPlace1Latitude = Math.Sin(Radians(place1Latitude));
             var sinPlace2Latitude = Math.Sin(Radians(place2Latitude));
@@ -30,7 +30,7 @@ namespace C_bool.BLL.Logic
             return distance;
         }
 
-        public static double Radians(double x)
+        private static double Radians(double x)
         {
             return x * Pi / 180;
         }
@@ -43,7 +43,7 @@ namespace C_bool.BLL.Logic
         /// <param name="radius">Radius in which to search, entered as meters</param>
         /// <param name="places">Input - list of Place object</param>
         /// <returns>List of places nearby</returns>
-        public static List<Place> GetPlaces(double latitude, double longitude, double radius, List<Place> places)
+        public static List<Place> GetPlaces(List<Place> places, double latitude, double longitude, double radius)
         {
             return (from place in places let distance = DistanceBetweenPlaces(latitude, longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
         }
@@ -55,9 +55,9 @@ namespace C_bool.BLL.Logic
         /// <param name="radius">Radius in which to search, entered as meters</param>
         /// <param name="places">Input - list of Place object</param>
         /// <returns>List of places nearby</returns>
-        public static List<Place> GetPlaces(Place fromPlace, double radius, List<Place> places)
+        public static List<Place> GetPlaces(List<Place> places, Place fromPlace, double radius)
         {
-            return fromPlace == null ? new List<Place>() : (from place in places let distance = DistanceBetweenPlaces(fromPlace.Geometry.Location.Latitude, fromPlace.Geometry.Location.Longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
+            return (from place in places let distance = DistanceBetweenPlaces(fromPlace.Geometry.Location.Latitude, fromPlace.Geometry.Location.Longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
         }
     }
 }

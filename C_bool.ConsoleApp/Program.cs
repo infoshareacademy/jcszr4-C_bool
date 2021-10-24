@@ -8,7 +8,8 @@ namespace C_bool.ConsoleApp
 
         static void Main(string[] args)
         {
-          Menu.StartProgram();
+            Menu menu = new Menu();
+            menu.StartProgram();
         
           //Playground.TestAddToRepositoryAndPrintInfo();
         }
