@@ -54,6 +54,14 @@ namespace C_bool.ConsoleApp.Other
             }
 
             GetInfo.PlaceInformation(nearbyPlaces, "");
+
+            //wyświetla listę użytkowników o określonej ilości punktów
+            var minPoints = 100;
+            var maxPoints = 500;
+            var sortDescending = true;
+            var usersByPoints = SearchUsers.ByPointsRange(usersRepository.Users, minPoints, maxPoints, sortDescending);
+            Console.WriteLine($"\n\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO":"ROSNĄCO")}:");
+            GetInfo.UserInformation(usersByPoints, "");
         }
     }
 }
