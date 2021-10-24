@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace C_bool.ConsoleApp.Logic
+namespace C_bool.ConsoleApp.ConsoleHelpers
 {
     public static class ReadDataFromConsole
     {

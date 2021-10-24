@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class PlacesRepository : BaseRepository<Place>
+    public sealed class PlacesRepository : BaseRepository<Place>, IRepository<Place>
     {
         public override List<Place> Repository { get; protected set; }
         public override string FileName { get; } = "places.json";
@@ -20,12 +20,7 @@ namespace C_bool.BLL.Repositories
             Repository = new List<Place>();
         }
 
-        public override Place SearchById(string searchId)
-        {
-            return (from place in Repository where place.PlaceId == searchId select place).First();
-        }
-
-        public override List<Place> SearchByName(string searchName)
+        public List<Place> SearchByName(string searchName)
         {
             return (from place in Repository
                 where place.Name.ToLower().Contains(searchName.ToLower()) 

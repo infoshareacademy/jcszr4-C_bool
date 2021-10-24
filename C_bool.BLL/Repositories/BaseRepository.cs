@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using C_bool.BLL.Models;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public abstract class BaseRepository<T> : IRepository<T>
+    public abstract class BaseRepository<T> where T : IEntity
     {
         public abstract List<T> Repository { get; protected set; }
         public abstract string FileName { get; }
@@ -27,10 +29,11 @@ namespace C_bool.BLL.Repositories
             Repository[index] = newRow;
         }
 
-        public abstract T SearchById(string searchId);
+        public T SearchById(string searchId)
+        {
+            return Repository.FirstOrDefault(x => x.Id == searchId);
+        }
 
-        public abstract List<T> SearchByName(string searchName);
-        
         protected virtual string ConvertFileJsonToString()
         {
             var jsonStream = new StreamReader(FileName).BaseStream;

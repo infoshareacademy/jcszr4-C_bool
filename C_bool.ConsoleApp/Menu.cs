@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using C_bool.BLL.Repositories;
-using C_bool.ConsoleApp.Logic;
+using C_bool.ConsoleApp.ConsoleHelpers;
 
 namespace C_bool.ConsoleApp
 {

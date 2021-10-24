@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using C_bool.BLL.Models.Users;
+using C_bool.BLL.Models;
 
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class UsersRepository : BaseRepository<User>
+    public sealed class UsersRepository : BaseRepository<User>, IRepository<User>
     {
         public override List<User> Repository { get; protected set; }
         public override string FileName { get; } = "users.json";
@@ -15,12 +15,7 @@ namespace C_bool.BLL.Repositories
             Repository = new List<User>();
         }
 
-        public override User SearchById(string searchId)
-        {
-            return (from user in Repository where user.Id == searchId select user).First();
-        }
-
-        public override List<User> SearchByName(string searchName)
+        public List<User> SearchByName(string searchName)
         {
             return (from user in Repository
                 where user.LastName.ToLower().Contains(searchName.ToLower()) || user.FirstName.ToLower().Contains(searchName.ToLower())

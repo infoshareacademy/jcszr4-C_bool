@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using C_bool.BLL.Models;
 using C_bool.BLL.Models.Places;
-using C_bool.BLL.Models.Users;
 
-namespace C_bool.ConsoleApp.Logic
+namespace C_bool.ConsoleApp.ConsoleHelpers
 {
     public class GetInfo
     {
@@ -18,7 +18,7 @@ namespace C_bool.ConsoleApp.Logic
             {
                 var outputString = $"\t| Ocena: {place.Rating} (wszystkich ocen: {place.UserRatingsTotal})\n\t| Adres: {place.Address}\n\t| Szer. geo.: {place.Geometry.Location.Latitude}\n\t| Wys. geo.: {place.Geometry.Location.Longitude}\n";
 
-                if (place.PlaceId.Equals(id))
+                if (place.Id.Equals(id))
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"NAZWA: {place.Name}");
