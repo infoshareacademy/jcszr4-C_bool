@@ -62,6 +62,18 @@ namespace C_bool.ConsoleApp.Other
             var usersByPoints = SearchUsers.ByPointsRange(usersRepository.Repository, minPoints, maxPoints, sortDescending);
             Console.WriteLine($"\n\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO":"ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
+
+            //szukanie miejsc w List<Places> po nazwie i miejsc w pobliżu
+            var searchCategory = "food";
+            //var placeToSearchFrom = placesRepository.Repository.Find(place => place.Name.Contains(searchString));
+            var placesWithMatchedCategories = SearchPlaceByCategory.GetPlaces(placesRepository.Repository, searchCategory);
+            Console.WriteLine($"\n\n\nMIEJSCA W KATEGORII {searchCategory}:");
+            GetInfo.PlaceInformation(placesWithMatchedCategories, "");
+
+            var searchSubCategory = "meal_delivery";
+            var placesWithMatchedSubCategories = SearchPlaceByCategory.GetPlacesExactCategory(placesWithMatchedCategories, searchSubCategory);
+            Console.WriteLine($"\n\n\nUŚCIŚLONE O {searchSubCategory}:");
+            GetInfo.PlaceInformation(placesWithMatchedSubCategories, "");
         }
     }
 }
