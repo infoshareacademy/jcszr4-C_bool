@@ -63,5 +63,18 @@ namespace C_bool.ConsoleApp.Other
             Console.WriteLine($"\n\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO":"ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
         }
+
+        /// <summary>
+        /// Assigns random points to users in repository
+        /// </summary>
+        /// <param name="repository"></param>
+        public static void AssignRandomPointsToUsers(UsersRepository repository)
+        {
+            var random = new Random();
+            foreach (var user in repository.Repository)
+            {
+                user.Points = random.Next(0, 1000);
+            }
+        }
     }
 }
