@@ -16,7 +16,7 @@ namespace C_bool.BLL.Logic
         /// <returns></returns>
         public static List<User> ByPointsRange(List<User> users, int minPoints, int maxPoints, bool orderByDescending)
         {
-            var userList = (from user in users where (user.Points >= minPoints && user.Points <= maxPoints) select user).ToList();
+            var userList = users.Where(user => user.Points >= minPoints && user.Points <= maxPoints).ToList();
             var sortedList = orderByDescending ? userList.OrderByDescending(user => user.Points).ToList() : userList.OrderBy(user => user.Points).ToList();
             return sortedList;
         }
