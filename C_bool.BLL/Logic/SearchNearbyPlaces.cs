@@ -9,6 +9,7 @@ namespace C_bool.BLL.Logic
     {
         const double Pi = Math.PI;
         const double EarthRadius = 6371000;
+        private static double Radians(double x) => x * Pi / 180;
 
         /// <summary>
         /// Returns approximate distance between two places on Earth, calculated from formula Distance, d = 3963.0 * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
@@ -30,10 +31,13 @@ namespace C_bool.BLL.Logic
             return distance;
         }
 
-        private static double Radians(double x)
-        {
-            return x * Pi / 180;
-        }
+        /// <summary>
+        /// Returns approximate distance between two places on Earth, calculated from formula Distance, d = 3963.0 * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
+        /// </summary>
+        /// <param name="firstPlace">First Place object</param>
+        /// <param name="secondPlace">Second Place object</param>
+        /// <returns></returns>
+        private static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) => DistanceBetweenPlaces(firstPlace.Geometry.Location.Latitude, firstPlace.Geometry.Location.Longitude, secondPlace.Geometry.Location.Latitude, secondPlace.Geometry.Location.Longitude);
 
         /// <summary>
         /// gets places nearby according to entered coordinates and radius

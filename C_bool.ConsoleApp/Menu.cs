@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using C_bool.BLL.Repositories;
 using C_bool.ConsoleApp.ConsoleHelpers;
+using C_bool.ConsoleApp.Other;
 
 namespace C_bool.ConsoleApp
 {
@@ -29,6 +30,7 @@ namespace C_bool.ConsoleApp
             {"  Wybierz ponownie źródło danych"},
             {"  Zamknij aplikację"}
         };
+
         private PlacesRepository _placesRepository = new PlacesRepository();
         private UsersRepository _usersRepository = new UsersRepository();
 
@@ -60,6 +62,8 @@ namespace C_bool.ConsoleApp
                 case 0:
                     Console.Clear();
                     Console.WriteLine(_menuList[0]);
+                    Playground.AssignRandomPointsToUsers(_usersRepository); // do testów
+                    ReadDataFromConsole.GetUserClassification(_usersRepository);
                     BackToMenu();
                     break;
                 case 1:
@@ -79,7 +83,6 @@ namespace C_bool.ConsoleApp
                     break;
                 case 4:
                     Console.Clear();
-                    ReadDataFromConsole.GetRadiusFromConsole();
                     GetInfo.PlaceInformation(_placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole()), "");
                     BackToMenu();
                     break;
