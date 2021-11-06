@@ -103,7 +103,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
             Console.WriteLine($"\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO" : "ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
         }
-        public static void GetPlacesByCategory2(PlacesRepository repository)
+        public static void GetPlacesByCategory(PlacesRepository repository)
         {
             var categories = SearchPlaceByCategory.PlaceCategories;
             Console.WriteLine("Dostępne kategorie: ");

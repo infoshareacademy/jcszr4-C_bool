@@ -88,7 +88,7 @@ namespace C_bool.ConsoleApp
                     break;
                 case 5:
                     Console.Clear();
-                    ReadDataFromConsole.GetPlacesByCategory2(_placesRepository);
+                    ReadDataFromConsole.GetPlacesByCategory(_placesRepository);
                     BackToMenu();
                     break;
                 case 6:
