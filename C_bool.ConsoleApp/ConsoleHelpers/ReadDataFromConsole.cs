@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Models;
 using C_bool.BLL.Repositories;
@@ -101,6 +102,72 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
             var usersByPoints = SearchUsers.ByPointsRange(repository.Repository, minPoints, maxPoints, sortDescending);
             Console.WriteLine($"\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO" : "ROSNĄCO")}:");
             GetInfo.UserInformation(usersByPoints, "");
+        }
+        public static void GetPlacesByCategory2(PlacesRepository repository)
+        {
+            var categories = SearchPlaceByCategory.PlaceCategories;
+            Console.WriteLine("Dostępne kategorie: ");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            foreach (var category in categories)
+            {
+                var placesWithMatchedCategoriesCount = SearchPlaceByCategory.GetPlaces(repository.Repository, category.Key).Count;
+                Console.WriteLine($"  {category.Key} ({placesWithMatchedCategoriesCount})");
+            }
+            Console.ResetColor();
+
+            Console.WriteLine("Podaj nazwę kategorii:");
+            var inputCategory = Console.ReadLine();
+            while (inputCategory != null && !categories.ContainsKey(inputCategory))
+            {
+                Console.Write($"\nWprowadzona kategoria ({inputCategory}) jest nieprawidłowa, spróbuj ponownie: ");
+                inputCategory = Console.ReadLine();
+            }
+
+            var placesWithMatchedCategories = SearchPlaceByCategory.GetPlaces(repository.Repository, inputCategory);
+
+            if (placesWithMatchedCategories.Count == 0)
+            {
+                Console.WriteLine("Nie znaleziono miejsc w wybranej kategorii");
+                return;
+            }
+
+            Console.WriteLine($"\nMIEJSCA W KATEGORII {inputCategory}:");
+            GetInfo.PlaceInformation(placesWithMatchedCategories, "");
+
+            var searchBySubCategory = false;
+            if (placesWithMatchedCategories.Count > 1) searchBySubCategory = ConfirmPrompt("Czy chcesz zawęzić swój wybór o podkategorie?");
+
+            if (searchBySubCategory)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Podkategorie w kategorii {inputCategory}: ");
+
+                var arrayTypes = placesWithMatchedCategories.SelectMany(i => i.Types).ToArray();
+
+                HashSet<string> combinedSubcategories = new HashSet<string>(arrayTypes);
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                combinedSubcategories.ToList().ForEach(item => Console.WriteLine("  " + item));
+                Console.ResetColor();
+
+                var inputSubCategory = Console.ReadLine();
+                while (!combinedSubcategories.Contains(inputSubCategory))
+                {
+                    Console.Write($"\nWprowadzona kategoria ({inputSubCategory}) jest nieprawidłowa, spróbuj ponownie: ");
+                    inputSubCategory = Console.ReadLine();
+                }
+
+                var placesWithMatchedSubCategories = SearchPlaceByCategory.GetPlacesExactCategory(placesWithMatchedCategories, inputSubCategory);
+
+                if (placesWithMatchedSubCategories.Count == 0)
+                {
+                    Console.WriteLine("Nie znaleziono miejsc w wybranej podkategorii");
+                    return;
+                }
+                Console.WriteLine($"\nMIEJSCA W KATEGORII {inputCategory} o podkategorii {inputSubCategory}:");
+                GetInfo.PlaceInformation(placesWithMatchedSubCategories, "");
+            }
         }
     }
 }
