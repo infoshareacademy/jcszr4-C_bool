@@ -236,6 +236,11 @@ namespace C_bool.ConsoleApp
                         var errorMessage = "[ERROR] Błąd odczytu pliku! Czy chcesz wybrać inne źródło danych?";
                         HandleDataSourceError(index, errorMessage);
                     }
+                    catch (ArgumentNullException)
+                    {
+                        var errorMessage = "[ERROR] Plik jest pusty! Czy chcesz wybrać inne źródło danych?";
+                        HandleDataSourceError(index, errorMessage);
+                    }
 
                     try
                     {
