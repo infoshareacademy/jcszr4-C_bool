@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using C_bool.BLL.Logic;
-using C_bool.BLL.Models;
-using C_bool.BLL.Repositories;
+using C_bool.BLL.Validators;
 
 namespace C_bool.ConsoleApp.ConsoleHelpers
 {
@@ -11,53 +8,127 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
         public static string GetApiKeyFromConsole()
         {
             Console.WriteLine("\nPodaj klucz API");
-            
-            return Console.ReadLine();
-        }
 
-        public static double GetLongitudeFromConsole()
-        {
-            Console.WriteLine("\nPodaj długość  geograficzną Twojej lokacji:");
-            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double longitude) && longitude >= -180 && longitude <= 180) 
-            {
-                return longitude;
-            }
-            else
-            {
-                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
-                
-                return GetLongitudeFromConsole();
-            }
+            return Console.ReadLine();
         }
 
         public static double GetLatitudeFromConsole()
         {
             Console.WriteLine("Podaj szerokość geogariczną Twojej lokacji:");
-            if (double.TryParse(Console.ReadLine().Replace(',', '.'), out double latitude) && latitude >= -90 && latitude <= 90)
+            var input = Console.ReadLine();
+
+            if (PlaceValidator.ValidateLatitude(input, out var message))
             {
-                return latitude;
+                return double.Parse(input);
             }
             else
             {
-                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
+                if (ConfirmPrompt(message))
+                {
+                    return GetLatitudeFromConsole();
+                }
+                else
+                {
+                    var defaultLatitude = 52.232434503602555;
+                    Console.WriteLine($"Ustawiono wartość domyślną: {defaultLatitude}");
+                    return defaultLatitude;
+                }
+            }
+        }
 
-                return GetLatitudeFromConsole();
+        public static double GetLongitudeFromConsole()
+        {
+            Console.WriteLine("\nPodaj długość  geograficzną Twojej lokacji:");
+            var input = Console.ReadLine();
+
+            if (PlaceValidator.ValidateLongitude(input, out var message))
+            {
+                return double.Parse(input);
+            }
+            else
+            {
+                if (ConfirmPrompt(message))
+                {
+                    return GetLongitudeFromConsole();
+                }
+                else
+                {
+                    var defaultLongitude = 21.00488390170703;
+                    Console.WriteLine($"Ustawiono wartość domyślna: {defaultLongitude}");
+                    return defaultLongitude;
+                }
             }
         }
 
         public static double GetRadiusFromConsole()
         {
             Console.WriteLine("\nPodaj promień w jakim chcesz szukać miejsc w okolicy: [m]");
-            
-            if (double.TryParse(Console.ReadLine().Replace(',' , '.'), out double radius))
+            var input = Console.ReadLine();
+
+            if (PlaceValidator.ValidateRadius(input, out var message))
             {
-                return Math.Abs(radius);
+                return Math.Abs(double.Parse(input));
             }
             else
             {
-                Console.WriteLine("Nieprawidłowa wartość! Spróbuj jeszcze raz.");
-                
-                return GetRadiusFromConsole();
+                if (ConfirmPrompt(message))
+                {
+                    return GetRadiusFromConsole();
+                }
+                else
+                {
+                    var defaultRadius = 1000.0;
+                    Console.WriteLine($"Ustawiono wartość domyślna: {defaultRadius}");
+                    return defaultRadius;
+                }
+            }
+        }
+
+        public static int GetMinPointsFromConsole()
+        {
+            Console.Write("Podaj minimalną ilość punktów: ");
+            var input = Console.ReadLine();
+
+            if (UserValidator.ValidatePoints(input, out var message))
+            {
+                return int.Parse(input);
+            }
+            else
+            {
+                if (ConfirmPrompt(message))
+                {
+                    return GetMinPointsFromConsole();
+                }
+                else
+                {
+                    var defaultPoints = 0;
+                    Console.WriteLine($"Ustawiono wartość domyślna: {defaultPoints}");
+                    return defaultPoints;
+                }
+            }
+        }
+
+        public static int GetMaxPointsFromConsole()
+        {
+            Console.Write("Podaj maksynalną ilość punktów: ");
+            var input = Console.ReadLine();
+
+            if (UserValidator.ValidatePoints(input, out var message))
+            {
+                return int.Parse(input);
+            }
+            else
+            {
+                if (ConfirmPrompt(message))
+                {
+                    return GetMaxPointsFromConsole();
+                }
+                else
+                {
+                    var defaultPoints = int.MaxValue;
+                    Console.WriteLine($"Ustawiono wartość domyślna: {defaultPoints}");
+                    return defaultPoints;
+                }
             }
         }
 
@@ -71,36 +142,12 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
             ConsoleKey key;
             do
             {
-                Console.Write($"{ description } [t/n] ");
+                Console.Write($"\r{description} [t/n] ");
                 key = Console.ReadKey(false).Key;
             } while (key != ConsoleKey.T && key != ConsoleKey.N);
+
+            Console.WriteLine();
             return (key == ConsoleKey.T);
-        }
-
-        public static void GetUserClassification(UsersRepository repository)
-        {
-            int minPoints;
-            int maxPoints;
-
-            Console.Write("Podaj minimalną ilość punktów użytkownika: ");
-            var input = Console.ReadLine();
-            while (!int.TryParse(input, out minPoints))
-            {
-                Console.Write($"\nWprowadzona wartość ({input}) jest nieprawidłowa (tylko liczby), spróbuj ponownie: ");
-                input = Console.ReadLine();
-            }
-
-            Console.Write("Podaj maksymalną ilość punktów użytkownika: ");
-            input = Console.ReadLine();
-            while (!int.TryParse(input, out maxPoints) && maxPoints < minPoints)
-            {
-                Console.Write($"\nNieprawidłowa wartość! Spróbuj jeszcze raz.");
-                input = Console.ReadLine();
-            }
-            var sortDescending = ConfirmPrompt("Czy chcesz sortować w kolejności malejącej?");
-            var usersByPoints = SearchUsers.ByPointsRange(repository.Repository, minPoints, maxPoints, sortDescending);
-            Console.WriteLine($"\n\nUŻYTKOWNICY Z MIN {minPoints} i MAX {maxPoints} ILOŚCIĄ PUNKTÓW, SORTOWANE {(sortDescending ? "MALEJĄCO" : "ROSNĄCO")}:");
-            GetInfo.UserInformation(usersByPoints, "");
         }
     }
 }

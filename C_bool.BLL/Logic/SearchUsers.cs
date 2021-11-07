@@ -2,6 +2,7 @@
 using System.Linq;
 using C_bool.BLL.Models;
 
+
 namespace C_bool.BLL.Logic
 {
     public static class SearchUsers
@@ -17,7 +18,9 @@ namespace C_bool.BLL.Logic
         public static List<User> ByPointsRange(List<User> users, int minPoints, int maxPoints, bool orderByDescending)
         {
             var userList = users.Where(user => user.Points >= minPoints && user.Points <= maxPoints).ToList();
-            var sortedList = orderByDescending ? userList.OrderByDescending(user => user.Points).ToList() : userList.OrderBy(user => user.Points).ToList();
+            var sortedList = orderByDescending
+                ? userList.OrderByDescending(user => user.Points).ToList()
+                : userList.OrderBy(user => user.Points).ToList();
             return sortedList;
         }
     }

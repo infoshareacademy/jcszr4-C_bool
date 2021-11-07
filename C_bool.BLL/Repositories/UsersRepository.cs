@@ -18,8 +18,13 @@ namespace C_bool.BLL.Repositories
         public List<User> SearchByName(string searchName)
         {
             return (from user in Repository
-                where user.LastName.ToLower().Contains(searchName.ToLower()) || user.FirstName.ToLower().Contains(searchName.ToLower())
+                where user.LastName.ToLower().Contains(searchName.ToLower()) ||
+                      user.FirstName.ToLower().Contains(searchName.ToLower())
                 select user).ToList();
         }
+
+        public List<User> OrderByPoints(bool isDescending) => isDescending
+            ? Repository.OrderByDescending(u => u.Points).ToList()
+            : Repository.OrderBy(u => u.Points).ToList();
     }
 }

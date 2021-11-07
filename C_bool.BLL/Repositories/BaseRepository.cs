@@ -40,10 +40,15 @@ namespace C_bool.BLL.Repositories
             var streamReader = new StreamReader(jsonStream);
             var convertedToString = streamReader.ReadToEnd();
 
+            if (convertedToString.Equals(""))
+            {
+                throw new ArgumentNullException();
+            }
+
             return convertedToString;
         }
 
-        protected virtual string ConvertApiJsonToString(WebRequest webRequest)
+        protected string ConvertApiJsonToString(WebRequest webRequest)
         {
             webRequest.ContentType = "application/json";
 
@@ -53,7 +58,7 @@ namespace C_bool.BLL.Repositories
 
             return convertedToString;
         }
-        
+
         public void AddFileDataToRepository()
         {
             try
@@ -62,12 +67,21 @@ namespace C_bool.BLL.Repositories
             }
             catch (FileNotFoundException ex)
             {
-                Console.WriteLine("Nie znaleziono pliku: " + ex.Message);
+                throw ex;
             }
             catch (IOException ex)
             {
-                Console.WriteLine("Błąd dostępu do pliku: " + ex.Message);
+                throw ex;
             }
+            catch (ArgumentNullException ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool IsRepositoryEmpty(List<T> repository)
+        {
+            return !repository.Any();
         }
     }
 }

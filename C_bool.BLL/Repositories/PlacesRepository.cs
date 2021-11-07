@@ -23,14 +23,24 @@ namespace C_bool.BLL.Repositories
         public List<Place> SearchByName(string searchName)
         {
             return (from place in Repository
-                where place.Name.ToLower().Contains(searchName.ToLower()) 
+                where place.Name.ToLower().Contains(searchName.ToLower())
                 select place).ToList();
         }
 
-        public List<Place> GetNearbyPlacesFromRadius(double radius) => SearchNearbyPlaces.GetPlaces(Repository, Repository.First(), radius);
+        public List<Place> GetNearbyPlacesFromRadius(double radius) =>
+            SearchNearbyPlaces.GetPlaces(Repository, Repository.FirstOrDefault(), radius);
 
-        private string TrimJson(string convertedJson, string sectionToGet) =>
-            JObject.Parse(convertedJson)[sectionToGet].ToString();
+        private string TrimJson(string convertedJson, string sectionToGet)
+        {
+            try
+            {
+                return JObject.Parse(convertedJson)[sectionToGet].ToString();
+            }
+            catch (JsonReaderException)
+            {
+                return null;
+            }
+        }
 
         protected override string ConvertFileJsonToString() => TrimJson(base.ConvertFileJsonToString(), "results");
 
@@ -38,16 +48,17 @@ namespace C_bool.BLL.Repositories
         {
             try
             {
-                var webRequest = WebRequest.Create(@$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitude},{longitude}&radius={radius}&key={apiKey}");
+                var webRequest =
+                    WebRequest.Create(
+                        @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitude},{longitude}&radius={radius}&key={apiKey}");
                 var trimmedJson = TrimJson(ConvertApiJsonToString(webRequest), "results");
 
                 Repository = JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Błąd odpowiedzi serwera: " + ex.Message);
+                throw ex;
             }
         }
-
     }
 }

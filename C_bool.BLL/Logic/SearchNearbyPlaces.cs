@@ -19,14 +19,16 @@ namespace C_bool.BLL.Logic
         /// <param name="place2Latitude">Second place latitude</param>
         /// <param name="place2Longitude">First place longitude</param>
         /// <returns></returns>
-        private static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude, double place2Latitude, double place2Longitude)
+        private static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude,
+            double place2Latitude, double place2Longitude)
         {
             var sinPlace1Latitude = Math.Sin(Radians(place1Latitude));
             var sinPlace2Latitude = Math.Sin(Radians(place2Latitude));
             var cosPlace1Latitude = Math.Cos(Radians(place1Latitude));
             var cosPlace2Latitude = Math.Cos(Radians(place2Latitude));
 
-            var distance = EarthRadius * Math.Acos(sinPlace1Latitude * sinPlace2Latitude + cosPlace1Latitude * cosPlace2Latitude * Math.Cos(Radians(place1Longitude) - Radians(place2Longitude)));
+            var distance = EarthRadius * Math.Acos(sinPlace1Latitude * sinPlace2Latitude + cosPlace1Latitude *
+                cosPlace2Latitude * Math.Cos(Radians(place1Longitude) - Radians(place2Longitude)));
 
             return distance;
         }
@@ -37,7 +39,13 @@ namespace C_bool.BLL.Logic
         /// <param name="firstPlace">First Place object</param>
         /// <param name="secondPlace">Second Place object</param>
         /// <returns></returns>
-        private static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) => DistanceBetweenPlaces(firstPlace.Geometry.Location.Latitude, firstPlace.Geometry.Location.Longitude, secondPlace.Geometry.Location.Latitude, secondPlace.Geometry.Location.Longitude);
+        private static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) =>
+            DistanceBetweenPlaces(
+                firstPlace.Geometry.Location.Latitude,
+                firstPlace.Geometry.Location.Longitude,
+                secondPlace.Geometry.Location.Latitude,
+                secondPlace.Geometry.Location.Longitude
+            );
 
         /// <summary>
         /// gets places nearby according to entered coordinates and radius
@@ -49,7 +57,14 @@ namespace C_bool.BLL.Logic
         /// <returns>List of places nearby</returns>
         public static List<Place> GetPlaces(List<Place> places, double latitude, double longitude, double radius)
         {
-            return (from place in places let distance = DistanceBetweenPlaces(latitude, longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
+            return places.Where(p =>
+                    DistanceBetweenPlaces(
+                        latitude,
+                        longitude,
+                        p.Geometry.Location.Latitude,
+                        p.Geometry.Location.Latitude
+                    ) <= radius)
+                .ToList();
         }
 
         /// <summary>
@@ -61,7 +76,14 @@ namespace C_bool.BLL.Logic
         /// <returns>List of places nearby</returns>
         public static List<Place> GetPlaces(List<Place> places, Place fromPlace, double radius)
         {
-            return (from place in places let distance = DistanceBetweenPlaces(fromPlace.Geometry.Location.Latitude, fromPlace.Geometry.Location.Longitude, place.Geometry.Location.Latitude, place.Geometry.Location.Longitude) where distance <= radius select place).ToList();
+            return places.Where(p =>
+                    DistanceBetweenPlaces(
+                        fromPlace.Geometry.Location.Latitude,
+                        fromPlace.Geometry.Location.Longitude,
+                        p.Geometry.Location.Latitude,
+                        p.Geometry.Location.Longitude
+                    ) <= radius)
+                .ToList();
         }
     }
 }
