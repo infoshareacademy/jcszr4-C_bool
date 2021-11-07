@@ -17,10 +17,10 @@ namespace C_bool.BLL.Repositories
 
         public List<User> SearchByName(string searchName)
         {
-            return (from user in Repository
-                where user.LastName.ToLower().Contains(searchName.ToLower()) ||
-                      user.FirstName.ToLower().Contains(searchName.ToLower())
-                select user).ToList();
+            var searchNameLowerCase = searchName.ToLower();
+            return Repository.Where(user =>
+                    user.LastName.ToLower().Contains(searchNameLowerCase) ||
+                    user.LastName.ToLower().Contains(searchNameLowerCase)).Select(user => user).ToList();
         }
 
         public List<User> OrderByPoints(bool isDescending) => isDescending

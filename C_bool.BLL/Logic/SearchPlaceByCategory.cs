@@ -10,7 +10,8 @@ namespace C_bool.BLL.Logic
         public static Dictionary<string, HashSet<string>> PlaceCategories { get; set; } = new()
         {
             {
-                "transport", new HashSet<string>
+                "transport",
+                new HashSet<string>
                 {
                     "airport",
                     "bus_station",
@@ -22,18 +23,21 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "food", new HashSet<string>
+                "food",
+                new HashSet<string>
                 {
                     "bakery",
                     "cafe",
                     "convenience_store",
                     "meal_delivery",
                     "meal_takeaway",
-                    "restaurant"
+                    "restaurant",
+                    "bar"
                 }
             },
             {
-                "culture", new HashSet<string>
+                "culture",
+                new HashSet<string>
                 {
                     "art_gallery",
                     "movie_rental",
@@ -42,7 +46,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "services", new HashSet<string>
+                "services",
+                new HashSet<string>
                 {
                     "atm",
                     "beauty_salon",
@@ -64,7 +69,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "entertainment", new HashSet<string>
+                "entertainment",
+                new HashSet<string>
                 {
                     "amusement_park",
                     "aquarium",
@@ -77,7 +83,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "finance places", new HashSet<string>
+                "finance_places",
+                new HashSet<string>
                 {
                     "accounting",
                     "bank",
@@ -85,7 +92,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "state offices", new HashSet<string>
+                "state_offices",
+                new HashSet<string>
                 {
                     "city_hall",
                     "courthouse",
@@ -97,7 +105,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "tourism and recreation", new HashSet<string>
+                "tourism_and_recreation",
+                new HashSet<string>
                 {
                     "campground",
                     "lodging",
@@ -109,7 +118,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "places of cult", new HashSet<string>
+                "places_of_cult",
+                new HashSet<string>
                 {
                     "cemetery",
                     "church",
@@ -119,7 +129,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "medical services", new HashSet<string>
+                "medical_services",
+                new HashSet<string>
                 {
                     "dentist",
                     "doctor",
@@ -129,7 +140,8 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "shops", new HashSet<string>
+                "shops",
+                new HashSet<string>
                 {
                     "bicycle_store",
                     "car_dealer",
@@ -144,11 +156,13 @@ namespace C_bool.BLL.Logic
                     "shoe_store",
                     "shopping_mall",
                     "store",
-                    "supermarket"
+                    "supermarket",
+                    "liquor_store"
                 }
             },
             {
-                "education", new HashSet<string>
+                "education",
+                new HashSet<string>
                 {
                     "primary_school",
                     "school",
@@ -157,21 +171,24 @@ namespace C_bool.BLL.Logic
                 }
             },
             {
-                "places with alcohol", new HashSet<string>
+                "places_with_alcohol",
+                new HashSet<string>
                 {
                     "bar",
                     "liquor_store"
                 }
             },
             {
-                "pharmacy", new HashSet<string>
+                "pharmacy",
+                new HashSet<string>
                 {
                     "drugstore",
                     "pharmacy"
                 }
             },
             {
-                "other", new HashSet<string>
+                "other",
+                new HashSet<string>
                 {
                     "gas_station",
                     "gym",
@@ -179,6 +196,14 @@ namespace C_bool.BLL.Logic
                     "roofing_contractor",
                     "stadium",
                     "storage"
+                }
+            },
+            {
+                "sports_places",
+                new HashSet<string>
+                {
+                    "gym",
+                    "stadium"
                 }
 
             }

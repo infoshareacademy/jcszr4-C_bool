@@ -68,113 +68,50 @@ namespace C_bool.ConsoleApp
                     Console.Clear();
                     Console.WriteLine(_menuList[0] + "\n");
 
-                    Playground.AssignRandomPointsToUsers(_usersRepository); // do testów
-
-                    if (_usersRepository.IsRepositoryEmpty(_usersRepository.Repository))
-                    {
-                        Console.WriteLine("Brak wyników do wyświetlenia!");
-                        BackToMenu();
-                        break;
-                    }
-
-                    var isDescending = ReadDataFromConsole.ConfirmPrompt("Czy chcesz sortować w kolejności malejącej?");
-
-                    if (ReadDataFromConsole.ConfirmPrompt("Czy chcesz określić przedział punktów?"))
-                    {
-                        while (true)
-                        {
-                            var minPoints = ReadDataFromConsole.GetMinPointsFromConsole();
-                            var maxPoints = ReadDataFromConsole.GetMaxPointsFromConsole();
-                            if (UserValidator.ValidatePointsRange(minPoints, maxPoints, out var message))
-                            {
-                                var usersByPointsRange = SearchUsers.ByPointsRange(
-                                    _usersRepository.Repository,
-                                    minPoints,
-                                    maxPoints,
-                                    isDescending
-                                );
-
-                                if (_usersRepository.IsRepositoryEmpty(usersByPointsRange))
-                                {
-                                    Console.WriteLine("Brak wyników do wyświetlenia!");
-                                    BackToMenu();
-                                    break;
-                                }
-
-                                Console.WriteLine();
-                                GetInfo.UserInformation(usersByPointsRange, "");
-                                break;
-                            }
-
-                            Console.WriteLine(message);
-                        }
-                    }
-                    else
-                    {
-                        var usersOrderByPoints = _usersRepository.OrderByPoints(isDescending);
-
-                        Console.WriteLine();
-                        GetInfo.UserInformation(usersOrderByPoints, "");
-                    }
+                    PrintInfo.UserClassification(_usersRepository);
 
                     BackToMenu();
                     break;
                 case 1: // Dodaj nowego uzytkownika
                     Console.Clear();
                     Console.WriteLine(_menuList[1] + "\n");
+
                     BackToMenu();
                     break;
                 case 2: // Edytuj wybranego uzytkownika
                     Console.Clear();
                     Console.WriteLine(_menuList[2] + "\n");
+
                     BackToMenu();
                     break;
                 case 3: // Wyswietl wszystkie miejsca w okolicy
                     Console.Clear();
                     Console.WriteLine(_menuList[3] + "\n");
 
-                    if (_placesRepository.IsRepositoryEmpty(_placesRepository.Repository))
-                    {
-                        Console.WriteLine("Brak wyników do wyświetlenia!");
-                        BackToMenu();
-                        break;
-                    }
+                    PrintInfo.PlacesNearby(_placesRepository);
 
-                    GetInfo.PlaceInformation(_placesRepository.Repository, "");
                     BackToMenu();
                     break;
                 case 4: // Wyswietl miejsca w okreslonym zasiegu
                     Console.Clear();
                     Console.WriteLine(_menuList[4] + "\n");
 
-                    if (_placesRepository.IsRepositoryEmpty(_placesRepository.Repository))
-                    {
-                        Console.WriteLine("Brak wyników do wyświetlenia!");
-                        BackToMenu();
-                        break;
-                    }
+                    PrintInfo.PlacesByRadius(_placesRepository);
 
-                    var placesNearbyRadius =
-                        _placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole());
-
-                    if (_placesRepository.IsRepositoryEmpty(placesNearbyRadius))
-                    {
-                        Console.WriteLine("Brak wyników do wyświetlenia!");
-                        BackToMenu();
-                        break;
-                    }
-
-                    GetInfo.PlaceInformation(placesNearbyRadius, "");
                     BackToMenu();
                     break;
                 case 5: // Wyswietl miejsca okreslonego typu
                     Console.Clear();
                     Console.WriteLine(_menuList[5] + "\n");
+
+                    PrintInfo.PlacesByCategory(_placesRepository);
+
                     BackToMenu();
                     break;
                 case 6: // Edytuj wybrane miejsce
                     Console.Clear();
                     Console.WriteLine(_menuList[6] + "\n");
+
                     BackToMenu();
                     break;
                 case 7: // Wybierz ponownie zródlo danych
