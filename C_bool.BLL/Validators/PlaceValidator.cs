@@ -8,7 +8,7 @@ namespace C_bool.BLL.Validators
 
         public static bool ValidateLatitude(string input, out string message)
         {
-            if (double.TryParse(input.Replace(',', '.'), out double latitude) && latitude >= -90 && latitude <= 90)
+            if (double.TryParse(input.Replace(',', '.'), out double latitude) && latitude is >= -90 and <= 90)
             {
                 message = "";
                 return true;
@@ -22,7 +22,7 @@ namespace C_bool.BLL.Validators
 
         public static bool ValidateLongitude(string input, out string message)
         {
-            if (double.TryParse(input.Replace(',', '.'), out double longitude) && longitude >= -180 && longitude <= 180)
+            if (double.TryParse(input.Replace(',', '.'), out double longitude) && longitude is >= -180 and <= 180)
             {
                 message = "";
                 return true;

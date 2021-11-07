@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Validators;

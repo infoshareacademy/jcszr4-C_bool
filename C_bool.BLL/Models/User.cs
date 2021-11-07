@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace C_bool.BLL.Models
+﻿namespace C_bool.BLL.Models
 {
     public class User : IEntity
     {

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
-using C_bool.BLL.Validators;
 using C_bool.ConsoleApp.ConsoleHelpers;
-using C_bool.ConsoleApp.Other;
 
 namespace C_bool.ConsoleApp
 {
@@ -36,8 +33,8 @@ namespace C_bool.ConsoleApp
             { "  Zamknij aplikację" }
         };
 
-        private PlacesRepository _placesRepository = new PlacesRepository();
-        private UsersRepository _usersRepository = new UsersRepository();
+        private PlacesRepository _placesRepository = new();
+        private UsersRepository _usersRepository = new();
 
         public void StartProgram()
         {

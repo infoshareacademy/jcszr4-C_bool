@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using C_bool.BLL.Models.Places;
-using C_bool.BLL.Repositories;
 
 namespace C_bool.BLL.Logic
 {
