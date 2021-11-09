@@ -4,4 +4,22 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="places.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="places.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\C_bool.BLL\C_bool.BLL.csproj" />
+  </ItemGroup>
+
 </Project>

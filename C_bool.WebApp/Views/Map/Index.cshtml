@@ -1,0 +1,105 @@
+﻿@model IEnumerable<C_bool.BLL.Models.Places.Place>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Rating)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserRatingsTotal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Address)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserRatingsTotal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Show on map", "ShowOnMap", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="row">
+    <button id="locationButton" type="button" class="btn btn-default" onclick="getLocation()">Use Actual Location</button>
+</div>
+
+@*<h2 style="background-color: rgb(73,171,210);color: white; text-align: center; height:50px;padding-top:10px">ASP.NET Core – Google Maps API</h2>*@
+<fieldset>
+    @*<legend style="font-family: 'Segoe UI'; color: rgb(73,171,210); font-size: large;">Taras widokowy: Mirador Sa Punta</legend>*@
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIOGY4Kk6SW7K5u0pxSHchfNy7b0oXj_0&callback=myMap"></script>
+
+    @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>*@
+
+    <div id="googleMap" style="height:500px;width:100%;"></div>
+    <script>
+        
+        var latitude, longitude;
+        getLocation();
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+                myMap();
+            }
+            
+        };
+
+        function useLocation(position) {
+/*            window.location.replace('?lat=' + position.coords.longitude + '&?lon=' + position.coords.latitude);*/
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+        };
+
+        function myMap() {
+            var myCenter = new google.maps.LatLng(latitude, longitude);
+            var mapProp = { center: myCenter, zoom: 12, scrollwheel: false, draggable: true, mapTypeId: google.maps.MapTypeId.ROADMAP };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+            var marker = new google.maps.Marker({ position: myCenter });
+            marker.setMap(map);
+        };
+    </script>
+</fieldset>
+<footer>
+    <p style="background-color: rgb(73,171,210); font-weight: bold; color:white; text-align: center;height:50px; padding-top:15px">© @DateTime.Now.ToLocalTime()</p>
+</footer>
+

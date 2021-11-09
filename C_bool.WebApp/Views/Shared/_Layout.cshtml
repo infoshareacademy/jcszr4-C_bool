@@ -22,6 +22,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Map" asp-action="Index">Mapa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" onclick="getLocation()">Mapy2</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
@@ -43,6 +49,19 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+@*<script type="text/javascript">
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            }
+        };
+
+        function useLocation(position) {
+            window.location.replace('Map?lat=' + position.coords.longitude + '&lon=' + position.coords.latitude);
+        };
+
+       /*window.loaded = getLocation();*/
+    </script>*@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
