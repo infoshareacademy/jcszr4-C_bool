@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using C_bool.BLL.Logic;
@@ -45,11 +46,19 @@ namespace C_bool.BLL.Repositories
 
         public void AddApiDataToRepository(double latitude, double longitude, double radius, string apiKey)
         {
+            AddApiDataToRepository(latitude.ToString(CultureInfo.InvariantCulture), longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "PL", "pl");
+        }
+
+        public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey, string type = "",
+            string region = "PL", string language = "pl")
+        {
+            var latitudeString = latitude.ToString(CultureInfo.InvariantCulture);
+            var longitudeString = longitude.ToString(CultureInfo.InvariantCulture);
             try
             {
                 var webRequest =
                     WebRequest.Create(
-                        @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitude},{longitude}&radius={radius}&key={apiKey}");
+                        @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitudeString},{longitudeString}&radius={radius}&type={type}&region={region}&language={language}&key={apiKey}");
                 var trimmedJson = TrimJson(ConvertApiJsonToString(webRequest), "results");
 
                 Repository = JsonConvert.DeserializeObject<List<Place>>(trimmedJson);

@@ -22,4 +22,8 @@
     <ProjectReference Include="..\C_bool.BLL\C_bool.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
 </Project>

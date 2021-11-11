@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
+using C_bool.WebApp.Interfaces;
+using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
 {
@@ -14,13 +18,23 @@ namespace C_bool.WebApp.Controllers
     {
         // GET: MapController
         private MapService _mapService;
-        private PlacesRepository _placesRepository = new();
+        private PlacesRepository _placesRepository = new PlacesRepository();
+        private GeoLocation _geoLocation;
 
-        public MapController()
+        public static string apiKey;
+        public static double Latitude;
+        public static double Longitude;
+
+        public IConfiguration configuration;
+
+        public MapController(IConfiguration config)
         {
             _mapService = new MapService();
-            _placesRepository.AddFileDataToRepository();
-            _mapService.GetFromRepo(_placesRepository);
+            configuration = config;
+            apiKey = configuration.GetSection("AppSettings").GetSection("GoogleAPIKey").Value;
+
+            //_placesRepository.AddFileDataToRepository();
+            //_mapService.GetFromRepo(_placesRepository);
 
         }
         public ActionResult Index()
@@ -29,13 +43,38 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
-        // GET: MapController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult NewRequest()
         {
-            return View();
+            var model = new PlaceSearchRequest();
+            model.Latitude = Latitude.ToString(CultureInfo.InvariantCulture);
+            model.Longitude = Longitude.ToString(CultureInfo.InvariantCulture);
+            return View(model);
         }
 
-        public ActionResult ShowOnMap(int id)
+        [HttpPost]
+        public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
+        {
+            if (postData.Latitude != 0)
+            {
+                _geoLocation = postData;
+                Latitude = _geoLocation.Latitude;
+                Longitude = _geoLocation.Longitude;
+            }
+
+            return Json(postData);
+        }
+
+        // GET: MapController/Details/5
+        public ActionResult Update()
+        {
+            _placesRepository.AddApiDataToRepository(Latitude.ToString(CultureInfo.InvariantCulture), Longitude.ToString(CultureInfo.InvariantCulture), 2000, apiKey, "restaurant", "PL", "en");
+            _mapService.GetFromRepo(_placesRepository);
+            var model = _mapService.GetAll();
+            return View("~/Views/Map/Index.cshtml", model);
+        }
+
+        // GET: MapController/Details/5
+        public ActionResult Details(int id)
         {
             return View();
         }
@@ -59,6 +98,17 @@ namespace C_bool.WebApp.Controllers
             {
                 return View();
             }
+        }
+
+        // POST: MapController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewRequest(PlaceSearchRequest request)
+        {
+            _placesRepository.AddApiDataToRepository(request.Latitude, request.Longitude, request.Radius, apiKey, request.SelectedType, "PL", "en");
+            _mapService.GetFromRepo(_placesRepository);
+            var model = _mapService.GetAll();
+            return View("~/Views/Map/Index.cshtml", model);
         }
 
         // GET: MapController/Edit/5

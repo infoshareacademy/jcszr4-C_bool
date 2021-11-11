@@ -1,9 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@using C_bool.WebApp.Interfaces
+@inject IAppSettings appSettings;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - C_bool.WebApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -22,10 +26,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Map" asp-action="Index">Mapa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" onclick="getLocation()">Mapy2</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Map" asp-action="Index">Miejsca</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -48,20 +49,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-@*<script type="text/javascript">
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(useLocation);
-            }
-        };
-
-        function useLocation(position) {
-            window.location.replace('Map?lat=' + position.coords.longitude + '&lon=' + position.coords.latitude);
-        };
-
-       /*window.loaded = getLocation();*/
-    </script>*@
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
