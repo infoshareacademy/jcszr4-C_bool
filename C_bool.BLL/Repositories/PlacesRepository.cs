@@ -22,9 +22,8 @@ namespace C_bool.BLL.Repositories
 
         public List<Place> SearchByName(string searchName)
         {
-            return (from place in Repository
-                where place.Name.ToLower().Contains(searchName.ToLower())
-                select place).ToList();
+            return (from place in Repository where place.Name.ToLower().Contains(searchName.ToLower()) select place)
+                .ToList();
         }
 
         public List<Place> GetNearbyPlacesFromRadius(double radius) =>
@@ -46,11 +45,19 @@ namespace C_bool.BLL.Repositories
 
         public void AddApiDataToRepository(double latitude, double longitude, double radius, string apiKey)
         {
-            AddApiDataToRepository(latitude.ToString(CultureInfo.InvariantCulture), longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "PL", "pl");
+            Repository = ApiDataToPlacesList(latitude.ToString(CultureInfo.InvariantCulture),
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "PL", "pl");
         }
 
-        public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey, string type = "",
-            string region = "PL", string language = "pl")
+        public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey,
+            string type = "", string region = "PL", string language = "pl")
+        {
+            Repository = ApiDataToPlacesList(latitude.ToString(CultureInfo.InvariantCulture),
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, type, region, language);
+        }
+
+        public List<Place> ApiDataToPlacesList(string latitude, string longitude, double radius, string apiKey,
+            string type = "", string region = "PL", string language = "pl")
         {
             var latitudeString = latitude.ToString(CultureInfo.InvariantCulture);
             var longitudeString = longitude.ToString(CultureInfo.InvariantCulture);
@@ -61,7 +68,7 @@ namespace C_bool.BLL.Repositories
                         @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitudeString},{longitudeString}&radius={radius}&type={type}&region={region}&language={language}&key={apiKey}");
                 var trimmedJson = TrimJson(ConvertApiJsonToString(webRequest), "results");
 
-                Repository = JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
+                return JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
             }
             catch (Exception ex)
             {
