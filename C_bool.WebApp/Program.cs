@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using C_bool.BLL.Models.Places;
+using C_bool.BLL.Repositories;
 
 namespace C_bool.WebApp
 {
@@ -22,5 +24,8 @@ namespace C_bool.WebApp
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static PlacesRepository MainPlacesRepository = new PlacesRepository();
+        public static List<Place> TempPlaces = new();
     }
 }

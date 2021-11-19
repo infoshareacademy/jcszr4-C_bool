@@ -7,19 +7,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
-using C_bool.WebApp.Interfaces;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
 {
-    public class PlacesController : Controller
+    public class NewPlaceController : Controller
     {
-        // GET: PlacesController
         private MapService _mapService;
-        //private PlacesRepository _placesRepository = new PlacesRepository();
-        private List<Place> _tempPlaces = new();
+
+        private PlacesRepository _tempRepository = new PlacesRepository();
+
         private GeoLocation _geoLocation;
 
         public static string apiKey;
@@ -28,7 +27,7 @@ namespace C_bool.WebApp.Controllers
 
         public IConfiguration configuration;
 
-        public PlacesController(IConfiguration config)
+        public NewPlaceController(IConfiguration config)
         {
             _mapService = new MapService();
             configuration = config;
@@ -38,10 +37,22 @@ namespace C_bool.WebApp.Controllers
             //_mapService.GetFromRepo(_placesRepository);
 
         }
+
+        // GET: NewPlaceController
         public ActionResult Index()
         {
-            _mapService.GetFromRepo(Program.MainPlacesRepository);
-            var model = _mapService.GetAll();
+            var model = Program.TempPlaces;
+            return View();
+        }
+
+        public ActionResult NewRequest()
+        {
+            var model = new PlaceSearchRequest
+            {
+                Latitude = Latitude.ToString(CultureInfo.InvariantCulture),
+                Longitude = Longitude.ToString(CultureInfo.InvariantCulture)
+            };
+
             return View(model);
         }
 
@@ -58,19 +69,19 @@ namespace C_bool.WebApp.Controllers
             return Json(postData);
         }
 
-        // GET: PlacesController/Details/5
+        // GET: NewPlaceController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: PlacesController/Create
+        // GET: NewPlaceController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: PlacesController/Create
+        // POST: NewPlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -85,13 +96,33 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: PlacesController/Edit/5
+        // GET: NewPlaceController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: PlacesController/Edit/5
+        [HttpPost]
+        public ActionResult Add([FromBody]ReturnString request)
+        {
+            foreach (var place in Program.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            {
+                Program.MainPlacesRepository.Add(place);
+            }
+            return View();
+        }
+
+        // POST: PlacesController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewRequest(PlaceSearchRequest request)
+        {
+            Program.TempPlaces = _tempRepository.ApiDataToPlacesList(request.Latitude, request.Longitude, request.Radius, apiKey, request.SelectedType, "PL", "en");
+            var model = Program.TempPlaces;
+            return View("~/Views/NewPlace/Index.cshtml", model);
+        }
+
+        // POST: NewPlaceController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -106,13 +137,13 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: PlacesController/Delete/5
+        // GET: NewPlaceController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: PlacesController/Delete/5
+        // POST: NewPlaceController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
@@ -126,5 +157,10 @@ namespace C_bool.WebApp.Controllers
                 return View();
             }
         }
+    }
+
+    public class ReturnString
+    {
+        public string Id { get; set; }
     }
 }
