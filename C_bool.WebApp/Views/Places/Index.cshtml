@@ -9,33 +9,83 @@
     ViewData["Title"] = "Index";
 }
 
-<div style="margin: 10px;">
-    @*<button id="locationButton" type="button" class="btn btn-primary" onclick="getLocation()">Pobierz lokalizację</button>
-    <a asp-action="Update"><input type="button" class="btn btn-primary" value="Odśwież bazując na lokalizacji" /></a>*@
-    <a asp-controller="NewPlace" asp-action="NewRequest"><input type="button" class="btn btn-lg btn-primary" value="Szukaj nowych miejsc" /></a>
+<div class="nav-wrapper position-relative mb-2">
+    <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Ulubione miejsca</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
+        </li>
+    </ul>
 </div>
+<!-- End of Tab Nav -->
+<!-- Tab Content -->
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="tab-content" id="tabcontent1">
+            <div class="tab-pane fade show active" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
 
-<ul class="nav nav-tabs" style="margin: 10px;">
-    <li class="nav-item">
-        <a class="nav-link active" data-bs-toggle="tab" href="#home">Miejsca</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#maptab">Mapa</a>
-    </li>
-    @*<li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-    </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-        <div class="dropdown-menu" style="">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
+                @if (Model != null && Model.Any())
+                {
+                    <div class="card-deck" style="align-content: center">
+                        @foreach (var item in Model)
+                        {
+                            <div class="card mb-3" style="float: left; width: 400px; height: 500px; margin: 10px;">
+                                <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+                                <div class="card-body">
+                                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
+                                    <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
+                                </div>
+                                @if (item.photos != null)
+                                {
+                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.photos[0].photo_reference)&key=@appSettings.GoogleAPIKey" alt="Card image cap">
+                                }
+                                else
+                                {
+                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                                         src="/img/image-placeholder.jpg" alt="Card image cap">
+                                }
+                                <div class="card-body">
+                                    <p class="card-text"></p>
+                                </div>
+
+                                    <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Nowe zadanie</l></button>
+                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                        <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary"><l class="bi bi-trash"> Usuń</l></button>
+                                    </form>
+
+
+                                <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    @foreach (var placeType in item.Types)
+                                    {
+                                        if (!placeType.Contains("establishment"))
+                                        {
+                                            <l>@placeType |</l>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading">Nie bangla!</h4>
+                        <p class="mb-0">Wygląda na to, że nie masz ulubionych miejsc...<br>Przedź do <b>Szukaj w pobliżu</b> aby coś wyszukać, lub dodaj swoje miejsce</p>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
+                <div id="dvMap" style="width: 100%; height: 800px"></div>
+            </div>
         </div>
-    </li>*@
-</ul>
+    </div>
+</div>
 
 <div class="modal" id="mapModal">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -52,76 +102,6 @@
             <div class="modal-footer">
             </div>
         </div>
-    </div>
-</div>
-
-<div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade active show" id="home">
-        @if (Model.Count() > 0)
-        {
-            <h1 style="margin: 10px;">Znalezione miejsca:</h1>
-        }
-        else
-        {
-            <div class="alert alert-dismissible alert-warning">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                <h4 class="alert-heading">Nie bangla!</h4>
-                <p class="mb-0">Wygląda na to, że nie ma żadnych miejsc pasujacych do zapytania :-(<br>Kliknij przycisk <b>Nowe zapytanie</b> aby coś wyszukać</p>
-            </div>
-        }
-
-        <div>
-            @foreach (var item in Model)
-            {
-                <div class="card mb-3" style="float: left; width: 400px; height: 500px; margin: 10px;">
-                    <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-                    <div class="card-body">
-                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-                        <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
-                    </div>
-
-                    @if (item.photos != null)
-                    {
-                        <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                             src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.photos[0].photo_reference)&key=@appSettings.GoogleAPIKey" alt="Card image cap">
-                    }
-                    else
-                    {
-                        <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                             src="/img/image-placeholder.jpg" alt="Card image cap">
-                    }
-                    <div class="card-body">
-                        <p class="card-text"></p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-                            <button type="button" class="btn btn-success"><l class="bi-file-plus"> Nowe zadanie</l></button>
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"><l class="bi-heart"> Ulubione</l></button>
-                        </div>
-                    </ul>
-                    <div class="card-footer text-muted">
-                        @foreach (var placeType in item.Types)
-                        {
-                            if (placeType is not ("point_of_interest" and "establishment"))
-                            {
-                                <l>@placeType |</l>
-                            }
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-
-    </div>
-    <div class="tab-pane fade" id="maptab">
-        <div id="dvMap" style="width: 100%; height: 800px"></div>
-    </div>
-    <div class="tab-pane fade" id="dropdown1">
-        <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork.</p>
-    </div>
-    <div class="tab-pane fade" id="dropdown2">
-        <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they sold out farm-to-table VHS viral locavore cosby sweater.</p>
     </div>
 </div>
 

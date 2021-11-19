@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +12,11 @@ namespace C_bool.WebApp.Models
 {
     public class PlaceSearchRequest
     {
+        [DisplayName("Szerokość geograficzna")]
         public string Latitude { get; set; }
+        [DisplayName("Długość geograficzna")]
         public string Longitude { get; set; }
+        [DisplayName("Promień")]
         public int Radius { get; set; } = 2000;
         public List<string> Type { get; set; }
 

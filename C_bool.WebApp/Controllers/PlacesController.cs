@@ -106,19 +106,22 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: PlacesController/Delete/5
-        public ActionResult Delete(int id)
+        // GET: ProductsController/Delete/5
+        public ActionResult Delete(string id)
         {
-            return View();
+            var model = Program.MainPlacesRepository.SearchById(id);
+            return View(model);
         }
 
-        // POST: PlacesController/Delete/5
+        // POST: ProductsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(string id, Place model)
         {
             try
             {
+                Program.MainPlacesRepository.Delete(id);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -126,5 +129,6 @@ namespace C_bool.WebApp.Controllers
                 return View();
             }
         }
-    }
+    
+}
 }

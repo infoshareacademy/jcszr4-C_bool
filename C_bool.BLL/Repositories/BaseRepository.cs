@@ -23,6 +23,13 @@ namespace C_bool.BLL.Repositories
             Repository.Remove(row);
         }
 
+        public void Delete(string id)
+        {
+            var product = SearchById(id);
+
+            Repository.Remove(product);
+        }
+
         public void Update(T oldRow, T newRow)
         {
             var index = Repository.IndexOf(oldRow);
