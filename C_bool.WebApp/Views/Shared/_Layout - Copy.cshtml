@@ -1,5 +1,6 @@
-﻿@using C_bool.WebApp.Interfaces
-@inject IAppSettings appSettings;
+﻿@using Microsoft.Extensions.Options
+@using C_bool.WebApp.Config
+@inject IOptions<AppSettings> appSettings;
 
 <!DOCTYPE html>
 <html lang="en">

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
-using C_bool.WebApp.Interfaces;
+using C_bool.WebApp.Config;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
@@ -18,25 +18,20 @@ namespace C_bool.WebApp.Controllers
     {
         // GET: PlacesController
         private MapService _mapService;
-        //private PlacesRepository _placesRepository = new PlacesRepository();
-        private List<Place> _tempPlaces = new();
         private GeoLocation _geoLocation;
 
-        public static string apiKey;
+        private AppSettings _appSettings = new AppSettings();
+
         public static double Latitude;
         public static double Longitude;
 
-        public IConfiguration configuration;
+        public IConfiguration Configuration;
 
-        public PlacesController(IConfiguration config)
+        public PlacesController(IConfiguration configuration)
         {
             _mapService = new MapService();
-            configuration = config;
-            apiKey = configuration.GetSection("AppSettings").GetSection("GoogleAPIKey").Value;
-
-            //_placesRepository.AddFileDataToRepository();
-            //_mapService.GetFromRepo(_placesRepository);
-
+            Configuration = configuration;
+            Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
         }
         public ActionResult Index()
         {

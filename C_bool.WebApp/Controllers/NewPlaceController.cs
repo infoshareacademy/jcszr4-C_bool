@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using C_bool.BLL.Logic;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
+using C_bool.WebApp.Config;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
@@ -17,25 +19,20 @@ namespace C_bool.WebApp.Controllers
     {
         private MapService _mapService;
 
-        private PlacesRepository _tempRepository = new PlacesRepository();
-
         private GeoLocation _geoLocation;
 
-        public static string apiKey;
+        private AppSettings _appSettings = new AppSettings();
+
         public static double Latitude;
         public static double Longitude;
 
-        public IConfiguration configuration;
+        public IConfiguration Configuration;
 
-        public NewPlaceController(IConfiguration config)
+        public NewPlaceController(IConfiguration configuration)
         {
             _mapService = new MapService();
-            configuration = config;
-            apiKey = configuration.GetSection("AppSettings").GetSection("GoogleAPIKey").Value;
-
-            //_placesRepository.AddFileDataToRepository();
-            //_mapService.GetFromRepo(_placesRepository);
-
+            Configuration = configuration;
+            Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
         }
 
         // GET: NewPlaceController
@@ -45,13 +42,20 @@ namespace C_bool.WebApp.Controllers
             return View();
         }
 
-        public ActionResult NewRequest()
+        public ActionResult SearchNearby()
         {
-            var model = new PlaceSearchRequest
+            var model = new NearbySearchRequest
             {
                 Latitude = Latitude.ToString(CultureInfo.InvariantCulture),
                 Longitude = Longitude.ToString(CultureInfo.InvariantCulture)
             };
+
+            return View(model);
+        }
+
+        public ActionResult SearchByName()
+        {
+            var model = new NameSearchRequest();
 
             return View(model);
         }
@@ -69,12 +73,6 @@ namespace C_bool.WebApp.Controllers
             return Json(postData);
         }
 
-        // GET: NewPlaceController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: NewPlaceController/Create
         public ActionResult Create()
         {
@@ -84,11 +82,19 @@ namespace C_bool.WebApp.Controllers
         // POST: NewPlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Place model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                //model.Id = Guid.NewGuid().ToString().Replace("-", "");
+                model.IsUserCreated = true;
+                Program.MainPlacesRepository.Add(model);
+                return RedirectToAction("Index","Places");
             }
             catch
             {
@@ -96,14 +102,8 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: NewPlaceController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
         [HttpPost]
-        public ActionResult Add([FromBody]ReturnString request)
+        public ActionResult AddToFavs([FromBody]ReturnString request)
         {
             foreach (var place in Program.TempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
@@ -115,48 +115,23 @@ namespace C_bool.WebApp.Controllers
         // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult NewRequest(PlaceSearchRequest request)
+        public ActionResult SearchNearby(NearbySearchRequest request)
         {
-            Program.TempPlaces = _tempRepository.ApiDataToPlacesList(request.Latitude, request.Longitude, request.Radius, apiKey, request.SelectedType, "PL", "en");
+            Program.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, request.SelectedType,request.Keyword, "PL", "pl", _appSettings.GetAllPages);
             var model = Program.TempPlaces;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
-        // POST: NewPlaceController/Edit/5
+        // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult SearchByName(NameSearchRequest request)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey,request.SearchPhrase, "PL", "pl");
+            var model = Program.TempPlaces;
+            return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
-        // GET: NewPlaceController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: NewPlaceController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 
     public class ReturnString

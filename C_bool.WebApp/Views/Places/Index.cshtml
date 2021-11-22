@@ -1,34 +1,38 @@
-﻿@using C_bool.WebApp.Interfaces
-@inject IAppSettings appSettings;
+﻿@inject IOptions<AppSettings> appSettings;
 @using System.Text.Json
 @using System.Globalization
 @using System.Security.Cryptography.X509Certificates
+@using C_bool.BLL.Logic
+@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
 @model IEnumerable<C_bool.BLL.Models.Places.Place>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<div class="nav-wrapper position-relative mb-2">
-    <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Ulubione miejsca</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
-        </li>
-    </ul>
+<div class="nav-wrapper position-relative mb-3">
+    <div class="col-4">
+        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Ulubione miejsca</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
+            </li>
+        </ul>
+        </div>
 </div>
 <!-- End of Tab Nav -->
 <!-- Tab Content -->
 <div class="card border-0">
     <div class="card-body p-0">
         <div class="tab-content" id="tabcontent1">
-            <div class="tab-pane fade show active" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
+            <div class="tab-pane fade show active" style="" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="card-deck" style="align-content: center">
+                    <div class="card-deck" style="height: 80vh; overflow-y: scroll; align-content: center">
                         @foreach (var item in Model)
                         {
                             <div class="card mb-3" style="float: left; width: 400px; height: 500px; margin: 10px;">
@@ -37,10 +41,10 @@
                                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
                                     <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
                                 </div>
-                                @if (item.photos != null)
+                                @if (item.Photos != null && item.Photos.Count > 0 && appSettings.Value.EnablePlacePhoto)
                                 {
                                     <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.photos[0].photo_reference)&key=@appSettings.GoogleAPIKey" alt="Card image cap">
+                                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@appSettings.Value.GoogleAPIKey" alt="Card image cap">
                                 }
                                 else
                                 {
@@ -51,21 +55,37 @@
                                     <p class="card-text"></p>
                                 </div>
 
-                                    <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Nowe zadanie</l></button>
-                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                                        <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary"><l class="bi bi-trash"> Usuń</l></button>
-                                    </form>
+                                <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+                                    <button type="button" class="btn btn-success"><l class="bi-file-plus"> Nowe zadanie</l></button>
+                                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                    <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary"><l class="bi bi-trash"> Usuń</l></button>
+                                </form>
 
 
                                 <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    @foreach (var placeType in item.Types)
+
+                                    @foreach (var type in item.Types)
                                     {
-                                        if (!placeType.Contains("establishment"))
+                                        if (SearchPlaceByCategory.PlaceCategories2.ContainsKey(type))
                                         {
-                                            <l>@placeType |</l>
+                                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategories2)
+                                            {
+                                                if (kvp.Key.Equals(type))
+                                                {
+                                                    <label>@kvp.Value |</label>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label style="color:silver"> @type |</label>
                                         }
                                     }
+                                    @if (item.Types.Count == 0)
+                                    {
+                                        <label>Brak kategorii</label>
+                                    }
+
                                 </div>
                             </div>
                         }
@@ -81,7 +101,7 @@
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                <div id="dvMap" style="width: 100%; height: 800px"></div>
+                <div id="dvMap" style="width: 100%; height: 80vh"></div>
             </div>
         </div>
     </div>
@@ -113,11 +133,9 @@
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(useLocation);
         }
-
     };
 
     function useLocation(position) {
-        /*            window.location.replace('?lat=' + position.coords.longitude + '&?lon=' + position.coords.latitude);*/
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
 
@@ -128,10 +146,8 @@
                 url: "@Url.Action("GetGeoLocation", "Places")",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                //dataType: "json",
                 data: JSON.stringify(postData),
                 success: function (data) {
-                    //alert("Pass" + data);
                 },
                 error: function (ex) {
                     alert("Nie udało się przekazać lokalizacji" + ex);
@@ -142,10 +158,10 @@
     window.onload = getLocation();
 </script>
 
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.GoogleAPIKey"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.Value.GoogleAPIKey"></script>
 <script type="text/javascript">
     var markers = $.parseJSON('@Html.Raw(JsonSerializer.Serialize(Model))');
-    window.onload = function () {
+    function initMarkersMap() {
         var mapOptions = {
             center: new google.maps.LatLng(markers[0].Geometry.Location.Latitude, markers[0].Geometry.Location.Longitude),
             zoom: 14,

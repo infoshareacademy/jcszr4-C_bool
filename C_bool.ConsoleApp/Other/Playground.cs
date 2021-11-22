@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using C_bool.BLL.Logic;
+using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
 using C_bool.ConsoleApp.ConsoleHelpers;
 
@@ -87,6 +89,13 @@ namespace C_bool.ConsoleApp.Other
             {
                 user.Points = random.Next(0, 1000);
             }
+        }
+
+        public static void GetFromKeyword()
+        {
+            var placesRepository = new PlacesRepository();
+            List<Place> getPlace = GoogleAPI.ApiSearchPlaces("AIzaSyD4SpU-L5LIBsWSYVvp3GVn51gz2Dts8BY", "bankomat w pruszczu gdańskim");
+            GetInfo.PlaceInformation(getPlace, "");
         }
     }
 }

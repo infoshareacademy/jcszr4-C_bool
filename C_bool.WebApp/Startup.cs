@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using C_bool.WebApp.Interfaces;
+using C_bool.WebApp.Config;
 using C_bool.WebApp.Services;
 using Microsoft.AspNetCore.Localization;
 
@@ -27,9 +27,11 @@ namespace C_bool.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
-            services.AddSingleton<IAppSettings, AppSettings>(e => Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>());
-            services.AddSingleton<IConfiguration>(Configuration);
+            //services.AddTransient<IAppSettings, AppSettings>(e => Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>());
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            //services.AddTransient<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

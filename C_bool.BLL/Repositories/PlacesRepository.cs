@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Models.Places;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -33,9 +35,9 @@ namespace C_bool.BLL.Repositories
         {
             try
             {
-                return JObject.Parse(convertedJson)[sectionToGet].ToString();
+                return JObject.Parse(convertedJson)[sectionToGet]?.ToString();
             }
-            catch (JsonReaderException)
+            catch
             {
                 return null;
             }
@@ -45,35 +47,17 @@ namespace C_bool.BLL.Repositories
 
         public void AddApiDataToRepository(double latitude, double longitude, double radius, string apiKey)
         {
-            Repository = ApiDataToPlacesList(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "PL", "pl");
+            Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "", "PL", "pl");
         }
 
         public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey,
-            string type = "", string region = "PL", string language = "pl")
+            string type = "", string keyword = "", string region = "PL", string language = "pl")
         {
-            Repository = ApiDataToPlacesList(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, type, region, language);
+            Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, type, keyword, region, language);
         }
 
-        public List<Place> ApiDataToPlacesList(string latitude, string longitude, double radius, string apiKey,
-            string type = "", string region = "PL", string language = "pl")
-        {
-            var latitudeString = latitude.ToString(CultureInfo.InvariantCulture);
-            var longitudeString = longitude.ToString(CultureInfo.InvariantCulture);
-            try
-            {
-                var webRequest =
-                    WebRequest.Create(
-                        @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitudeString},{longitudeString}&radius={radius}&type={type}&region={region}&language={language}&key={apiKey}");
-                var trimmedJson = TrimJson(ConvertApiJsonToString(webRequest), "results");
 
-                return JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
     }
 }
