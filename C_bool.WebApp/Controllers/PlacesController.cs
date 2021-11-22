@@ -31,7 +31,7 @@ namespace C_bool.WebApp.Controllers
         {
             _mapService = new MapService();
             Configuration = configuration;
-            Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
+
         }
         public ActionResult Index()
         {

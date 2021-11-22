@@ -47,6 +47,14 @@ namespace C_bool.BLL.Logic
                 secondPlace.Geometry.Location.Longitude
             );
 
+        private static double DistanceBetweenPlaces(string latitude, string longitude, Place secondPlace) =>
+            DistanceBetweenPlaces(
+                double.Parse(latitude),
+                double.Parse(longitude),
+                secondPlace.Geometry.Location.Latitude,
+                secondPlace.Geometry.Location.Longitude
+            );
+
         /// <summary>
         /// gets places nearby according to entered coordinates and radius
         /// </summary>

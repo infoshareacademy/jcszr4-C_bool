@@ -101,7 +101,7 @@
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                <div id="dvMap" style="width: 100%; height: 80vh"></div>
+                @await Component.InvokeAsync("MapView")
             </div>
         </div>
     </div>
@@ -156,50 +156,4 @@
     };
 
     window.onload = getLocation();
-</script>
-
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.Value.GoogleAPIKey"></script>
-<script type="text/javascript">
-    var markers = $.parseJSON('@Html.Raw(JsonSerializer.Serialize(Model))');
-    function initMarkersMap() {
-        var mapOptions = {
-            center: new google.maps.LatLng(markers[0].Geometry.Location.Latitude, markers[0].Geometry.Location.Longitude),
-            zoom: 14,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            mapId: 'c67cdd640e77cc91'
-        };
-        var infoWindow = new google.maps.InfoWindow();
-        var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
-        for (i = 0; i < markers.length; i++) {
-            var data = markers[i]
-            var myLatlng = new google.maps.LatLng(data.Geometry.Location.Latitude, data.Geometry.Location.Longitude);
-            var marker = new google.maps.Marker({
-                position: myLatlng,
-                map: map,
-                title: data.Name,
-                icon: "/img/onion.png"
-            });
-            (function (marker, data) {
-                google.maps.event.addListener(marker, "click", function (e) {
-                    infoWindow.setContent(data.Address);
-                    infoWindow.open(map, marker);
-                });
-            })(marker, data);
-        }
-    }
-</script>
-<script>
-    function initMap(latitude, longitude) {
-        const point = { lat: latitude, lng: longitude };
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 16,
-            center: point,
-            mapId: 'c67cdd640e77cc91'
-        });
-        const marker = new google.maps.Marker({
-            position: point,
-            map: map,
-            icon: "/img/onion.png"
-        });
-    }
 </script>

@@ -124,8 +124,8 @@
                 radius: parseInt(document.getElementById('radiusForm').value),
             });
 
-            document.getElementById('latitudeForm').value = mapsMouseEvent.latLng.lat();
-            document.getElementById('longitudeForm').value = mapsMouseEvent.latLng.lng();
+            document.getElementById('latitudeForm').value = cityCircle.center.lat();
+            document.getElementById('longitudeForm').value = cityCircle.center.lng();
         });
 
         const cityCircle = new google.maps.Circle();
@@ -138,8 +138,21 @@
             map,
             center: myLatlng,
             radius: parseInt(document.getElementById('radiusForm').value),
+            editable: true,
+            draggable: true
+        });
+
+        google.maps.event.addListener(cityCircle, 'radius_changed', function() {
+            document.getElementById('radiusForm').value = cityCircle.getRadius();
+        });
+        google.maps.event.addListener(cityCircle, 'center_changed', function() {
+            document.getElementById('latitudeForm').value = cityCircle.center.lat();
+            document.getElementById('longitudeForm').value = cityCircle.center.lng();
         });
     }
+
+
+
     window.addEventListener("load", initMap);
 </script>
 
