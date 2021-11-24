@@ -127,7 +127,7 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SearchByName(NameSearchRequest request)
         {
-            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey,request.SearchPhrase, "PL", "pl");
+            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey,request.SearchPhrase, "pl");
             var model = Program.TempPlaces;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }

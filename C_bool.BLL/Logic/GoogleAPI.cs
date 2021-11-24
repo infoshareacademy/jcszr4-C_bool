@@ -95,14 +95,14 @@ namespace C_bool.BLL.Logic
             return listPlaces;
         }
 
-        public static List<Place> ApiSearchPlaces(string apiKey, string keyword = "", string region = "PL", string language = "pl")
+        public static List<Place> ApiSearchPlaces(string apiKey, string query = "", string language = "pl")
         {
             var listPlaces = new List<Place>();
             try
             {
                 var webRequest =
                     WebRequest.Create(
-                        @$"https://maps.googleapis.com/maps/api/place/textsearch/json?query={keyword}&key={apiKey}");
+                        @$"https://maps.googleapis.com/maps/api/place/textsearch/json?query={query}&language={language}&key={apiKey}");
                 var response = ConvertApiJsonToString(webRequest);
                 Status status;
                 Enum.TryParse(TrimJson(response, "status"), out status);

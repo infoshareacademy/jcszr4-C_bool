@@ -42,7 +42,6 @@
                 <select asp-for="SelectedType" asp-items="Model.ListItems" class="form-control">
                     <option selected="selected" value="">Brak kategorii</option>
                 </select>
-                @*@Html.DropDownListFor(x => x.SelectedType, new SelectList(Model.Type), "Wybierz kategorię...", new { @style = "width:500px" })*@
             </div>
             <br />
             <div class="form-group">
@@ -67,18 +66,15 @@
         {
             alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
         }
-
     };
 
     function useLocation(position) {
-        /*            window.location.replace('?lat=' + position.coords.longitude + '&?lon=' + position.coords.latitude);*/
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
 
         document.getElementById('latitudeForm').value = latitude;
         document.getElementById('longitudeForm').value = longitude;
         initMap();
-
     };
     window.onload = getLocation();
 </script>
@@ -109,7 +105,7 @@
         map.addListener("click", (mapsMouseEvent) => {
             // Close the current InfoWindow.
             infoWindow.close();
-            cityCircle.setMap(null);
+            radiusCircle.setMap(null);
             // Create a new InfoWindow.
             infoWindow = new google.maps.InfoWindow({
                 position: mapsMouseEvent.latLng,
@@ -118,18 +114,18 @@
             infoWindow.open(map);
             myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
 
-            cityCircle.setOptions({
+            radiusCircle.setOptions({
                 map,
                 center: myLatlng,
                 radius: parseInt(document.getElementById('radiusForm').value),
             });
 
-            document.getElementById('latitudeForm').value = cityCircle.center.lat();
-            document.getElementById('longitudeForm').value = cityCircle.center.lng();
+            document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+            document.getElementById('longitudeForm').value = radiusCircle.center.lng();
         });
 
-        const cityCircle = new google.maps.Circle();
-        cityCircle.setOptions({
+        const radiusCircle = new google.maps.Circle();
+        radiusCircle.setOptions({
             strokeColor: "#FF0000",
             strokeOpacity: 0.8,
             strokeWeight: 2,
@@ -142,12 +138,18 @@
             draggable: true
         });
 
-        google.maps.event.addListener(cityCircle, 'radius_changed', function() {
-            document.getElementById('radiusForm').value = cityCircle.getRadius();
+        var maxRadius = 50000;
+
+            google.maps.event.addListener(radiusCircle, 'radius_changed', function () {
+                if (radiusCircle.getRadius() > maxRadius) {
+                    radiusCircle.setRadius(maxRadius);
+                }
+
+            document.getElementById('radiusForm').value = radiusCircle.getRadius();
         });
-        google.maps.event.addListener(cityCircle, 'center_changed', function() {
-            document.getElementById('latitudeForm').value = cityCircle.center.lat();
-            document.getElementById('longitudeForm').value = cityCircle.center.lng();
+        google.maps.event.addListener(radiusCircle, 'center_changed', function() {
+            document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+            document.getElementById('longitudeForm').value = radiusCircle.center.lng();
         });
     }
 

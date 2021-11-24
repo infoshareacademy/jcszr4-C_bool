@@ -3,73 +3,65 @@
 <h1>Wyszukaj nowe miejsca</h1>
 
 <h4>Powiedz mi, czego szukasz?</h4>
+<h4>Na przykład: <span class="typed-text"></span><span class="cursor">&nbsp;</span></h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="SearchByName">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label>Na przykład: <span class="typed-text"></span><span class="cursor">&nbsp;</span></label>
-                <input asp-for="SearchPhrase" class="form-control" />
-                <span asp-validation-for="SearchPhrase" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+<form asp-action="SearchByName">
+    <div class="input-group mb-3">
+        <input asp-for="SearchPhrase" type="text" class="form-control" placeholder="Czego szukasz?" aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Szukaj!</button>
     </div>
-</div>
+</form>
+    <div>
+        <div class="container">
 
-<div>
-    <div class="container">
-
+        </div>
     </div>
-</div>
 
-<script>
-    const typedTextSpan = document.querySelector(".typed-text");
-    const cursorSpan = document.querySelector(".cursor");
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    const textArray = ["zamek w Krakowie", "sens życia w Białymstoku", "monopolowy w Szczekocinach", "most w Gdańsku", "płot na granicy"];
-    const typingDelay = 150;
-    const erasingDelay = 100;
-    const newTextDelay = 2000; // Delay between current and next text
-    let textArrayIndex = 0;
-    let charIndex = 0;
+        <script>
+            const typedTextSpan = document.querySelector(".typed-text");
+            const cursorSpan = document.querySelector(".cursor");
 
-    function type() {
-        if (charIndex < textArray[textArrayIndex].length) {
-            if (!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-            typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
-            charIndex++;
-            setTimeout(type, typingDelay);
-        }
-        else {
-            cursorSpan.classList.remove("typing");
-            setTimeout(erase, newTextDelay);
-        }
+            const textArray = ["zamek w Krakowie", "sens życia w Radomiu", "monopolowy w Szczekocinach", "most w Gdańsku", "piramidy w Gizie"];
+            const typingDelay = 100;
+            const erasingDelay = 100;
+            const newTextDelay = 2000;
+            let textArrayIndex = 0;
+            let charIndex = 0;
+
+            function type() {
+                if (charIndex < textArray[textArrayIndex].length) {
+                    if (!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+                    typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, typingDelay);
+                }
+                else {
+                    cursorSpan.classList.remove("typing");
+                    setTimeout(erase, newTextDelay);
+                }
+            }
+
+            function erase() {
+                if (charIndex > 0) {
+                    if (!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+                    typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(erase, erasingDelay);
+                }
+                else {
+                    cursorSpan.classList.remove("typing");
+                    textArrayIndex++;
+                    if (textArrayIndex >= textArray.length) textArrayIndex = 0;
+                    setTimeout(type, typingDelay + 1100);
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                if (textArray.length) setTimeout(type, newTextDelay + 250);
+            });
+        </script>
     }
-
-    function erase() {
-        if (charIndex > 0) {
-            if (!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
-            typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
-            charIndex--;
-            setTimeout(erase, erasingDelay);
-        }
-        else {
-            cursorSpan.classList.remove("typing");
-            textArrayIndex++;
-            if (textArrayIndex >= textArray.length) textArrayIndex = 0;
-            setTimeout(type, typingDelay + 1100);
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function () { // On DOM Load initiate the effect
-        if (textArray.length) setTimeout(type, newTextDelay + 250);
-    });
-</script>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
