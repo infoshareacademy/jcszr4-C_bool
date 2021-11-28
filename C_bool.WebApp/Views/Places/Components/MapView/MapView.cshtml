@@ -2,7 +2,7 @@
 @using Microsoft.Extensions.Options
 @using System.Text.Json
 @model List<PlaceViewModel>
-@inject IOptions<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> appSettings;
 
 <div id="dvMap" style="width: 100%; height: 80vh"></div>
 

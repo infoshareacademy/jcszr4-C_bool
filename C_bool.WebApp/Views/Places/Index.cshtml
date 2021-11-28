@@ -1,4 +1,4 @@
-﻿@inject IOptions<AppSettings> appSettings;
+﻿@inject IOptionsSnapshot<AppSettings> appSettings;
 @using System.Text.Json
 @using System.Globalization
 @using System.Security.Cryptography.X509Certificates
@@ -55,14 +55,15 @@
                                 <p class="card-text"></p>
                             </div>
                             <ul class="list-group list-group-flush">
-                            <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display: flex; justify-content: center;">
-                                <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px; ">
-                                    <button type="button" class="btn btn-success"><l class="bi-file-plus"> Zadanie</l></button>
-                                    <button type="button" class="btn btn-success"><l class="bi-file-plus"> Edytuj</l></button>
-                                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                                    <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary"><l class="bi bi-trash"> Usuń</l></button>
-                                </div>
-                            </form>
+                                <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display: flex; justify-content: center;">
+                                    <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px; ">
+                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Zadanie</l></button>
+                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Edytuj</l></button>
+                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+
+                                    </div>
+                                    <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>
+                                </form>
                             </ul>
 
 

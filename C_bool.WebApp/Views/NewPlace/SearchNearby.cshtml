@@ -2,7 +2,7 @@
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model C_bool.WebApp.Models.NearbySearchRequest
-@inject IOptions<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> appSettings;
 
 @{
     ViewData["Title"] = "SearchNearby";
@@ -11,6 +11,7 @@
 <h1>Szukaj nowych miejsc</h1>
 
 <h4>Wprowadź lokalizację wokół której chcesz szukać nowych miejsc</h4>
+<h4>@ViewBag.Message</h4>
 <hr />
 <div class="row">
     <div class="col-md-3">
@@ -106,12 +107,6 @@
             // Close the current InfoWindow.
             infoWindow.close();
             radiusCircle.setMap(null);
-            // Create a new InfoWindow.
-            infoWindow = new google.maps.InfoWindow({
-                position: mapsMouseEvent.latLng,
-            });
-            infoWindow.setContent("Szukaj tutaj");
-            infoWindow.open(map);
             myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
 
             radiusCircle.setOptions({
@@ -158,32 +153,6 @@
     window.addEventListener("load", initMap);
 </script>
 
-<script>
-    document.getElementById('latitudeForm').addEventListener('click', function (){
-        const notyf = new Notyf({
-            position: {
-                x: 'right',
-                y: 'bottom',
-            },
-            types: [
-                {
-                    type: 'info',
-                    background: 'blue',
-                    icon: {
-                        className: 'fas fa-info-circle',
-                        tagName: 'span',
-                        color: '#fff'
-                    },
-                    dismissible: false
-                }
-            ]
-        });
-        notyf.open({
-            type: 'info',
-            message: 'Send us <b>an email</b> to get support'
-        });
-    });
-</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

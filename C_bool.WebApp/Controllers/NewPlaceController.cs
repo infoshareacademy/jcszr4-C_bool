@@ -26,6 +26,8 @@ namespace C_bool.WebApp.Controllers
         public static double Latitude;
         public static double Longitude;
 
+        private static string _message;
+
         public IConfiguration Configuration;
 
         public NewPlaceController(IConfiguration configuration)
@@ -117,8 +119,10 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SearchNearby(NearbySearchRequest request)
         {
-            Program.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, request.SelectedType,request.Keyword, "PL", "pl", _appSettings.GetAllPages);
+            Program.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, out var message, out var status, type: request.SelectedType,keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
             var model = Program.TempPlaces;
+            ViewBag.Message = message;
+            ViewBag.Status = status;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
@@ -127,8 +131,10 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SearchByName(NameSearchRequest request)
         {
-            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey,request.SearchPhrase, "pl");
+            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey, out var message, out var status,query: request.SearchPhrase, language: "pl");
             var model = Program.TempPlaces;
+            ViewBag.Message = message;
+            ViewBag.Status = status;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 

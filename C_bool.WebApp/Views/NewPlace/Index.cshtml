@@ -1,4 +1,4 @@
-﻿@inject IOptions<AppSettings> appSettings;
+﻿@inject IOptionsSnapshot<AppSettings> appSettings;
 @using System.Text.Json
 @using C_bool.BLL.Logic
 @using System.Globalization
@@ -78,7 +78,7 @@ else
     <div class="alert alert-dismissible alert-warning">
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         <h4 class="alert-heading">Nie bangla!</h4>
-        <p class="mb-0">Wygląda na to, że nie ma żadnych miejsc pasujących do zapytania :-(<br>Kliknij przycisk <b>Nowe zapytanie</b> aby coś wyszukać</p>
+        <p class="mb-0">@ViewBag.Message<br>Spróbuj ponownie używając opcji <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b></p>
     </div>
 }
 
@@ -136,4 +136,34 @@ else
                 }
             });
     };
+</script>
+
+<script>
+    function showNotif() {
+        const notyf = new Notyf({
+            position: {
+                x: 'right',
+                y: 'bottom',
+            },
+            types: [
+                {
+                    type: 'info',
+                    background: '@if(ViewBag.Status) {@Html.Raw("green")} else {@Html.Raw("red")}' ,
+                    icon: {
+                        className: 'fas fa-info-circle',
+                        tagName: 'span',
+                        color: '#fff'
+                    },
+                    dismissible: true
+                }
+            ],
+            duration: 10000,
+        });
+        notyf.open({
+            type: 'info',
+            message: '@ViewBag.Message'
+        });
+    };
+
+    window.addEventListener("load", showNotif);
 </script>

@@ -94,7 +94,7 @@ namespace C_bool.ConsoleApp.Other
         public static void GetFromKeyword()
         {
             var placesRepository = new PlacesRepository();
-            List<Place> getPlace = GoogleAPI.ApiSearchPlaces("AIzaSyD4SpU-L5LIBsWSYVvp3GVn51gz2Dts8BY", "bankomat w pruszczu gdańskim");
+            List<Place> getPlace = GoogleAPI.ApiSearchPlaces("AIzaSyD4SpU-L5LIBsWSYVvp3GVn51gz2Dts8BY", "bankomat w pruszczu gdańskim", out TODO, out TODO);
             GetInfo.PlaceInformation(getPlace, "");
         }
     }

@@ -1,5 +1,11 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
+
+@{
+    var action = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
+    var controller = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+    var area = (ViewContext.RouteData.DataTokens["area"] ?? "").ToString().ToLower();
+}
 <!--
 
 =========================================================
@@ -18,7 +24,7 @@
 
 -->
 
-@inject IOptions<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> appSettings;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,9 +32,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <!-- Primary Meta Tags -->
-    <title>Cebulowa gra miejska</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@ViewData["Title"] - C_bool.WebApp</title>
+    <title>@ViewData["Title"] - Cebulowa gra miejska</title>
     <meta name="author" content="C_BooL Team">
     <meta name="description" content="Gra miejska - zdobywaj punkty za odwiedzanie fajnych miejscówek.">
     <meta name="keywords" content="" />
@@ -38,7 +43,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon/favicon-16x16.png">
     <link rel="manifest" href="/assets/img/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
 
@@ -54,6 +58,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="~/css/theme.css" />
+
+    <link href="/css/carousel.css" rel="stylesheet">
 
     <!-- NOTICE: You can use the _analytics.html partial to include production code specific code & trackers -->
 
@@ -100,15 +106,16 @@
                 </div>
             </div>
             <ul class="nav flex-column pt-3 pt-md-0">
-                <li class="nav-item">
+                <li class="nav-item @(controller == "home" && action == "index" ? "active" : "")">
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                         <span class="sidebar-icon">
-                            <img src="/img/header-logo2.png" height="200" width="200" alt="C_Bool logo">
+                            <img src="/img/header-logo-name.png" height="66" width="220" alt="C_Bool logo">
                         </span>
                     </a>
                 </li>
+                <li role="separator" class="dropdown-divider mt-2 mb-3 border-gray-700"></li>
 
-                <li class="nav-item active">
+                <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
                           data-bs-toggle="collapse" data-bs-target="#submenu-pages">
                         <span>
@@ -121,10 +128,10 @@
                             <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
                         </span>
                     </span>
-                    <div class="multi-level collapse " role="list"
+                    <div class="multi-level @(controller == "places" || controller == "newplace" ? "" : "collapse") " role="list"
                          id="submenu-pages" aria-expanded="false">
                         <ul class="flex-column nav">
-                            <li class="nav-item">
+                            <li class="nav-item @(controller == "places" && action == "index" ? "active" : "")">
 
                                 <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index">
                                     <span class="sidebar-icon">
@@ -133,7 +140,7 @@
                                     <span class="sidebar-text">Ulubione</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item @(controller == "newplace" && action == "searchnearby" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="SearchNearby">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
@@ -141,7 +148,7 @@
                                     <span class="sidebar-text">Szukaj w pobliżu</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item @(controller == "newplace" && action == "searchbyname" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="SearchByName">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"></path><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clip-rule="evenodd"></path></svg>
@@ -149,7 +156,7 @@
                                     <span class="sidebar-text">Szukaj po nazwie</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item @(controller == "newplace" && action == "create" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="Create">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
@@ -160,7 +167,19 @@
                         </ul>
                     </div>
                 </li>
-                <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
+                <li class="nav-item">
+                    <a class="btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <span class="sidebar-icon d-inline-flex align-items-center justify-content-center">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.392 10.4362L14.8106 9.0176C14.1031 8.38476 13.169 8 12.145 8C9.93588 8 8.14502 9.79086 8.14502 12C8.14502 14.2091 9.93588 16 12.145 16C13.2563 16 14.2617 15.5468 14.9866 14.8152L13.674 13.5026L13.4646 13.503C13.1124 13.8124 12.6506 14 12.145 14C11.0405 14 10.145 13.1046 10.145 12C10.145 10.8954 11.0405 10 12.145 10C12.6166 10 13.0501 10.1632 13.392 10.4362Z" />
+                                <path fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12 5C15.866 5 19 8.13401 19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5Z" />
+                            </svg>
+                        </span>
+                        <span>2021 team <b>C_BooL</b></span>
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>

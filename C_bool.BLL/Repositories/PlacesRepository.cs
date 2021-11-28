@@ -48,14 +48,14 @@ namespace C_bool.BLL.Repositories
         public void AddApiDataToRepository(double latitude, double longitude, double radius, string apiKey)
         {
             Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, "", "", "PL", "pl");
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, out var message, out var status, type: "", keyword: "", region: "PL", language: "pl");
         }
 
         public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey,
             string type = "", string keyword = "", string region = "PL", string language = "pl")
         {
             Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, type, keyword, region, language);
+                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, out var message, out var status, type: type, keyword: keyword, region: region, language: language);
         }
 
 

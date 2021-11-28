@@ -1,7 +1,7 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model C_bool.BLL.Models.Places.Place
-@inject IOptions<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> appSettings;
 
 <h1>Dodaj nowe miejsce</h1>
 
@@ -102,7 +102,7 @@
             infoWindow = new google.maps.InfoWindow({
                 position: mapsMouseEvent.latLng,
             });
-            infoWindow.setContent("Szukaj tutaj");
+            infoWindow.setContent("Tu jest moje nowe miejsce");
             infoWindow.open(map);
 
             document.getElementById('latitudeForm').value = mapsMouseEvent.latLng.lat();

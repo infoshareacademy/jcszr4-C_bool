@@ -45,9 +45,19 @@ namespace C_bool.BLL.Logic
 
         protected string ConvertFileJsonToString() => TrimJson(ConvertFileJsonToString(), "results");
 
-        public static List<Place> ApiGetNearbyPlaces(string latitude, string longitude, double radius, string apiKey,
-            string type = "", string keyword = "", string region = "PL", string language = "pl", bool loadAllPages = false)
+        public static List<Place> ApiGetNearbyPlaces(string latitude,
+            string longitude,
+            double radius,
+            string apiKey,
+            out string message,
+            out bool queryStatus,
+            string type = "",
+            string keyword = "",
+            string region = "PL",
+            string language = "pl",
+            bool loadAllPages = false)
         {
+            queryStatus = true;
             var latitudeString = latitude.ToString(CultureInfo.InvariantCulture);
             var longitudeString = longitude.ToString(CultureInfo.InvariantCulture);
             var listPlaces = new List<Place>();
@@ -61,13 +71,14 @@ namespace C_bool.BLL.Logic
                 Enum.TryParse(TrimJson(response, "status"), out status);
                 if (status != Status.OK)
                 {
+                    message = $"GoogleAPI - zapytanie zwróciło informację: {status}";
+                    queryStatus = false;
                     return listPlaces;
                 }
                 var trimmedJson = TrimJson(response, "results");
                 var nextPageToken = TrimJson(response, "next_page_token");
 
                 listPlaces.AddRange(JsonConvert.DeserializeObject<List<Place>>(trimmedJson));
-
 
                 if (!string.IsNullOrEmpty(nextPageToken) && loadAllPages)
                 {
@@ -80,6 +91,7 @@ namespace C_bool.BLL.Logic
                     Enum.TryParse(TrimJson(response, "status"), out status);
                     if (status != Status.OK)
                     {
+                        message = $"Znaleziono {listPlaces.Count} miejsc w okolicy dla zapytania {keyword} {type}";
                         return listPlaces;
                     }
                     trimmedJson = TrimJson(response, "results");
@@ -89,14 +101,19 @@ namespace C_bool.BLL.Logic
             }
             catch (Exception ex)
             {
-                throw ex;
+                message = $"Wystąpił błąd: {ex.Message}";
+                queryStatus = false;
+                return listPlaces;
             }
 
+            message = $"Znaleziono {listPlaces.Count} miejsc w okolicy dla zapytania {keyword} {type}";
             return listPlaces;
         }
 
-        public static List<Place> ApiSearchPlaces(string apiKey, string query = "", string language = "pl")
+        public static List<Place> ApiSearchPlaces(string apiKey, out string message, out bool queryStatus,
+            string query = "", string language = "pl")
         {
+            queryStatus = true;
             var listPlaces = new List<Place>();
             try
             {
@@ -108,15 +125,20 @@ namespace C_bool.BLL.Logic
                 Enum.TryParse(TrimJson(response, "status"), out status);
                 if (status != Status.OK)
                 {
+                    message = $"GoogleAPI - zapytanie zwróciło informację: {status}";
+                    queryStatus = false;
                     return listPlaces;
                 }
                 var trimmedJson = TrimJson(response, "results");
-
-                return JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
+                listPlaces.AddRange(JsonConvert.DeserializeObject<List<Place>>(trimmedJson));
+                message = $"Znaleziono {listPlaces.Count} miejsc w okolicy dla zapytania {query}";
+                return listPlaces;
             }
             catch (Exception ex)
             {
-                throw ex;
+                message = $"Wystąpił błąd: {ex.Message}";
+                queryStatus = false;
+                return listPlaces;
             }
         }
     }
