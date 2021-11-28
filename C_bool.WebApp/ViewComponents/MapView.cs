@@ -11,9 +11,8 @@ namespace C_bool.WebApp.ViewComponents
 {
     public class MapView : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<Place> placesList)
         {
-            List<Place> placesList = Program.MainPlacesRepository.Repository;
             List<PlaceViewModel> placesViewList = JsonConvert.DeserializeObject<List<PlaceViewModel>>(JsonConvert.SerializeObject(placesList));
             return View("MapView", placesViewList);
         }

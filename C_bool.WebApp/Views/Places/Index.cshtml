@@ -1,4 +1,4 @@
-﻿@inject IOptionsSnapshot<AppSettings> appSettings;
+﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
 @using System.Text.Json
 @using System.Globalization
 @using System.Security.Cryptography.X509Certificates
@@ -32,48 +32,48 @@
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="card-deck" style="height: 80vh; overflow-y: scroll; align-content: center">
+                    <div class="card-deck" style="height: 80vh; align-content: center">
                         @foreach (var item in Model)
                         {
                             <div class="card mb-3" style="float: left; min-width: 450px; max-width: 500px; width: 50%; height: 550px; margin: 10px;">
-                            <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-                            <div class="card-body">
-                                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-                                <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
-                            </div>
-                            @if (item.Photos != null && item.Photos.Count > 0 && appSettings.Value.EnablePlacePhoto)
-                            {
-                                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                                     src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@appSettings.Value.GoogleAPIKey" alt="Card image cap">
-                            }
-                            else
-                            {
-                                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                                     src="/img/image-placeholder.jpg" alt="Card image cap">
-                            }
-                            <div class="card-body">
-                                <p class="card-text"></p>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display: flex; justify-content: center;">
-                                    <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px; ">
-                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Zadanie</l></button>
-                                        <button type="button" class="btn btn-success"><l class="bi-file-plus"> Edytuj</l></button>
-                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+                                <div class="card-body">
+                                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
+                                    <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
+                                </div>
+                                @if (item.Photos != null && item.Photos.Count > 0 && _appSettings.Value.EnablePlacePhoto)
+                                {
+                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
+                                }
+                                else
+                                {
+                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                                         src="/img/image-placeholder.jpg" alt="Card image cap">
+                                }
+                                <div class="card-body">
+                                    <p class="card-text"></p>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display: flex; justify-content: center;">
+                                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px; ">
+                                            <button type="button" class="btn btn-success"><l class="bi-file-plus"> Zadanie</l></button>
+                                            <button type="button" class="btn btn-success"><l class="bi-file-plus"> Edytuj</l></button>
+                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
 
-                                    </div>
-                                    <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>
-                                </form>
-                            </ul>
+                                        </div>
+                                        <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>
+                                    </form>
+                                </ul>
 
 
                                 <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 
                                     @foreach (var type in item.Types)
                                     {
-                                        if (SearchPlaceByCategory.PlaceCategories2.ContainsKey(type))
+                                        if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
                                         {
-                                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategories2)
+                                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
                                             {
                                                 if (kvp.Key.Equals(type))
                                                 {
@@ -92,7 +92,7 @@
                                     }
 
                                 </div>
-                        </div>
+                            </div>
                         }
                     </div>
                 }
@@ -106,7 +106,7 @@
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                @await Component.InvokeAsync("MapView")
+                @await Component.InvokeAsync("MapView", new {placesList = Model})
             </div>
         </div>
     </div>
@@ -130,34 +130,67 @@
     </div>
 </div>
 
-<script>
-    var latitude, longitude;
+@section Scripts {
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(useLocation);
-        }
-    };
+    <script>
+        var latitude, longitude;
 
-    function useLocation(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            }
+        };
 
-        var postData = { Latitude: latitude, Longitude: longitude };
-        $.ajax(
-            {
-                type: "POST",
-                url: "@Url.Action("GetGeoLocation", "Places")",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                success: function (data) {
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+            var postData = { Latitude: latitude, Longitude: longitude };
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "@Url.Action("GetGeoLocation", "Places")",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                    },
+                    error: function(ex) {
+                        alert("Nie udało się przekazać lokalizacji" + ex);
+                    }
+                });
+        };
+
+        window.onload = getLocation();
+    </script>
+    
+    <script>
+        function showNotif() {
+            const notyf = new Notyf({
+                position: {
+                    x: 'right',
+                    y: 'bottom',
                 },
-                error: function (ex) {
-                    alert("Nie udało się przekazać lokalizacji" + ex);
-                }
+                types: [
+                    {
+                        type: 'info',
+                        background: '@if(ViewBag.Status) {@Html.Raw("green")} else {@Html.Raw("red")}' ,
+                        icon: {
+                            className: 'fas fa-info-circle',
+                            tagName: 'span',
+                            color: '#fff'
+                        },
+                        dismissible: true
+                    }
+                ],
+                duration: 10000,
             });
-    };
+            notyf.open({
+                type: 'info',
+                message: '@ViewBag.Message'
+            });
+        };
 
-    window.onload = getLocation();
-</script>
+        window.addEventListener("load", showNotif);
+    </script>
+}

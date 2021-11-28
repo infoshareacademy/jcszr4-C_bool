@@ -12,10 +12,10 @@ namespace C_bool.BLL.Models.Places
         public string Id { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         public Geometry Geometry { get; set; }
         [DisplayName("Nazwa miejsca")]
-        [Required]
+        [Required(ErrorMessage = "Miejsce musi posiadać nazwę")]
         public string Name { get; set; }
         [DisplayName("Opis")]
-        [Required(ErrorMessage = "Opis musi być")]
+        [Required(ErrorMessage = "Miejsce musi posiadać opis")]
         public string Description { get; set; }
         public List<Photo> Photos { get; set; } = new();
 
@@ -27,24 +27,13 @@ namespace C_bool.BLL.Models.Places
 
         [JsonProperty(PropertyName = "vicinity")]
         [DisplayName("Adres")]
-        [Required(ErrorMessage = "Adres musi być")]
+        [Required(ErrorMessage = "Musisz podać adres miejsca, lub jego przybliżoną lokalizację")]
         public string Address { get; set; } = "no_address";
 
         [JsonProperty("formatted_address")]
         private string AddressFormatted { set { Address = value; } }
 
         public bool IsUserCreated { get; set; }
-
-        //public Place(string name, string address, List<string> types, Geometry geometry, Photo photo, bool userCreated = false)
-        //{
-        //    Id = Guid.NewGuid().ToString().Replace("-","");
-        //    Name = name;
-        //    Address = address;
-        //    Types = types;
-        //    Geometry = geometry;
-        //    IsUserCreated = userCreated;
-        //    Photos.Add(photo);
-        //}
     }
 
     public class Photo

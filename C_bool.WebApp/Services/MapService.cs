@@ -9,16 +9,17 @@ namespace C_bool.WebApp.Services
 {
     public class MapService
     {
-        public static List<Place> Places = new List<Place>();
+        public IPlacesRepository Places;
+        public List<Place> TempPlaces;
 
-        public void GetFromRepo(BaseRepository<Place> repository)
+        public MapService(IPlacesRepository repository)
         {
-            Places = repository.Repository;
+            Places = repository;
         }
 
         public List<Place> GetAll()
         {
-            return Places;
+            return Places.GetAll();
         }
     }
 }

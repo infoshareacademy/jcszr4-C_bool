@@ -1,7 +1,7 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model C_bool.BLL.Models.Places.Place
-@inject IOptionsSnapshot<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> _appSettings;
 
 <h1>Dodaj nowe miejsce</h1>
 
@@ -44,33 +44,37 @@
     </div>
 </div>
 
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.Value.GoogleAPIKey"></script>
-<script>
-    var latitude, longitude;
-    getLocation();
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(useLocation);
-        } else {
-            alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
-        }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    };
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+    <script>
+        var latitude, longitude;
+        getLocation();
 
-    function useLocation(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            } else {
+                alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
+            }
 
-        document.getElementById('latitudeForm').value = latitude;
-        document.getElementById('longitudeForm').value = longitude;
-        initMap();
+        };
 
-    };
-    window.onload = getLocation();
-</script>
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
 
-<script>
+            document.getElementById('latitudeForm').value = latitude;
+            document.getElementById('longitudeForm').value = longitude;
+            initMap();
+
+        };
+        window.onload = getLocation();
+    </script>
+
+    <script>
     var geocoder;
     var myLatlng;
 
@@ -109,7 +113,7 @@
             document.getElementById('longitudeForm').value = mapsMouseEvent.latLng.lng();
 
             myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
-            @if (appSettings.Value.EnableGeocoding)
+            @if (_appSettings.Value.EnableGeocoding)
             {
                 <text>
                 geocodeLatLng(geocoder, map, infoWindow);
@@ -145,8 +149,5 @@
 
 
     window.addEventListener("load", initMap);
-</script>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    </script>
 }

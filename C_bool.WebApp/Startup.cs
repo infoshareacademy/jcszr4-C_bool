@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Services;
 using Microsoft.AspNetCore.Localization;
@@ -29,9 +30,9 @@ namespace C_bool.WebApp
         {
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
-            //services.AddTransient<IAppSettings, AppSettings>(e => Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>());
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            //services.AddTransient<IConfiguration>(Configuration);
+            services.AddSingleton<IPlacesRepository,PlacesRepository>();
+            services.AddSingleton<MapService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

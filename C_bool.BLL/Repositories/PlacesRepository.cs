@@ -12,24 +12,20 @@ using Newtonsoft.Json.Linq;
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class PlacesRepository : BaseRepository<Place>, IRepository<Place>
+    public interface IPlacesRepository : IRepository<Place>
     {
-        public override List<Place> Repository { get; protected set; }
-        public override string FileName { get; } = "places.json";
 
-        public PlacesRepository()
-        {
-            Repository = new List<Place>();
-        }
+    }
+
+    public sealed class PlacesRepository : BaseRepository<Place>, IPlacesRepository
+    {
+        public override string FileName { get; } = "places.json";
 
         public List<Place> SearchByName(string searchName)
         {
             return (from place in Repository where place.Name.ToLower().Contains(searchName.ToLower()) select place)
                 .ToList();
         }
-
-        public List<Place> GetNearbyPlacesFromRadius(double radius) =>
-            SearchNearbyPlaces.GetPlaces(Repository, Repository.FirstOrDefault(), radius);
 
         private string TrimJson(string convertedJson, string sectionToGet)
         {
@@ -44,20 +40,6 @@ namespace C_bool.BLL.Repositories
         }
 
         protected override string ConvertFileJsonToString() => TrimJson(base.ConvertFileJsonToString(), "results");
-
-        public void AddApiDataToRepository(double latitude, double longitude, double radius, string apiKey)
-        {
-            Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, out var message, out var status, type: "", keyword: "", region: "PL", language: "pl");
-        }
-
-        public void AddApiDataToRepository(string latitude, string longitude, double radius, string apiKey,
-            string type = "", string keyword = "", string region = "PL", string language = "pl")
-        {
-            Repository = GoogleAPI.ApiGetNearbyPlaces(latitude.ToString(CultureInfo.InvariantCulture),
-                longitude.ToString(CultureInfo.InvariantCulture), radius, apiKey, out var message, out var status, type: type, keyword: keyword, region: region, language: language);
-        }
-
 
     }
 }

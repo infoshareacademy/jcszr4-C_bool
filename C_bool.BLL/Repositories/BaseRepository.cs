@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public abstract class BaseRepository<T> where T : IEntity
+    public abstract class BaseRepository<T> : IRepository<T> where T : IEntity
     {
-        public abstract List<T> Repository { get; protected set; }
+        protected List<T> Repository { get; } = new();
         public abstract string FileName { get; }
 
         public void Add(T row)
@@ -55,22 +55,11 @@ namespace C_bool.BLL.Repositories
             return convertedToString;
         }
 
-        protected string ConvertApiJsonToString(WebRequest webRequest)
-        {
-            webRequest.ContentType = "application/json";
-
-            var response = webRequest.GetResponse().GetResponseStream();
-            var streamReader = new StreamReader(response);
-            var convertedToString = streamReader.ReadToEnd();
-
-            return convertedToString;
-        }
-
         public void AddFileDataToRepository()
         {
             try
             {
-                Repository = JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString());
+                Repository.AddRange(JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString()));
             }
             catch (FileNotFoundException ex)
             {
@@ -89,6 +78,11 @@ namespace C_bool.BLL.Repositories
         public bool IsRepositoryEmpty(List<T> repository)
         {
             return !repository.Any();
+        }
+
+        public List<T> GetAll()
+        {
+            return Repository;
         }
     }
 }

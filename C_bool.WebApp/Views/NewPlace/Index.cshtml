@@ -1,4 +1,4 @@
-﻿@inject IOptionsSnapshot<AppSettings> appSettings;
+﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
 @using System.Text.Json
 @using C_bool.BLL.Logic
 @using System.Globalization
@@ -23,10 +23,10 @@
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
                     <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
                 </div>
-                @if (item.Photos != null && item.Photos.Count > 0 && appSettings.Value.EnablePlacePhoto)
+                @if (item.Photos != null && item.Photos.Count > 0 && _appSettings.Value.EnablePlacePhoto)
                 {
                     <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@appSettings.Value.GoogleAPIKey" alt="Card image cap">
+                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
                 }
                 else
                 {
@@ -47,9 +47,9 @@
 
                     @foreach (var type in item.Types)
                     {
-                        if (SearchPlaceByCategory.PlaceCategories2.ContainsKey(type))
+                        if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
                         {
-                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategories2)
+                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
                             {
                                 if (kvp.Key.Equals(type))
                                 {
@@ -100,70 +100,77 @@ else
     </div>
 </div>
 
-
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.Value.GoogleAPIKey"></script>
-<script>
-    function initMap(latitude, longitude) {
-        const point = { lat: latitude, lng: longitude };
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 16,
-            center: point,
-            mapId: 'c67cdd640e77cc91'
-        });
-        const marker = new google.maps.Marker({
-            position: point,
-            map: map,
-            icon: "/img/onion.png"
-        });
-    }
-</script>
-
-<script>
-    function post(input) {
-        var postData = { Id: input };
-        $.ajax(
-            {
-                type: "POST",
-                url: "@Url.Action("AddToFavs", "NewPlace")",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                success: function (data) {
-                    //alert("Pass" + data);
-                },
-                error: function (ex) {
-                    //alert("Nie udało się przekazać lokalizacji" + ex);
-                }
-            });
-    };
-</script>
-
-<script>
-    function showNotif() {
-        const notyf = new Notyf({
-            position: {
-                x: 'right',
-                y: 'bottom',
-            },
-            types: [
+@section Scripts {
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+    <script>
+        function initMap(latitude, longitude) {
+            const point = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"),
                 {
-                    type: 'info',
-                    background: '@if(ViewBag.Status) {@Html.Raw("green")} else {@Html.Raw("red")}' ,
-                    icon: {
-                        className: 'fas fa-info-circle',
-                        tagName: 'span',
-                        color: '#fff'
-                    },
-                    dismissible: true
-                }
-            ],
-            duration: 10000,
-        });
-        notyf.open({
-            type: 'info',
-            message: '@ViewBag.Message'
-        });
-    };
+                    zoom: 16,
+                    center: point,
+                    mapId: 'c67cdd640e77cc91'
+                });
+            const marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                icon: "/img/onion.png"
+            });
+        }
+    </script>
 
-    window.addEventListener("load", showNotif);
-</script>
+    <script>
+        function post(input) {
+            var postData = { Id: input };
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "@Url.Action("AddToFavs", "NewPlace")",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        //alert("Pass" + data);
+                    },
+                    error: function(ex) {
+                        //alert("Nie udało się przekazać lokalizacji" + ex);
+                    }
+                });
+        };
+    </script>
+
+    <script>
+        function showNotif() {
+            const notyf = new Notyf({
+                position: {
+                    x: 'right',
+                    y: 'bottom',
+                },
+                types: [
+                    {
+                        type: 'info',
+                        background: '@if (ViewBag.Status)
+                                     {@Html.Raw("green")
+                                     }
+                                     else
+                                     {@Html.Raw("red")
+                                     }',
+                        icon: {
+                            className: 'fas fa-info-circle',
+                            tagName: 'span',
+                            color: '#fff'
+                        },
+                        dismissible: true
+                    }
+                ],
+                duration: 10000,
+            });
+            notyf.open({
+                type: 'info',
+                message: '@ViewBag.Message'
+            });
+        };
+
+        window.addEventListener("load", showNotif);
+    </script>
+}

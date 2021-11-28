@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using C_bool.BLL.Models.Places;
 
 namespace C_bool.BLL.Repositories
 {
@@ -9,7 +10,7 @@ namespace C_bool.BLL.Repositories
         public void Delete(string id);
         public void Update(T oldRow, T newRow);
         public T SearchById(string searchId);
-        public List<T> SearchByName(string searchName);
 
+        List<T> GetAll();
     }
 }

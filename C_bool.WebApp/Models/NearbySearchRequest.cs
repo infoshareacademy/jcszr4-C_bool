@@ -42,7 +42,7 @@ namespace C_bool.WebApp.Models
             //ListItems = Type.Select(x => new SelectListItem { Text = x, Value = x })
             //    .ToList();
 
-            ListItems = SearchPlaceByCategory.PlaceCategories2.Select(x => new SelectListItem{Text = x.Value, Value = x.Key}).ToList();
+            ListItems = SearchPlaceByCategory.PlaceCategoriesTranslated.Select(x => new SelectListItem{Text = x.Value, Value = x.Key}).ToList();
         }
     }
 }

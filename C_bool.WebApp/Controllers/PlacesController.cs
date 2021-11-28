@@ -18,25 +18,26 @@ namespace C_bool.WebApp.Controllers
     {
         // GET: PlacesController
         private MapService _mapService;
+        private IPlacesRepository _repository;
         private GeoLocation _geoLocation;
-
-        private AppSettings _appSettings = new AppSettings();
 
         public static double Latitude;
         public static double Longitude;
 
         public IConfiguration Configuration;
 
-        public PlacesController(IConfiguration configuration)
+        public PlacesController(IConfiguration configuration, MapService mapService, IPlacesRepository repository)
         {
-            _mapService = new MapService();
+            _mapService = mapService;
+            _repository = repository;
             Configuration = configuration;
-
         }
+
         public ActionResult Index()
         {
-            _mapService.GetFromRepo(Program.MainPlacesRepository);
             var model = _mapService.GetAll();
+            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.Count}";
+            ViewBag.Status = true;
             return View(model);
         }
 
@@ -104,7 +105,7 @@ namespace C_bool.WebApp.Controllers
         // GET: ProductsController/Delete/5
         public ActionResult Delete(string id)
         {
-            var model = Program.MainPlacesRepository.SearchById(id);
+            var model = _repository.SearchById(id);
             return View(model);
         }
 
@@ -115,7 +116,9 @@ namespace C_bool.WebApp.Controllers
         {
             try
             {
-                Program.MainPlacesRepository.Delete(id);
+                _repository.Delete(id);
+                ViewBag.Message = $"Usunięto miejsce: {model.Name}";
+                ViewBag.Status = true;
 
                 return RedirectToAction(nameof(Index));
             }

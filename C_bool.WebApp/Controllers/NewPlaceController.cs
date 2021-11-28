@@ -18,7 +18,7 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private MapService _mapService;
-
+        private IPlacesRepository _repository;
         private GeoLocation _geoLocation;
 
         private AppSettings _appSettings = new AppSettings();
@@ -30,9 +30,10 @@ namespace C_bool.WebApp.Controllers
 
         public IConfiguration Configuration;
 
-        public NewPlaceController(IConfiguration configuration)
+        public NewPlaceController(IConfiguration configuration, MapService mapService, IPlacesRepository repository)
         {
-            _mapService = new MapService();
+            _mapService = mapService;
+            _repository = repository;
             Configuration = configuration;
             Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
         }
@@ -40,7 +41,7 @@ namespace C_bool.WebApp.Controllers
         // GET: NewPlaceController
         public ActionResult Index()
         {
-            var model = Program.TempPlaces;
+            var model = _mapService.TempPlaces;
             return View();
         }
 
@@ -90,12 +91,16 @@ namespace C_bool.WebApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    ViewBag.Message = "Nie udało się utworzyć miejsca";
+                    ViewBag.Status = false;
                     return View(model);
                 }
 
                 //model.Id = Guid.NewGuid().ToString().Replace("-", "");
                 model.IsUserCreated = true;
-                Program.MainPlacesRepository.Add(model);
+                _repository.Add(model);
+                ViewBag.Message = $"Dodano nowe miejsce: {model.Name}";
+                ViewBag.Status = true;
                 return RedirectToAction("Index","Places");
             }
             catch
@@ -107,9 +112,9 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public ActionResult AddToFavs([FromBody]ReturnString request)
         {
-            foreach (var place in Program.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var place in _mapService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
-                Program.MainPlacesRepository.Add(place);
+                _repository.Add(place);
             }
             return View();
         }
@@ -119,8 +124,8 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SearchNearby(NearbySearchRequest request)
         {
-            Program.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, out var message, out var status, type: request.SelectedType,keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
-            var model = Program.TempPlaces;
+            _mapService.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, out var message, out var status, type: request.SelectedType,keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
+            var model = _mapService.TempPlaces;
             ViewBag.Message = message;
             ViewBag.Status = status;
             return View("~/Views/NewPlace/Index.cshtml", model);
@@ -131,8 +136,8 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SearchByName(NameSearchRequest request)
         {
-            Program.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey, out var message, out var status,query: request.SearchPhrase, language: "pl");
-            var model = Program.TempPlaces;
+            _mapService.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey, out var message, out var status,query: request.SearchPhrase, language: "pl");
+            var model = _mapService.TempPlaces;
             ViewBag.Message = message;
             ViewBag.Status = status;
             return View("~/Views/NewPlace/Index.cshtml", model);

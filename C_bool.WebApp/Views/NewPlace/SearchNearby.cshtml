@@ -2,7 +2,7 @@
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model C_bool.WebApp.Models.NearbySearchRequest
-@inject IOptionsSnapshot<AppSettings> appSettings;
+@inject IOptionsSnapshot<AppSettings> _appSettings;
 
 @{
     ViewData["Title"] = "SearchNearby";
@@ -55,105 +55,105 @@
     </div>
 </div>
 
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@appSettings.Value.GoogleAPIKey"></script>
-<script>
-    var latitude, longitude;
-    getLocation();
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(useLocation);
-        } else
-        {
-            alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
-        }
-    };
 
-    function useLocation(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-        document.getElementById('latitudeForm').value = latitude;
-        document.getElementById('longitudeForm').value = longitude;
-        initMap();
-    };
-    window.onload = getLocation();
-</script>
-
-<script>
-
-    var myLatlng;
-
-    function initMap() {
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+    <script>
         var latitude, longitude;
-        latitude = parseFloat(document.getElementById('latitudeForm').value);
-        longitude = parseFloat(document.getElementById('longitudeForm').value);
+        getLocation();
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            } else {
+                alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
+            }
+        };
+
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+            document.getElementById('latitudeForm').value = latitude;
+            document.getElementById('longitudeForm').value = longitude;
+            initMap();
+        };
+        window.onload = getLocation();
+    </script>
+
+    <script>
+
+        var myLatlng;
+
+        function initMap() {
+            var latitude, longitude;
+            latitude = parseFloat(document.getElementById('latitudeForm').value);
+            longitude = parseFloat(document.getElementById('longitudeForm').value);
 
 
-        myLatlng = { lat: latitude, lng: longitude };
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 12,
-            center: myLatlng,
-        });
-        // Create the initial InfoWindow.
-        let infoWindow = new google.maps.InfoWindow({
-            content: "Kliknij na mapę aby wybrać położenie",
-            position: myLatlng,
-        });
+            myLatlng = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: myLatlng,
+            });
+            // Create the initial InfoWindow.
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Kliknij na mapę aby wybrać położenie",
+                position: myLatlng,
+            });
 
-        infoWindow.open(map);
-        // Configure the click listener.
-        map.addListener("click", (mapsMouseEvent) => {
-            // Close the current InfoWindow.
-            infoWindow.close();
-            radiusCircle.setMap(null);
-            myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
+            infoWindow.open(map);
+            // Configure the click listener.
+            map.addListener("click", (mapsMouseEvent) => {
+                // Close the current InfoWindow.
+                infoWindow.close();
+                radiusCircle.setMap(null);
+                myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
 
+                radiusCircle.setOptions({
+                    map,
+                    center: myLatlng,
+                    radius: parseInt(document.getElementById('radiusForm').value),
+                });
+
+                document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                document.getElementById('longitudeForm').value = radiusCircle.center.lng();
+            });
+
+            const radiusCircle = new google.maps.Circle();
             radiusCircle.setOptions({
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35,
                 map,
                 center: myLatlng,
                 radius: parseInt(document.getElementById('radiusForm').value),
+                editable: true,
+                draggable: true
             });
 
-            document.getElementById('latitudeForm').value = radiusCircle.center.lat();
-            document.getElementById('longitudeForm').value = radiusCircle.center.lng();
-        });
-
-        const radiusCircle = new google.maps.Circle();
-        radiusCircle.setOptions({
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: "#FF0000",
-            fillOpacity: 0.35,
-            map,
-            center: myLatlng,
-            radius: parseInt(document.getElementById('radiusForm').value),
-            editable: true,
-            draggable: true
-        });
-
-        var maxRadius = 50000;
+            var maxRadius = 50000;
 
             google.maps.event.addListener(radiusCircle, 'radius_changed', function () {
                 if (radiusCircle.getRadius() > maxRadius) {
                     radiusCircle.setRadius(maxRadius);
                 }
 
-            document.getElementById('radiusForm').value = radiusCircle.getRadius();
-        });
-        google.maps.event.addListener(radiusCircle, 'center_changed', function() {
-            document.getElementById('latitudeForm').value = radiusCircle.center.lat();
-            document.getElementById('longitudeForm').value = radiusCircle.center.lng();
-        });
-    }
+                document.getElementById('radiusForm').value = radiusCircle.getRadius();
+            });
+            google.maps.event.addListener(radiusCircle, 'center_changed', function () {
+                document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                document.getElementById('longitudeForm').value = radiusCircle.center.lng();
+            });
+        }
 
 
 
-    window.addEventListener("load", initMap);
-</script>
-
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        window.addEventListener("load", initMap);
+    </script>
 }

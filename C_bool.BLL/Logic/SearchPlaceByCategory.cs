@@ -208,7 +208,7 @@ namespace C_bool.BLL.Logic
             }
         };
 
-        public static Dictionary<string, string> PlaceCategories2 { get; set; } = new()
+        public static Dictionary<string, string> PlaceCategoriesTranslated { get; set; } = new()
         {
             { "accounting", "Księgowość" },
             { "airport", "Lotnisko" },
