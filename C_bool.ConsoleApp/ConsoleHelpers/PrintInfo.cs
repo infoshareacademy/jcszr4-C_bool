@@ -12,9 +12,9 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
     {
         public static void UserClassification(UsersRepository usersRepository)
         {
-            Playground.AssignRandomPointsToUsers(usersRepository); // do testów
+            //Playground.AssignRandomPointsToUsers(usersRepository); // do testów
 
-            if (usersRepository.IsRepositoryEmpty(usersRepository.Repository))
+            if (usersRepository.IsRepositoryEmpty(usersRepository.GetAll()))
             {
                 Console.WriteLine("Brak wyników do wyświetlenia!");
                 return;
@@ -31,7 +31,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
                     if (UserValidator.ValidatePointsRange(minPoints, maxPoints, out var message))
                     {
                         var usersByPointsRange = SearchUsers.ByPointsRange(
-                            usersRepository.Repository,
+                            usersRepository.GetAll(),
                             minPoints,
                             maxPoints,
                             isDescending
@@ -66,7 +66,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
             Console.ForegroundColor = ConsoleColor.Cyan;
             foreach (var category in categories)
             {
-                var placesWithMatchedCategoriesCount = SearchPlaceByCategory.GetPlaces(repository.Repository, category.Key).Count;
+                var placesWithMatchedCategoriesCount = SearchPlaceByCategory.GetPlaces(repository.GetAll(), category.Key).Count;
                 Console.WriteLine($"  {category.Key} ({placesWithMatchedCategoriesCount})");
             }
             Console.ResetColor();
@@ -79,7 +79,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
                 inputCategory = Console.ReadLine();
             }
 
-            var placesWithMatchedCategories = SearchPlaceByCategory.GetPlaces(repository.Repository, inputCategory);
+            var placesWithMatchedCategories = SearchPlaceByCategory.GetPlaces(repository.GetAll(), inputCategory);
 
             if (placesWithMatchedCategories.Count == 0)
             {
@@ -129,33 +129,33 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
 
         public static void PlacesNearby(PlacesRepository placesRepository)
         {
-            if (placesRepository.IsRepositoryEmpty(placesRepository.Repository))
+            if (placesRepository.IsRepositoryEmpty(placesRepository.GetAll()))
             {
                 Console.WriteLine("Brak wyników do wyświetlenia!");
                 return;
             }
 
-            GetInfo.PlaceInformation(placesRepository.Repository, "");
+            GetInfo.PlaceInformation(placesRepository.GetAll(), "");
         }
 
         public static void PlacesByRadius(PlacesRepository placesRepository)
         {
-            if (placesRepository.IsRepositoryEmpty(placesRepository.Repository))
-            {
-                Console.WriteLine("Brak wyników do wyświetlenia!");
-                return;
-            }
+            //if (placesRepository.IsRepositoryEmpty(placesRepository.GetAll()))
+            //{
+            //    Console.WriteLine("Brak wyników do wyświetlenia!");
+            //    return;
+            //}
 
-            var placesNearbyRadius =
-                placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole());
+            //var placesNearbyRadius =
+            //    placesRepository.GetNearbyPlacesFromRadius(ReadDataFromConsole.GetRadiusFromConsole());
 
-            if (placesRepository.IsRepositoryEmpty(placesNearbyRadius))
-            {
-                Console.WriteLine("Brak wyników do wyświetlenia!");
-                return;
-            }
+            //if (placesRepository.IsRepositoryEmpty(placesNearbyRadius))
+            //{
+            //    Console.WriteLine("Brak wyników do wyświetlenia!");
+            //    return;
+            //}
 
-            GetInfo.PlaceInformation(placesNearbyRadius, "");
+            //GetInfo.PlaceInformation(placesNearbyRadius, "");
         }
 
     }

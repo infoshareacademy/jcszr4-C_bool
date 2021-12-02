@@ -32,7 +32,15 @@ namespace C_bool.WebApp
             services.AddControllersWithViews();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddSingleton<IPlacesRepository,PlacesRepository>();
-            services.AddSingleton<MapService>();
+            services.AddSingleton<PlacesService>();
+
+            services.AddHttpClient("GoogleMapsClient", client =>
+            {
+                client.BaseAddress = new Uri("https://maps.googleapis.com/");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -17,7 +17,7 @@ namespace C_bool.WebApp.Controllers
     public class PlacesController : Controller
     {
         // GET: PlacesController
-        private MapService _mapService;
+        private PlacesService _placesService;
         private IPlacesRepository _repository;
         private GeoLocation _geoLocation;
 
@@ -26,16 +26,24 @@ namespace C_bool.WebApp.Controllers
 
         public IConfiguration Configuration;
 
-        public PlacesController(IConfiguration configuration, MapService mapService, IPlacesRepository repository)
+        public PlacesController(IConfiguration configuration, PlacesService placesService, IPlacesRepository repository)
         {
-            _mapService = mapService;
+            _placesService = placesService;
             _repository = repository;
             Configuration = configuration;
         }
 
         public ActionResult Index()
         {
-            var model = _mapService.GetAll();
+            var model = _placesService.GetAll();
+            ViewBag.Message = $"Ilość miejsc w bazie: {model.Count}";
+            ViewBag.Status = true;
+            return View(model);
+        }
+
+        public ActionResult Favourities()
+        {
+            var model = _placesService.GetAll();
             ViewBag.Message = $"Ilość miejsc w ulubionych: {model.Count}";
             ViewBag.Status = true;
             return View(model);

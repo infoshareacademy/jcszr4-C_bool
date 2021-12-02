@@ -41,7 +41,7 @@
                                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
                                     <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
                                 </div>
-                                @if (item.Photos != null && item.Photos.Count > 0 && _appSettings.Value.EnablePlacePhoto)
+                                @if (item.Photos is {Count: > 0 } && _appSettings.Value.EnablePlacePhoto)
                                 {
                                     <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
                                          src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">

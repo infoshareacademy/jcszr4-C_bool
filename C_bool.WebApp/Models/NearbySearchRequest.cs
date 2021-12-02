@@ -31,18 +31,7 @@ namespace C_bool.WebApp.Models
 
         public NearbySearchRequest()
         {
-            //Type = new List<string>();
-
-            //var list = SearchPlaceByCategory.PlaceCategories.Values.ToList();
-            //foreach (var item in list)
-            //{
-            //    Type.AddRange(item);
-            //}
-
-            //ListItems = Type.Select(x => new SelectListItem { Text = x, Value = x })
-            //    .ToList();
-
-            ListItems = SearchPlaceByCategory.PlaceCategoriesTranslated.Select(x => new SelectListItem{Text = x.Value, Value = x.Key}).ToList();
+            ListItems = SearchPlaceByCategory.PlaceCategoriesTranslated.OrderBy(x => x.Value).Select(x => new SelectListItem{Text = x.Value, Value = x.Key}).ToList();
         }
     }
 }

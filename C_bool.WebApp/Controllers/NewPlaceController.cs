@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
-using C_bool.BLL.Logic;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
@@ -17,11 +17,11 @@ namespace C_bool.WebApp.Controllers
 {
     public class NewPlaceController : Controller
     {
-        private MapService _mapService;
+        private PlacesService _placesService;
         private IPlacesRepository _repository;
         private GeoLocation _geoLocation;
-
-        private AppSettings _appSettings = new AppSettings();
+        private IHttpClientFactory _clientFactory;
+        private AppSettings _appSettings = new();
 
         public static double Latitude;
         public static double Longitude;
@@ -30,18 +30,19 @@ namespace C_bool.WebApp.Controllers
 
         public IConfiguration Configuration;
 
-        public NewPlaceController(IConfiguration configuration, MapService mapService, IPlacesRepository repository)
+        public NewPlaceController(IConfiguration configuration, PlacesService placesService, IPlacesRepository repository, IHttpClientFactory clientFactory)
         {
-            _mapService = mapService;
+            _placesService = placesService;
             _repository = repository;
             Configuration = configuration;
             Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
+            _clientFactory = clientFactory;
         }
 
         // GET: NewPlaceController
         public ActionResult Index()
         {
-            var model = _mapService.TempPlaces;
+            var model = _placesService.TempPlaces;
             return View();
         }
 
@@ -96,12 +97,11 @@ namespace C_bool.WebApp.Controllers
                     return View(model);
                 }
 
-                //model.Id = Guid.NewGuid().ToString().Replace("-", "");
                 model.IsUserCreated = true;
                 _repository.Add(model);
                 ViewBag.Message = $"Dodano nowe miejsce: {model.Name}";
                 ViewBag.Status = true;
-                return RedirectToAction("Index","Places");
+                return RedirectToAction("Index", "Places");
             }
             catch
             {
@@ -110,9 +110,9 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddToFavs([FromBody]ReturnString request)
+        public ActionResult AddToFavs([FromBody] ReturnString request)
         {
-            foreach (var place in _mapService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var place in _placesService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
                 _repository.Add(place);
             }
@@ -122,24 +122,28 @@ namespace C_bool.WebApp.Controllers
         // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SearchNearby(NearbySearchRequest request)
+        public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
-            _mapService.TempPlaces = GoogleAPI.ApiGetNearbyPlaces(request.Latitude, request.Longitude, request.Radius, _appSettings.GoogleAPIKey, out var message, out var status, type: request.SelectedType,keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
-            var model = _mapService.TempPlaces;
-            ViewBag.Message = message;
-            ViewBag.Status = status;
+            var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+
+            _placesService.TempPlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
+            var model = _placesService.TempPlaces;
+            ViewBag.Message = api.Message;
+            ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
         // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SearchByName(NameSearchRequest request)
+        public async Task<ActionResult> SearchByNameAsync(NameSearchRequest request)
         {
-            _mapService.TempPlaces = GoogleAPI.ApiSearchPlaces(_appSettings.GoogleAPIKey, out var message, out var status,query: request.SearchPhrase, language: "pl");
-            var model = _mapService.TempPlaces;
-            ViewBag.Message = message;
-            ViewBag.Status = status;
+            var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+
+            _placesService.TempPlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
+            var model = _placesService.TempPlaces;
+            ViewBag.Message = api.Message;
+            ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 

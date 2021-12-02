@@ -178,12 +178,12 @@ namespace C_bool.ConsoleApp
 
                     try
                     {
-                        _placesRepository.AddApiDataToRepository(
-                            ReadDataFromConsole.GetLatitudeFromConsole(),
-                            ReadDataFromConsole.GetLongitudeFromConsole(),
-                            ReadDataFromConsole.GetRadiusFromConsole(),
-                            ReadDataFromConsole.GetApiKeyFromConsole()
-                        );
+                        //_placesRepository.AddApiDataToRepository(
+                        //    ReadDataFromConsole.GetLatitudeFromConsole(),
+                        //    ReadDataFromConsole.GetLongitudeFromConsole(),
+                        //    ReadDataFromConsole.GetRadiusFromConsole(),
+                        //    ReadDataFromConsole.GetApiKeyFromConsole()
+                        //);
                     }
                     catch (Exception)
                     {

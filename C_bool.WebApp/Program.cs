@@ -24,8 +24,5 @@ namespace C_bool.WebApp
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-        public static PlacesRepository MainPlacesRepository = new PlacesRepository();
-        public static List<Place> TempPlaces = new();
     }
 }

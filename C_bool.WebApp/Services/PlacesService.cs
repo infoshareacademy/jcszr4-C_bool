@@ -7,12 +7,12 @@ using C_bool.BLL.Repositories;
 
 namespace C_bool.WebApp.Services
 {
-    public class MapService
+    public class PlacesService
     {
         public IPlacesRepository Places;
         public List<Place> TempPlaces;
 
-        public MapService(IPlacesRepository repository)
+        public PlacesService(IPlacesRepository repository)
         {
             Places = repository;
         }
