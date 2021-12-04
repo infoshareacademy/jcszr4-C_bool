@@ -9,6 +9,7 @@ namespace C_bool.WebApp.Config
         public bool EnablePlacePhoto { get; set; }
         public bool EnableGeocoding { get; set; }
         public bool GetAllPages { get; set; }
+        public bool MockAPIRequest { get; set; }
 
     }
 }

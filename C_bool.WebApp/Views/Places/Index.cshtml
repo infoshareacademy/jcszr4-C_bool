@@ -55,12 +55,26 @@
                                     <p class="card-text"></p>
                                 </div>
                                 <ul class="list-group list-group-flush">
-                                    <form asp-controller="Places" asp-action="Delete" asp-route-id="@item.Id" method="post" style="display: flex; justify-content: center;">
-                                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px; ">
-                                            <button type="button" class="btn btn-success"><l class="bi-file-plus"> Zadanie</l></button>
-                                            <button type="button" class="btn btn-success"><l class="bi-file-plus"> Edytuj</l></button>
-                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                    <form method="post" style="display: flex; justify-content: center;">
+                                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
 
+                                            <button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>
+                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                            <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('@item.Id')"><l class="bi-heart"> Ulubione</l></button>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <l class="bi-file-plus"> Edytuj</l>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li><a class="dropdown-item" onclick="post('@item.Id')" href="#"><l class="bi-heart"> Inne</l></a></li>
+                                                <li><a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item"><l class="bi-heart"> Usuń miejsce</l></a></li>
+                                                <li><a class="btn"
+                                                asp-action="Delete"
+                                                asp-controller="Places"
+                                                asp-route-id="@item.Id"
+                                                method="post"><l class="bi-heart"> Usuń miejsce v2</l></a></li>
+                                            </ul>
                                         </div>
                                         <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>
                                     </form>

@@ -5,19 +5,20 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using C_bool.BLL.Logic;
-using C_bool.BLL.Models.Places;
+using C_bool.BLL.Models;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class PlacesRepository : BaseRepository<Place>, IPlacesRepository
+    public sealed class GameTasksRepository : BaseRepository<GameTask>, IGameTasksRepository
     {
         public override string FileName { get; } = "places.json";
 
-        public List<Place> SearchByName(string searchName)
+        public List<GameTask> SearchByName(string searchName)
         {
-            return (from place in Repository where place.Name.ToLower().Contains(searchName.ToLower()) select place)
+            return (from gameTask in Repository where gameTask.Name.ToLower().Contains(searchName.ToLower()) select gameTask)
                 .ToList();
         }
 
@@ -34,6 +35,7 @@ namespace C_bool.BLL.Repositories
         }
 
         protected override string ConvertFileJsonToString() => TrimJson(base.ConvertFileJsonToString(), "results");
+
 
     }
 }

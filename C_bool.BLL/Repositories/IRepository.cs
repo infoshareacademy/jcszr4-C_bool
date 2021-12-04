@@ -10,7 +10,6 @@ namespace C_bool.BLL.Repositories
         public void Delete(string id);
         public void Update(T oldRow, T newRow);
         public T SearchById(string searchId);
-
         List<T> GetAll();
     }
 }
