@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using C_bool.WebApp.Interfaces;
 
 namespace C_bool.WebApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IGameTaskService _gameTaskService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IGameTaskService gameTaskService)
         {
             _logger = logger;
+            _gameTaskService = gameTaskService;
         }
 
         public IActionResult Index()
@@ -25,6 +28,7 @@ namespace C_bool.WebApp.Controllers
 
         public IActionResult Privacy()
         {
+            _gameTaskService.CreateANewTask();
             return View();
         }
 

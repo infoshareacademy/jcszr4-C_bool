@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using C_bool.WebApp.Config;
+using C_bool.WebApp.Interfaces;
 using C_bool.WebApp.Services;
 using Microsoft.AspNetCore.Localization;
 
@@ -31,6 +32,7 @@ namespace C_bool.WebApp
             services.AddControllersWithViews();
             //services.AddTransient<IAppSettings, AppSettings>(e => Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>());
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddTransient<IGameTaskService, GameTaskService>();
             //services.AddTransient<IConfiguration>(Configuration);
         }
 

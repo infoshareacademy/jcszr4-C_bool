@@ -18,4 +18,6 @@ namespace C_bool.WebApp.ViewComponents
             return View("MapView", placesViewList);
         }
     }
+
+
 }
