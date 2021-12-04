@@ -75,18 +75,5 @@ namespace C_bool.ConsoleApp.Other
             Console.WriteLine($"\n\n\nUŚCIŚLONE O {searchSubCategory}:");
             GetInfo.PlaceInformation(placesWithMatchedSubCategories, "");
         }
-
-        /// <summary>
-        /// Assigns random points to users in repository
-        /// </summary>
-        /// <param name="repository"></param>
-        public static void AssignRandomPointsToUsers(UsersRepository repository)
-        {
-            var random = new Random();
-            foreach (var user in repository.Repository)
-            {
-                user.Points = random.Next(0, 1000);
-            }
-        }
     }
 }

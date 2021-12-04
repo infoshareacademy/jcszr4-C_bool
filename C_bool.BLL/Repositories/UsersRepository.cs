@@ -1,30 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using C_bool.BLL.Models;
+using C_bool.BLL.Models.User;
 
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class UsersRepository : BaseRepository<User>, IRepository<User>
+    public sealed class UsersRepository : BaseRepository<User>, IUserRepository
     {
-        public override List<User> Repository { get; protected set; }
         public override string FileName { get; } = "users.json";
 
         public UsersRepository()
         {
-            Repository = new List<User>();
+            AddFileDataToRepository();
         }
 
-        public List<User> SearchByName(string searchName)
+        public List<User> SearchByFirstName(List<User> users, string firstName) => 
+            users.Where(u => u.FirstName.ToLower().Contains(firstName.ToLower())).ToList();
+
+        public List<User> SearchByLastName(List<User> users, string lastName) => 
+            users.Where(u => u.LastName.ToLower().Contains(lastName.ToLower())).ToList();
+
+        public List<User> SearchByEmail(List<User> users, string email) => 
+            users.Where(u => u.Email.Equals(email)).ToList();
+
+        public List<User> SearchByGender(List<User> users, Gender gender) => users.Where(u => u.Gender == gender).ToList();
+
+        public List<User> SearchActive(List<User> users) => users.Where(u => u.IsActive == true).ToList();
+
+        public List<User> OrderByPoints(List<User> users, bool isDescending) => isDescending
+            ? users.OrderByDescending(u => u.Points).ToList()
+            : users.OrderBy(u => u.Points).ToList();
+
+        public void AddUser(User user)
         {
-            var searchNameLowerCase = searchName.ToLower();
-            return Repository.Where(user =>
-                    user.LastName.ToLower().Contains(searchNameLowerCase) ||
-                    user.LastName.ToLower().Contains(searchNameLowerCase)).Select(user => user).ToList();
+            user.Id = Guid.NewGuid().ToString().Replace("-", "");
+            user.CreatedOn = DateTime.Now;
+            Add(user);
         }
 
-        public List<User> OrderByPoints(bool isDescending) => isDescending
-            ? Repository.OrderByDescending(u => u.Points).ToList()
-            : Repository.OrderBy(u => u.Points).ToList();
+        //TODO should be implemented by sum of points from all completed GameTasks 
+        private void AddPoints(string userId, int pointsToAdd)
+        {
+            var random = new Random();
+            foreach (var user in Repository)
+            {
+                user.Points = random.Next(0, 1000);
+            }
+        }
     }
 }

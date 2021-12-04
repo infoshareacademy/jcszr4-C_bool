@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public abstract class BaseRepository<T> where T : IEntity
+    public abstract class BaseRepository<T> : IRepository<T> where T : IEntity
     {
-        public abstract List<T> Repository { get; protected set; }
+        protected List<T> Repository { get; } = new();
         public abstract string FileName { get; }
 
         public void Add(T row)
@@ -18,20 +18,30 @@ namespace C_bool.BLL.Repositories
             Repository.Add(row);
         }
 
+        public void AddRange(List<T> rows)
+        {
+            Repository.AddRange(rows);
+        }
+
         public void Delete(T row)
         {
             Repository.Remove(row);
         }
 
-        public void Update(T oldRow, T newRow)
+        public void Update(T row)
         {
-            var index = Repository.IndexOf(oldRow);
-            Repository[index] = newRow;
+            var index = Repository.IndexOf(Repository.SingleOrDefault(r => r.Id == row.Id));
+            Repository[index] = row;
         }
 
         public T SearchById(string searchId)
         {
             return Repository.FirstOrDefault(x => x.Id == searchId);
+        }
+
+        public List<T> GetAll()
+        {
+            return Repository;
         }
 
         protected virtual string ConvertFileJsonToString()
@@ -63,7 +73,7 @@ namespace C_bool.BLL.Repositories
         {
             try
             {
-                Repository = JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString());
+                AddRange(JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString()));
             }
             catch (FileNotFoundException ex)
             {

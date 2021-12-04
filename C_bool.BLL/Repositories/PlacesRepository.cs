@@ -9,15 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class PlacesRepository : BaseRepository<Place>, IRepository<Place>
+    public sealed class PlacesRepository : BaseRepository<Place>
     {
-        public override List<Place> Repository { get; protected set; }
         public override string FileName { get; } = "places.json";
-
-        public PlacesRepository()
-        {
-            Repository = new List<Place>();
-        }
 
         public List<Place> SearchByName(string searchName)
         {
@@ -52,7 +46,7 @@ namespace C_bool.BLL.Repositories
                         @$"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitude},{longitude}&radius={radius}&key={apiKey}");
                 var trimmedJson = TrimJson(ConvertApiJsonToString(webRequest), "results");
 
-                Repository = JsonConvert.DeserializeObject<List<Place>>(trimmedJson);
+                AddRange(JsonConvert.DeserializeObject<List<Place>>(trimmedJson));
             }
             catch (Exception ex)
             {

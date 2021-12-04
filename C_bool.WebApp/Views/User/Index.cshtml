@@ -1,0 +1,134 @@
+﻿@using System.Linq
+@using System.Security.Cryptography
+@using C_bool.BLL.Models.User
+@model List<C_bool.BLL.Models.User.User>
+
+@{
+    ViewData["Title"] = "Users List";
+}
+
+<h1>Users List</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="container">
+    <form asp-action="Index">
+        <table class="table">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">First Name:</label>
+                        <input class="form-control small" type="text" name="firstName" placeholder="Wpisz" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Last Name:</label>
+                        <input class="form-control small" type="text" name="lastName" placeholder="Wpisz" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Email:</label>
+                        <input class="form-control small" type="text" name="email" placeholder="Wpisz" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Gender:</label>
+                        <select class="form-control small" name="gender">
+                            <option value="true" selected>Wybierz</option>
+                            <option value="@Gender.Male">Mężczyźni</option>
+                            <option value="@Gender.Female">Kobiety</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Active:</label>
+                        <select class="form-control small" name="isActive">
+                            <option value="true" selected>Wybierz</option>
+                            <option value="true">Tylko aktywni</option>
+                            <option value="false">Tylko nieaktywni</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Sortuj punkty</label>
+                        <select class="form-control small" name="isDescending">
+                            <option value="true" selected>Wybierz</option>
+                            <option value="@bool.TrueString">Malejąco</option>
+                            <option value="@bool.FalseString">Rosnąco</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <label asp-for="First().FirstName"></label>
+            </th>
+            <th>
+                <label asp-for="First().LastName"></label>
+            </th>
+            <th>
+                <label asp-for="First().Email"></label>
+            </th>
+            <th>
+                <label asp-for="First().Gender"></label>
+            </th>
+            <th>
+                <label asp-for="First().IsActive"></label>
+            </th>
+            <th>
+                <label asp-for="First().Points"></label>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.FirstName
+                </td>
+                <td>
+                    @item.LastName
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    @item.Gender
+                </td>
+                <td>
+                    @item.IsActive
+                </td>
+                <td>
+                    @item.Points
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

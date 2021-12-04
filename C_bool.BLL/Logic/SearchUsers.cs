@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using C_bool.BLL.Models;
+using C_bool.BLL.Models.User;
 
 
 namespace C_bool.BLL.Logic

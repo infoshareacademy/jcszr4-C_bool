@@ -1,0 +1,66 @@
+﻿@model C_bool.BLL.Models.User.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            <label asp-for="Id"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Id
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="FirstName"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.FirstName
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="LastName"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.LastName
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="Gender"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Gender
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="Email"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Email
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="CreatedOn"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.CreatedOn
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="IsActive"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.IsActive
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="Points"></label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Points
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

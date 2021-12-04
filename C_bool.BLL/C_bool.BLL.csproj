@@ -13,6 +13,9 @@
 		<Content Include="..\C_bool.BLL\places.json" Link="places.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="..\C_bool.BLL\users.json" Link="users.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

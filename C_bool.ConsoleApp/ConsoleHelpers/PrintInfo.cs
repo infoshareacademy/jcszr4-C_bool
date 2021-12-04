@@ -12,7 +12,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
     {
         public static void UserClassification(UsersRepository usersRepository)
         {
-            Playground.AssignRandomPointsToUsers(usersRepository); // do testów
+            usersRepository.AssignRandomPointsToUsers(usersRepository); // do testów
 
             if (usersRepository.IsRepositoryEmpty(usersRepository.Repository))
             {
