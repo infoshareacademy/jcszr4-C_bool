@@ -12,6 +12,11 @@
     <None Include="places.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Views\User\Create.cshtml" />
+    <None Include="Views\User\Delete.cshtml" />
+    <None Include="Views\User\Details.cshtml" />
+    <None Include="Views\User\Edit.cshtml" />
+    <None Include="Views\User\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

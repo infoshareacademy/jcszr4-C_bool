@@ -1,22 +1,28 @@
-﻿namespace C_bool.BLL.Models
+﻿using C_bool.BLL.Enums;
+using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace C_bool.BLL.Models
 {
     public class User : IEntity
     {
         public string Id { get; set; }
-        public bool IsActive { get; set; }
-        public int Age { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Gender { get; set; }
-        //public string Company { get; set; }
+        [Required(ErrorMessage = "Nazwa jest wymagana")]
+        [Range(2, 30, ErrorMessage = "Nazwa powinna zawierać od 2 do 30 znaków")]
+        [Display(Name = "Nazwa użytkownika")]
+        public string Name { get; set; }
+        [Display(Name = "Płeć")]
+        public Gender Gender { get; set; }
+        [Required(ErrorMessage = "Email jest wymagany")]
+        [EmailAddress]
         public string Email { get; set; }
-        //public string Phone { get; set; }
-        //public string Address { get; set; }
-        public string Registered { get; set; }
-        //public double Latitude { get; set; }
-        //public double Longitude { get; set; }
+        [Display(Name = "Aktywny")]
+        public bool IsActive { get; set; }
+        [JsonProperty(PropertyName = "registered")]
+        [Display(Name = "Data rejestracji")]
+        public DateTime CreatedOn { get; set; }
+        [Display(Name = "Liczba punktów")]
         public int Points { get; set; }
-
-
     }
 }

@@ -31,9 +31,9 @@ namespace C_bool.WebApp
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.AddSingleton<IPlacesRepository,PlacesRepository>();
+            services.AddSingleton<IPlacesRepository, PlacesRepository>();
             services.AddSingleton<PlacesService>();
-
+            services.AddSingleton<IUserRepository, UsersRepository>();
             services.AddHttpClient("GoogleMapsClient", client =>
             {
                 client.BaseAddress = new Uri("https://maps.googleapis.com/");

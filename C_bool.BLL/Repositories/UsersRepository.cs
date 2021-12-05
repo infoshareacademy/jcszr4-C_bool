@@ -1,24 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using C_bool.BLL.Enums;
 using C_bool.BLL.Models;
 
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class UsersRepository : BaseRepository<User>
+    public sealed class UsersRepository : BaseRepository<User>, IUserRepository
     {
         public override string FileName { get; } = "users.json";
 
-        public List<User> SearchByName(string searchName)
+        public UsersRepository()
         {
-            var searchNameLowerCase = searchName.ToLower();
-            return Repository.Where(user =>
-                    user.LastName.ToLower().Contains(searchNameLowerCase) ||
-                    user.LastName.ToLower().Contains(searchNameLowerCase)).Select(user => user).ToList();
+            AddFileDataToRepository();
         }
 
-        public List<User> OrderByPoints(bool isDescending) => isDescending
-            ? Repository.OrderByDescending(u => u.Points).ToList()
-            : Repository.OrderBy(u => u.Points).ToList();
+        public List<User> SearchByName(List<User> users, string name) =>
+            users.Where(u => u.Name.Equals(name)).ToList();
+        public List<User> SearchByEmail(List<User> users, string email) =>
+            users.Where(u => u.Email.Equals(email)).ToList();
+
+        public List<User> SearchByGender(List<User> users, Gender gender) => users.Where(u => u.Gender == gender).ToList();
+
+        public List<User> SearchActive(List<User> users) => users.Where(u => u.IsActive == true).ToList();
+
+        public List<User> OrderByPoints(List<User> users, bool isDescending) => isDescending
+            ? users.OrderByDescending(u => u.Points).ToList()
+            : users.OrderBy(u => u.Points).ToList();
+
+        public void AddUser(User user)
+        {
+            user.Id = Guid.NewGuid().ToString().Replace("-", "");
+            user.CreatedOn = DateTime.Now;
+            Add(user);
+        }
+
+        //TODO should be implemented by sum of points from completed GameTasks list 
+        public void AddPoints(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

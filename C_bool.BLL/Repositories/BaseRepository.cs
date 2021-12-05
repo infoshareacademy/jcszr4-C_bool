@@ -18,6 +18,11 @@ namespace C_bool.BLL.Repositories
             Repository.Add(row);
         }
 
+        public void AddRange(List<T> rows)
+        {
+            Repository.AddRange(rows);
+        }
+
         public void Delete(T row)
         {
             Repository.Remove(row);
@@ -30,10 +35,10 @@ namespace C_bool.BLL.Repositories
             Repository.Remove(product);
         }
 
-        public void Update(T oldRow, T newRow)
+        public void Update(T row)
         {
-            var index = Repository.IndexOf(oldRow);
-            Repository[index] = newRow;
+            var index = Repository.IndexOf(Repository.SingleOrDefault(r => r.Id == row.Id));
+            Repository[index] = row;
         }
 
         public T SearchById(string searchId)
@@ -59,7 +64,7 @@ namespace C_bool.BLL.Repositories
         {
             try
             {
-                Repository.AddRange(JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString()));
+                AddRange(JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString()));
             }
             catch (FileNotFoundException ex)
             {
