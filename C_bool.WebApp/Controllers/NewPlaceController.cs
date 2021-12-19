@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using C_bool.BLL.Models.Places;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
@@ -20,19 +17,18 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private PlacesService _placesService;
-        private IPlacesRepository _repository;
         private GeoLocation _geoLocation;
         private IHttpClientFactory _clientFactory;
         private AppSettings _appSettings = new();
 
+        private IRepository<Place> _repository;
+
         public static double Latitude;
         public static double Longitude;
 
-        private static string _message;
-
         public IConfiguration Configuration;
 
-        public NewPlaceController(IConfiguration configuration, PlacesService placesService, IPlacesRepository repository, IHttpClientFactory clientFactory)
+        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IHttpClientFactory clientFactory)
         {
             _placesService = placesService;
             _repository = repository;
@@ -44,7 +40,7 @@ namespace C_bool.WebApp.Controllers
         // GET: NewPlaceController
         public ActionResult Index()
         {
-            var model = _placesService.TempPlaces;
+            var model = _placesService.TempGooglePlaces;
             return View();
         }
 
@@ -115,10 +111,11 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task AddToFavs([FromBody] ReturnString request)
         {
-            foreach (var place in _placesService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
             {
+                var place = _placesService.MapGooglePlaceToPlace(googlePlace);
                 var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
-                var photo = await api.DownloadImageAsync(place, "600");
+                var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
                 _repository.Add(place);
             }
@@ -130,10 +127,11 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task AddToRepository([FromBody] ReturnString request)
         {
-            foreach (var place in _placesService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
             {
+                var place = _placesService.MapGooglePlaceToPlace(googlePlace);
                 var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
-                var photo = await api.DownloadImageAsync(place, "600");
+                var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
                 _repository.Add(place);
             }
@@ -149,8 +147,8 @@ namespace C_bool.WebApp.Controllers
         {
             var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
 
-            _placesService.TempPlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
-            var model = _placesService.TempPlaces;
+            _placesService.TempGooglePlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
+            var model = _placesService.TempGooglePlaces;
             ViewBag.Message = api.Message;
             ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
@@ -163,8 +161,8 @@ namespace C_bool.WebApp.Controllers
         {
             var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
 
-            _placesService.TempPlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
-            var model = _placesService.TempPlaces;
+            _placesService.TempGooglePlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
+            var model = _placesService.TempGooglePlaces;
             ViewBag.Message = api.Message;
             ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);

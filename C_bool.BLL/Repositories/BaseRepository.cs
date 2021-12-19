@@ -2,48 +2,48 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using C_bool.BLL.Models;
+using C_bool.BLL.DAL.Entities;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T> where T : IEntity
     {
+
         protected List<T> Repository { get; } = new();
         public abstract string FileName { get; }
 
-        public void Add(T row)
+        public void Add(T entity)
         {
-            Repository.Add(row);
+            Repository.Add(entity);
         }
 
-        public void AddRange(List<T> rows)
+        public void AddRange(IEnumerable<T> entities)
         {
-            Repository.AddRange(rows);
+            Repository.AddRange(entities);
         }
 
-        public void Delete(T row)
+        public void Delete(T entity)
         {
-            Repository.Remove(row);
+            Repository.Remove(entity);
         }
 
-        public void Delete(string id)
+        public void Delete(int id)
         {
-            var product = SearchById(id);
+            var product = GetById(id);
 
             Repository.Remove(product);
         }
 
-        public void Update(T row)
+        public void Update(T entity)
         {
-            var index = Repository.IndexOf(Repository.SingleOrDefault(r => r.Id == row.Id));
-            Repository[index] = row;
+            var index = Repository.IndexOf(Repository.SingleOrDefault(r => r.Id == entity.Id));
+            Repository[index] = entity;
         }
 
-        public T SearchById(string searchId)
+        public T GetById(int id)
         {
-            return Repository.FirstOrDefault(x => x.Id == searchId);
+            return Repository.FirstOrDefault(x => x.Id == id);
         }
 
         protected virtual string ConvertFileJsonToString()
@@ -85,9 +85,14 @@ namespace C_bool.BLL.Repositories
             return !repository.Any();
         }
 
-        public List<T> GetAll()
+        public IQueryable<T> GetAllQueryable()
         {
-            return Repository;
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,13 +1,12 @@
-﻿using C_bool.BLL.Enums;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using C_bool.BLL.Enums;
+using Newtonsoft.Json;
 
-namespace C_bool.BLL.Models
+namespace C_bool.BLL.DAL.Entities
 {
-    public class User : IEntity
+    public class User : Entity
     {
-        public string Id { get; set; }
         [Required(ErrorMessage = "Nazwa jest wymagana")]
         [Range(2, 30, ErrorMessage = "Nazwa powinna zawierać od 2 do 30 znaków")]
         [Display(Name = "Nazwa użytkownika")]

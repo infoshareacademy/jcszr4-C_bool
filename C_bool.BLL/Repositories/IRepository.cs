@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
-using C_bool.BLL.Models.Places;
+using System.Linq;
+using C_bool.BLL.DAL.Entities;
 
 namespace C_bool.BLL.Repositories
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : IEntity
     {
-        public void Add(T row);
-        public void AddRange(List<T> rows);
-        public void Delete(T row);
-        public void Delete(string id);
-        public void Update(T row);
-        public T SearchById(string searchId);
-        List<T> GetAll();
+        public void Add(T entity);
+        public void AddRange(IEnumerable<T> entities);
+        public void Delete(T entity);
+        public void Delete(int id);
+        public void Update(T entity);
+        public T GetById(int id);
+        IEnumerable<T> GetAll();
+        IQueryable<T> GetAllQueryable();
     }
 }

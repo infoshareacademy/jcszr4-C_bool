@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
-using C_bool.BLL.Models;
 
 
 namespace C_bool.BLL.Repositories
 {
-    public sealed class UsersRepository : BaseRepository<User>, IUserRepository
+    public sealed class UsersRepository
     {
-        public override string FileName { get; } = "users.json";
+        private readonly IRepository<User> _repository;
+        public string FileName { get; } = "users.json";
 
-        public UsersRepository()
+        public UsersRepository(IRepository<User> repository)
         {
-            AddFileDataToRepository();
+            _repository = repository;
         }
 
-        public List<User> SearchByName(List<User> users, string name) =>
-            users.Where(u => u.Name.Equals(name)).ToList();
+        public List<User> SearchByName(string name)
+        {
+            var users = _repository.GetAllQueryable();
+            return users.Where(u => u.Name.Equals(name)).ToList();
+            //users.Where(u => u.Name.Equals(name)).ToList();
+        }
         public List<User> SearchByEmail(List<User> users, string email) =>
             users.Where(u => u.Email.Equals(email)).ToList();
 
@@ -31,9 +36,9 @@ namespace C_bool.BLL.Repositories
 
         public void AddUser(User user)
         {
-            user.Id = Guid.NewGuid().ToString().Replace("-", "");
+            //user.Id = Guid.NewGuid().ToString().Replace("-", "");
             user.CreatedOn = DateTime.Now;
-            Add(user);
+            _repository.Add(user);
         }
 
         //TODO should be implemented by sum of points from completed GameTasks list 

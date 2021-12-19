@@ -1,16 +1,15 @@
 ﻿using C_bool.WebApp.Interfaces;
 using System;
-using System.Threading.Tasks;
-using C_bool.BLL.Models;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 
 namespace C_bool.WebApp.Services
 {
     public class GameTaskService : IGameTaskService
     {
-        private readonly IGameTasksRepository _gameTasksRepository;
+        private IRepository<GameTask> _gameTasksRepository;
 
-        public GameTaskService(IGameTasksRepository gameTasksRepository)
+        public GameTaskService(IRepository<GameTask> gameTasksRepository)
         {
             _gameTasksRepository = gameTasksRepository;
         }
@@ -37,26 +36,26 @@ namespace C_bool.WebApp.Services
         }
 
 
-        public void ManuallyCompleteTask(string taskId, string userId)
+        public void ManuallyCompleteTask(int taskId, int userId)
         {
             throw new NotImplementedException();
         }
 
 
-        public bool CompleteTask(string taskId, string userId, string textToConfirm)
+        public bool CompleteTask(int taskId, int userId, string textToConfirm)
         {
             throw new NotImplementedException();
         }
 
         ///
-        public void CompleteTask(string taskId, string userId, string latitude, string longitude)
+        public void CompleteTask(int taskId, int userId, string latitude, string longitude)
         {
-            var task = _gameTasksRepository.SearchById(taskId);
+            var task = _gameTasksRepository.GetById(taskId);
             throw new NotImplementedException();
 
         }
 
-        public bool CompleteTask(string taskId, string userId, string latitude, string longitude, DateTime timeOfVisit)
+        public bool CompleteTask(int taskId, int userId, string latitude, string longitude, DateTime timeOfVisit)
         {
             throw new NotImplementedException();
         }
@@ -64,7 +63,7 @@ namespace C_bool.WebApp.Services
         /// <summary>
         /// Complete task method overload for task type ....
         /// </summary>
-        public bool CompleteTask(string taskId, string userId)
+        public bool CompleteTask(int taskId, int userId)
         {
             throw new NotImplementedException();
         }

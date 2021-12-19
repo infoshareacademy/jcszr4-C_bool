@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using C_bool.BLL.Models;
+﻿using C_bool.BLL.DAL.Entities;
 
 
 namespace C_bool.WebApp.Interfaces

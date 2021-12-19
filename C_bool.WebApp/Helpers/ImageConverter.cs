@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using C_bool.BLL.Models.Places;
 using Microsoft.AspNetCore.Http;
 
 namespace C_bool.WebApp.Helpers
@@ -8,7 +7,7 @@ namespace C_bool.WebApp.Helpers
     public class ImageConverter
     {
 
-        public static PhotoBase64 ConvertImage(IFormFile files)
+        public static string ConvertImage(IFormFile files)
         {
             if (files != null)
             {
@@ -21,17 +20,13 @@ namespace C_bool.WebApp.Helpers
                     // concatenating  FileName + FileExtension
                     var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtension);
 
-                    var objfiles = new PhotoBase64()
-                    {
-                        Name = newFileName,
-                    };
-
+                    string base64String;
                     using (var target = new MemoryStream())
                     {
                         files.CopyTo(target);
-                        objfiles.Data = Convert.ToBase64String(target.ToArray());
+                        base64String = Convert.ToBase64String(target.ToArray());
                     }
-                    return objfiles;
+                    return base64String;
                 }
             }
             return null;
