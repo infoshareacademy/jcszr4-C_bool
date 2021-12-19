@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
+using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
@@ -86,7 +88,7 @@ namespace C_bool.WebApp.Controllers
         // POST: NewPlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Place model)
+        public ActionResult Create(Place model, IFormFile file)
         {
             try
             {
@@ -98,6 +100,7 @@ namespace C_bool.WebApp.Controllers
                 }
 
                 model.IsUserCreated = true;
+                model.Photo = (ImageConverter.ConvertImage(file));
                 _repository.Add(model);
                 ViewBag.Message = $"Dodano nowe miejsce: {model.Name}";
                 ViewBag.Status = true;
@@ -110,13 +113,33 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddToFavs([FromBody] ReturnString request)
+        public async Task AddToFavs([FromBody] ReturnString request)
         {
             foreach (var place in _placesService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
+                var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+                var photo = await api.DownloadImageAsync(place, "600");
+                place.Photo = photo;
                 _repository.Add(place);
             }
-            return View();
+            //return View();
+
+            return;
+        }
+
+        [HttpPost]
+        public async Task AddToRepository([FromBody] ReturnString request)
+        {
+            foreach (var place in _placesService.TempPlaces.Where(place => place.Id.Equals(request.Id)))
+            {
+                var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+                var photo = await api.DownloadImageAsync(place, "600");
+                place.Photo = photo;
+                _repository.Add(place);
+            }
+            //return View();
+
+            return;
         }
 
         // POST: PlacesController/Create

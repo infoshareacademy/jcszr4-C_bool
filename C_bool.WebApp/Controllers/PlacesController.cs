@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
+using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +38,8 @@ namespace C_bool.WebApp.Controllers
             var model = _placesService.GetAll();
             ViewBag.Message = $"Ilość miejsc w bazie: {model.Count}";
             ViewBag.Status = true;
+            ViewBag.Latitude = Latitude;
+            ViewBag.Longitude = Longitude;
             return View(model);
         }
 
@@ -57,15 +59,18 @@ namespace C_bool.WebApp.Controllers
                 _geoLocation = postData;
                 Latitude = _geoLocation.Latitude;
                 Longitude = _geoLocation.Longitude;
+                ViewBag.Latitude = Latitude;
+                ViewBag.Longitude = Longitude;
             }
 
             return Json(postData);
         }
 
         // GET: PlacesController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id)
         {
-            return View();
+            var model = _repository.SearchById(id);
+            return View(model);
         }
 
         // GET: PlacesController/Create
@@ -89,19 +94,27 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: PlacesController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            return View();
+            var model = _repository.SearchById(id);
+
+
+            return View("Edit", model);
         }
 
         // POST: PlacesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(string id, Place model, IFormFile file)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                model.Photo = ImageConverter.ConvertImage(file);
+                _repository.Update(model);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -110,31 +123,10 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: ProductsController/Delete/5
-        public ActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var model = _repository.SearchById(id);
-            return View(model);
+            _repository.Delete(id);
+            return RedirectToAction(nameof(Index));
         }
-
-        // POST: ProductsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(string id, Place model)
-        {
-            try
-            {
-                _repository.Delete(id);
-                ViewBag.Message = $"Usunięto miejsce: {model.Name}";
-                ViewBag.Status = true;
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-    
-}
+    }
 }

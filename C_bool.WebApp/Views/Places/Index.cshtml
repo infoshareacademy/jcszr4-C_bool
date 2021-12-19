@@ -5,17 +5,18 @@
 @using C_bool.BLL.Logic
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
+@using Status = C_bool.WebApp.Services.Status
 @model IEnumerable<C_bool.BLL.Models.Places.Place>
 
 @{
     ViewData["Title"] = "Index";
 }
-
+<!-- TabBar for places/map -->
 <div class="nav-wrapper position-relative mb-3">
     <div class="col-4">
         <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
             <li class="nav-item">
-                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Ulubione miejsca</a>
+                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Lista miejsc</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
@@ -24,7 +25,7 @@
     </div>
 </div>
 <!-- End of Tab Nav -->
-<!-- Tab Content -->
+<!-- Tab Content 1) Places -->
 <div class="card border-0">
     <div class="card-body p-0">
         <div class="tab-content" id="tabcontent1">
@@ -32,100 +33,25 @@
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="card-deck" style="height: 80vh; align-content: center">
-                        @foreach (var item in Model)
-                        {
-                            <div class="card mb-3" style="float: left; min-width: 450px; max-width: 500px; width: 50%; height: 550px; margin: 10px;">
-                                <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-                                <div class="card-body">
-                                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-                                    <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
-                                </div>
-                                @if (item.Photos is {Count: > 0 } && _appSettings.Value.EnablePlacePhoto)
-                                {
-                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
-                                }
-                                else
-                                {
-                                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                                         src="/img/image-placeholder.jpg" alt="Card image cap">
-                                }
-                                <div class="card-body">
-                                    <p class="card-text"></p>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <form method="post" style="display: flex; justify-content: center;">
-                                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-
-                                            <button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>
-                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                                            <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('@item.Id')"><l class="bi-heart"> Ulubione</l></button>
-                                        </div>
-                                        <div class="btn-group">
-                                            <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <l class="bi-file-plus"> Edytuj</l>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                <li><a class="dropdown-item" onclick="post('@item.Id')" href="#"><l class="bi-heart"> Inne</l></a></li>
-                                                <li><a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item"><l class="bi-heart"> Usuń miejsce</l></a></li>
-                                                <li><a class="btn"
-                                                asp-action="Delete"
-                                                asp-controller="Places"
-                                                asp-route-id="@item.Id"
-                                                method="post"><l class="bi-heart"> Usuń miejsce v2</l></a></li>
-                                            </ul>
-                                        </div>
-                                        <button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>
-                                    </form>
-                                </ul>
-
-
-                                <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-
-                                    @foreach (var type in item.Types)
-                                    {
-                                        if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
-                                        {
-                                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
-                                            {
-                                                if (kvp.Key.Equals(type))
-                                                {
-                                                    <label>@kvp.Value |</label>
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <label style="color:silver"> @type |</label>
-                                        }
-                                    }
-                                    @if (item.Types.Count == 0)
-                                    {
-                                        <label>Brak kategorii</label>
-                                    }
-
-                                </div>
-                            </div>
-                        }
-                    </div>
+                    <!-- Patial with Card style places list -->
+                    <partial name="Partials/PlacesCards" model="Model" />
                 }
                 else
                 {
                     <div class="alert alert-dismissible alert-warning" style="margin: 10px">
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         <h4 class="alert-heading">Nie bangla!</h4>
-                        <p class="mb-0">Wygląda na to, że nie masz ulubionych miejsc...<br>Przedź do <b>Szukaj w pobliżu</b> aby coś wyszukać, lub dodaj swoje miejsce</p>
+                        <p class="mb-0">Wygląda na to, że nie ma miejsc w bazie...<br>Przedź do <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b> aby coś wyszukać, lub dodaj swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
                     </div>
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                @await Component.InvokeAsync("MapView", new {placesList = Model})
+                @await Component.InvokeAsync("MapView", new { placesList = Model })
             </div>
         </div>
     </div>
 </div>
-
+<!-- MapModal -->
 <div class="modal" id="mapModal">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -144,10 +70,46 @@
     </div>
 </div>
 
-@section Scripts {
 
-    <script>
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć wskazane miejsce?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
         var latitude, longitude;
+
+        function initMap(latitude, longitude) {
+            const point = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 16,
+                    center: point,
+
+                });
+            const marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                icon: "/img/onion.png"
+            });
+        }
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -175,11 +137,30 @@
                 });
         };
 
-        window.onload = getLocation();
-    </script>
-    
-    <script>
-        function showNotif() {
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = {Id: input};
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        showNotif('green', 'OK');
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        //alert(" conection to the server failed ");
+                        showNotif('red', errorthrown);
+                    }
+                });
+        };
+
+        // show notification window
+        function showNotif(background, message) {
             const notyf = new Notyf({
                 position: {
                     x: 'right',
@@ -188,7 +169,7 @@
                 types: [
                     {
                         type: 'info',
-                        background: '@if(ViewBag.Status) {@Html.Raw("green")} else {@Html.Raw("red")}' ,
+                        background: background,
                         icon: {
                             className: 'fas fa-info-circle',
                             tagName: 'span',
@@ -201,10 +182,21 @@
             });
             notyf.open({
                 type: 'info',
-                message: '@ViewBag.Message'
+                message: message
             });
         };
 
-        window.addEventListener("load", showNotif);
+        var path_to_delete;
+
+        $(".deleteItem").click(function (e) {
+            path_to_delete = $(this).data('path');
+        });
+
+        $('#btnContinueDelete').click(function () {
+            window.location = path_to_delete;
+        });
+
+        window.addEventListener("load", showNotif('green', '@ViewBag.Message'));
+        window.onload = getLocation();
     </script>
 }

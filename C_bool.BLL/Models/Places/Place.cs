@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using C_bool.BLL.Logic;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Models.Places
@@ -14,10 +15,16 @@ namespace C_bool.BLL.Models.Places
         [DisplayName("Nazwa miejsca")]
         [Required(ErrorMessage = "Miejsce musi posiadać nazwę")]
         public string Name { get; set; }
-        [DisplayName("Opis")]
+
+        [DisplayName("Krótki opis")]
         [Required(ErrorMessage = "Miejsce musi posiadać opis")]
+        public string ShortDescription { get; set; } = "Brak opisu";
+        [DisplayName("Rozszerzony opis")]
         public string Description { get; set; }
-        public List<Photo> Photos { get; set; } = new();
+        [JsonProperty(PropertyName = "photos")]
+        public List<Photo> GooglePhotos { get; set; } = new();
+
+        public PhotoBase64 Photo { get; set; } = new();
 
         public List<string> Types { get; set; } = new();
         public double Rating { get; set; } = 0.0;
@@ -47,4 +54,11 @@ namespace C_bool.BLL.Models.Places
         public string PhotoReference { get; set; }
         public int Width { get; set; }
     }
+
+    public class PhotoBase64
+    {
+        public string Name { get; set; }
+        public string Data { get; set; } = "";
+    }
+
 }

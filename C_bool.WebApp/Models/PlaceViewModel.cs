@@ -15,7 +15,7 @@ namespace C_bool.WebApp.Models
         public string Id { get; set; }
         public Geometry Geometry { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string ShortDescription { get; set; }
         public string Address { get; set; }
     }
 }

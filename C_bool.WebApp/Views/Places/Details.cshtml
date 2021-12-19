@@ -1,0 +1,132 @@
+﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
+@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@using System.Globalization
+@model C_bool.BLL.Models.Places.Place
+
+<div class="row">
+    <div class="col-12 col-xl-8">
+        <div class="card card-body border-0 shadow mb-4">
+            <!-- zawartość okienka Szczegóły -->
+            <h2 class="h5 mb-4">Ogólne informacje</h2>
+            <div>@Html.Raw(Model.Description)</div>
+
+
+        </div>
+        <div class="card card-body border-0 shadow mb-4 mb-xl-0">
+            <!-- zawartość okienka Zadania -->
+            <h2 class="h5 mb-4">Zadania</h2>
+
+        </div>
+    </div>
+    <div class="col-12 col-xl-4">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow border-0 text-center p-0">
+                    <div class="profile-cover rounded-top" data-background="../assets/img/profile-cover.jpg"></div>
+                    <div class="card-body pb-5">
+                        @if (Model.Photo is not null)
+                        {
+                            <img src="data:image;base64,@Html.Raw(Model.Photo.Data)" class="rounded mx-auto mt-n7 mb-4" alt="Place photo">
+                        }
+                        else
+                        {
+                            <img src="/img/image-placeholder.jpg" class="rounded mx-auto mt-n7 mb-4" alt="Place photo">
+                        }
+                        <h4 class="h3">@Html.DisplayFor(model => model.Name)</h4>
+                        <h5 class="fw-normal">@Html.DisplayFor(model => model.ShortDescription)</h5>
+                        <p class="text-gray mb-4">@Html.DisplayFor(model => model.Address)</p>
+                        <ul class="list-group list-group-flush">
+                            <form method="post" style="display: flex; justify-content: center;">
+                                <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+
+                                    <button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>
+                                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                                    <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('Model.Id')"><l class="bi-heart"> Ulubione</l></button>
+                                </div>
+                                <div class="btn">
+                                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <l class="bi-three-dots"></l>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="Places/Edit/@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                                        <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = Model.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
+
+                                    </ul>
+                                </div>
+                                @*<button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>*@
+                            </form>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-body border-0 shadow mb-4">
+                    <h2 class="h5 mb-4">Wybierz zdjęcie</h2>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <!-- Avatar -->
+                            <img class="rounded avatar-xl" src="../assets/img/team/profile-picture-3.jpg" alt="zdjęcie miejsca">
+                        </div>
+                        <div class="file-field">
+                            <div class="d-flex justify-content-xl-center ms-xl-3">
+                                <div class="d-flex">
+                                    <svg class="icon text-gray-500 me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
+                                    <input type="file">
+                                    <div class="d-md-block text-left">
+                                        <div class="fw-normal text-dark mb-1">Wybierz zdjęcie</div>
+                                        <div class="text-gray small">JPG, GIF lub PNG.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var latitude, longitude;
+
+    function initMap(latitude, longitude) {
+        const point = { lat: latitude, lng: longitude };
+        const map = new google.maps.Map(document.getElementById("map"),
+            {
+                zoom: 16,
+                center: point,
+
+            });
+        const marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            icon: "/img/onion.png"
+        });
+    }
+</script>
+
+@*<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>*@

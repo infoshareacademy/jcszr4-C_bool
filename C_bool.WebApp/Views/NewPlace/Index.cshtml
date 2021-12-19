@@ -17,73 +17,7 @@
 @if (Model != null && Model.Any())
 {
     <h1 style="margin: 10px;">Znalezione miejsca:</h1>
-    <div class="card-deck" style="align-content: center">
-        @foreach (var item in Model)
-        {
-            <div class="card mb-3" style="float: left; min-width: 450px; max-width: 500px; width: 50%; height: 550px; margin: 10px;">
-                <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-                <div class="card-body">
-                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-                    <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
-                </div>
-                @if (item.Photos is {Count: > 0 } && _appSettings.Value.EnablePlacePhoto)
-                {
-                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                         src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.Photos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
-                }
-                else
-                {
-                    <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                         src="/img/image-placeholder.jpg" alt="Card image cap">
-                }
-                <div class="card-body">
-                    <p class="card-text"></p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-                        <div class="btn-group">
-                            <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <l class="bi-file-plus"> Dodaj</l>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" onclick="post('@item.Id')" href="#"><l class="bi-heart"> Do bazy</l></a></li>
-                                <li><a class="dropdown-item" href="#"><l class="bi-heart"> Do ulubionych</l></a></li>
-                                <li><a class="dropdown-item" href="#"><l class="bi-heart"> Zadanie</l></a></li>
-                            </ul>
-                        </div>
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                        <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('@item.Id')"><l class="bi-heart"> Ulubione</l></button>
-                    </div>
-                </ul>
-                <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-
-                    @foreach (var type in item.Types)
-                    {
-                        if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
-                        {
-                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
-                            {
-                                if (kvp.Key.Equals(type))
-                                {
-                                    <label>@kvp.Value |</label>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <label style="color:silver"> @type |</label>
-                        }
-                    }
-                    @if (item.Types.Count == 0)
-                    {
-                        <label>Brak kategorii</label>
-                    }
-
-                </div>
-            </div>
-        }
-
-    </div>
+    <partial name="Partials/NewPlacesCards" model="Model" />
 }
 else
 {
@@ -113,8 +47,10 @@ else
 </div>
 
 @section Scripts {
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+    @*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>*@
     <script>
+
+        // show map in modal
         function initMap(latitude, longitude) {
             const point = { lat: latitude, lng: longitude };
             const map = new google.maps.Map(document.getElementById("map"),
@@ -129,30 +65,31 @@ else
                 icon: "/img/onion.png"
             });
         }
-    </script>
 
-    <script>
-        function post(input) {
-            var postData = { Id: input };
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = {Id: input};
+
             $.ajax(
                 {
                     type: "POST",
-                    url: "@Url.Action("AddToFavs", "NewPlace")",
+                    url: '/' + controller + '/' + view,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(postData),
                     success: function(data) {
-                        //alert("Pass" + data);
+                       showNotif('green', 'OK');
                     },
-                    error: function(ex) {
-                        //alert("Nie udało się przekazać lokalizacji" + ex);
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                            //alert(" conection to the server failed ");
+                            showNotif('red', errorthrown);
                     }
                 });
         };
-    </script>
 
-    <script>
-        function showNotif() {
+        // show notification window
+        function showNotif(background, message) {
             const notyf = new Notyf({
                 position: {
                     x: 'right',
@@ -161,12 +98,7 @@ else
                 types: [
                     {
                         type: 'info',
-                        background: '@if (ViewBag.QueryStatus.Equals(Status.OK))
-                                     {@Html.Raw("green")
-                                     }
-                                     else
-                                     {@Html.Raw("red")
-                                     }',
+                        background: background,
                         icon: {
                             className: 'fas fa-info-circle',
                             tagName: 'span',
@@ -179,10 +111,10 @@ else
             });
             notyf.open({
                 type: 'info',
-                message: '@ViewBag.Message'
+                message: message
             });
         };
 
-        window.addEventListener("load", showNotif);
+        window.addEventListener("load", showNotif('@if (ViewBag.QueryStatus.Equals(Status.OK)){@Html.Raw("green")} else {@Html.Raw("red")}', '@ViewBag.Message'));
     </script>
 }

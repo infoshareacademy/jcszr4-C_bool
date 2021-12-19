@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using C_bool.BLL.Models.Places;
+using C_bool.WebApp.Controllers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -176,6 +178,21 @@ namespace C_bool.WebApp.Services
             }
             return listPlaces;
         }
+
+
+        public async Task<PhotoBase64> DownloadImageAsync(Place place, string width)
+        {
+            using var httpClient = new HttpClient();
+            var requestUri =
+                @$"https://maps.googleapis.com/maps/api/place/photo?maxwidth={width}&photo_reference={place.GooglePhotos[0].PhotoReference}&key={ApiKey}";
+            Uri uri = new Uri(requestUri);
+            PhotoBase64 photo = new();
+            var imageBytes = await httpClient.GetByteArrayAsync(uri);
+            photo.Data = Convert.ToBase64String(imageBytes);
+
+            return photo;
+        }
+
     }
 
     public enum Status
