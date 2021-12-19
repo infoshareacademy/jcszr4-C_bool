@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace C_bool.BLL.Models.Places
+namespace C_bool.BLL.Models.GooglePlaces
 {
     public class Geometry
     {

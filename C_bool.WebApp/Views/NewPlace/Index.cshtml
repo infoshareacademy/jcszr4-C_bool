@@ -1,12 +1,8 @@
 ﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
-@using System.Text.Json
-@using C_bool.BLL.Logic
-@using System.Globalization
-@using System.Security.Cryptography.X509Certificates
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using Status = C_bool.WebApp.Services.Status
-@model IEnumerable<C_bool.BLL.Models.Places.Place>
+@model IEnumerable<C_bool.BLL.Models.GooglePlaces.GooglePlace>
 
 @{
     ViewData["Title"] = "Index";

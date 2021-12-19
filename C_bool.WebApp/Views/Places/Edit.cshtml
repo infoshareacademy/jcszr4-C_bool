@@ -1,6 +1,6 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
-@model C_bool.BLL.Models.Places.Place
+@model C_bool.BLL.DAL.Entities.Place
 @inject IOptionsSnapshot<AppSettings> _appSettings;
 
 <h1>Edytuj miejsce</h1>
@@ -43,10 +43,10 @@
             </div>
 
             <div class="form-group">
-                <input id="latitudeForm" style="display: none;" asp-for="Geometry.Location.Latitude" class="form-control" />
+                <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
             </div>
             <div class="form-group">
-                <input id="longitudeForm" style="display: none;" asp-for="Geometry.Location.Longitude" class="form-control" />
+                <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
             </div>
             <br />
             <div class="form-group">

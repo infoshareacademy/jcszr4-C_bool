@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
-using C_bool.BLL.Models.Places;
-using C_bool.WebApp.Controllers;
+using C_bool.BLL.Models.GooglePlaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +14,7 @@ namespace C_bool.WebApp.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private string ApiKey { get; set; }
-        public List<Place> Places { get; set; }
+        public List<GooglePlace> Places { get; set; }
         public string Message { get; set; }
         public Status QueryStatus { get; set; }
 
@@ -62,9 +57,9 @@ namespace C_bool.WebApp.Services
             }
         }
 
-        public async Task<List<Place>> GetBySearchQuery(string query = "", string language = "pl")
+        public async Task<List<GooglePlace>> GetBySearchQuery(string query = "", string language = "pl")
         {
-            var listPlaces = new List<Place>();
+            var listPlaces = new List<GooglePlace>();
             var requestUri = @$"/maps/api/place/textsearch/json?query={query}&language={language}&key={ApiKey}";
             try
             {
@@ -95,7 +90,7 @@ namespace C_bool.WebApp.Services
             return listPlaces;
         }
 
-        public async Task<List<Place>> GetNearby(string latitude,
+        public async Task<List<GooglePlace>> GetNearby(string latitude,
         string longitude,
         double radius,
         string type = "",
@@ -106,7 +101,7 @@ namespace C_bool.WebApp.Services
         {
             var latitudeString = latitude.ToString(CultureInfo.InvariantCulture);
             var longitudeString = longitude.ToString(CultureInfo.InvariantCulture);
-            var listPlaces = new List<Place>();
+            var listPlaces = new List<GooglePlace>();
             var requestUri = @$"/maps/api/place/nearbysearch/json?location={latitudeString},{longitudeString}&radius={radius}&type={type}&keyword={keyword}&region={region}&language={language}&key={ApiKey}";
 
             try
@@ -157,15 +152,15 @@ namespace C_bool.WebApp.Services
             return listPlaces;
         }
 
-        private List<Place> GetPlacesFromResponseContent(string responseContent, out string nextPageToken)
+        private List<GooglePlace> GetPlacesFromResponseContent(string responseContent, out string nextPageToken)
         {
 
-            var listPlaces = new List<Place>();
+            var listPlaces = new List<GooglePlace>();
             try
             {
                 Enum.TryParse(TrimJson(responseContent, "status"), out Status queryStatus);
                 var trimmedJson = TrimJson(responseContent, "results");
-                listPlaces.AddRange(JsonConvert.DeserializeObject<List<Place>>(trimmedJson));
+                listPlaces.AddRange(JsonConvert.DeserializeObject<List<GooglePlace>>(trimmedJson));
                 nextPageToken = TrimJson(responseContent, "next_page_token");
                 QueryStatus = queryStatus;
             }
@@ -180,17 +175,14 @@ namespace C_bool.WebApp.Services
         }
 
 
-        public async Task<PhotoBase64> DownloadImageAsync(Place place, string width)
+        public async Task<string> DownloadImageAsync(GooglePlace place, string width)
         {
             using var httpClient = new HttpClient();
             var requestUri =
                 @$"https://maps.googleapis.com/maps/api/place/photo?maxwidth={width}&photo_reference={place.GooglePhotos[0].PhotoReference}&key={ApiKey}";
             Uri uri = new Uri(requestUri);
-            PhotoBase64 photo = new();
             var imageBytes = await httpClient.GetByteArrayAsync(uri);
-            photo.Data = Convert.ToBase64String(imageBytes);
-
-            return photo;
+            return Convert.ToBase64String(imageBytes);
         }
 
     }

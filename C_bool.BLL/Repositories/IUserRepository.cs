@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
-using C_bool.BLL.Models;
 
 
 namespace C_bool.BLL.Repositories

@@ -12,7 +12,7 @@
 
     function initMarkersMap() {
         var mapOptions = {
-            center: new google.maps.LatLng(markers[0].Geometry.Location.Latitude, markers[0].Geometry.Location.Longitude),
+            center: new google.maps.LatLng(markers[0].Latitude, markers[0].Longitude),
             zoom: 14,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapId: 'c67cdd640e77cc91'
@@ -21,7 +21,7 @@
         var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
         for (i = 0; i < markers.length; i++) {
             var data = markers[i];
-            var myLatlng = new google.maps.LatLng(data.Geometry.Location.Latitude, data.Geometry.Location.Longitude);
+            var myLatlng = new google.maps.LatLng(data.Latitude, data.Longitude);
             var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,

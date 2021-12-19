@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using C_bool.BLL.Models.Places;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
-using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Services;
@@ -18,7 +15,7 @@ namespace C_bool.WebApp.Controllers
     {
         // GET: PlacesController
         private PlacesService _placesService;
-        private IPlacesRepository _repository;
+        private IRepository<Place> _repository;
         private GeoLocation _geoLocation;
 
         public static double Latitude;
@@ -26,7 +23,7 @@ namespace C_bool.WebApp.Controllers
 
         public IConfiguration Configuration;
 
-        public PlacesController(IConfiguration configuration, PlacesService placesService, IPlacesRepository repository)
+        public PlacesController(IConfiguration configuration, PlacesService placesService, IRepository<Place> repository)
         {
             _placesService = placesService;
             _repository = repository;
@@ -35,8 +32,8 @@ namespace C_bool.WebApp.Controllers
 
         public ActionResult Index()
         {
-            var model = _placesService.GetAll();
-            ViewBag.Message = $"Ilość miejsc w bazie: {model.Count}";
+            var model = _repository.GetAll();
+            ViewBag.Message = $"Ilość miejsc w bazie: {model.ToList().Count}";
             ViewBag.Status = true;
             ViewBag.Latitude = Latitude;
             ViewBag.Longitude = Longitude;
@@ -45,8 +42,8 @@ namespace C_bool.WebApp.Controllers
 
         public ActionResult Favourities()
         {
-            var model = _placesService.GetAll();
-            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.Count}";
+            var model = _repository.GetAll();
+            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.ToList().Count}";
             ViewBag.Status = true;
             return View(model);
         }
@@ -67,9 +64,9 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: PlacesController/Details/5
-        public ActionResult Details(string id)
+        public ActionResult Details(int id)
         {
-            var model = _repository.SearchById(id);
+            var model = _repository.GetById(id);
             return View(model);
         }
 
@@ -94,9 +91,9 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var model = _repository.SearchById(id);
+            var model = _repository.GetById(id);
 
 
             return View("Edit", model);
@@ -105,7 +102,7 @@ namespace C_bool.WebApp.Controllers
         // POST: PlacesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(string id, Place model, IFormFile file)
+        public ActionResult Edit(int id, Place model, IFormFile file)
         {
             try
             {
@@ -113,7 +110,7 @@ namespace C_bool.WebApp.Controllers
                 {
                     return View(model);
                 }
-                model.Photo = ImageConverter.ConvertImage(file);
+                if (file != null) { model.Photo = ImageConverter.ConvertImage(file); }
                 _repository.Update(model);
                 return RedirectToAction(nameof(Index));
             }
@@ -123,7 +120,7 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             _repository.Delete(id);
             return RedirectToAction(nameof(Index));

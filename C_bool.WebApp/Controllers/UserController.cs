@@ -1,4 +1,4 @@
-﻿using C_bool.BLL.Models;
+﻿using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,9 +21,9 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: UserController/Details/5
-        public ActionResult Details(string id)
+        public ActionResult Details(int id)
         {
-            var model = _userRepository.SearchById(id);
+            var model = _userRepository.GetById(id);
             return View(model);
         }
 
@@ -56,9 +56,9 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: UserController/Edit/5
-        public ActionResult Edit(string id)
+        public ActionResult Edit(int id)
         {
-            var model = _userRepository.SearchById(id);
+            var model = _userRepository.GetById(id);
             return View(model);
         }
 
@@ -85,9 +85,9 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: UserController/Delete/5
-        public ActionResult Delete(string id)
+        public ActionResult Delete(int id)
         {
-            var model = _userRepository.SearchById(id);
+            var model = _userRepository.GetById(id);
             return View(model);
         }
 
@@ -99,7 +99,7 @@ namespace C_bool.WebApp.Controllers
             
             try
             {
-                model = _userRepository.SearchById(model.Id);
+                model = _userRepository.GetById(model.Id);
                 _userRepository.Delete(model);
                 return RedirectToAction(nameof(Index));
             }

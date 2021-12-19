@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using C_bool.BLL.Models.Places;
+using C_bool.BLL.DAL.Entities;
 
 namespace C_bool.BLL.Logic
 {
@@ -41,18 +41,18 @@ namespace C_bool.BLL.Logic
         /// <returns></returns>
         public static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) =>
             DistanceBetweenPlaces(
-                firstPlace.Geometry.Location.Latitude,
-                firstPlace.Geometry.Location.Longitude,
-                secondPlace.Geometry.Location.Latitude,
-                secondPlace.Geometry.Location.Longitude
+                firstPlace.Latitude,
+                firstPlace.Longitude,
+                secondPlace.Latitude,
+                secondPlace.Longitude
             );
 
         public static double DistanceBetweenPlaces(string latitude, string longitude, Place secondPlace) =>
             DistanceBetweenPlaces(
                 double.Parse(latitude),
                 double.Parse(longitude),
-                secondPlace.Geometry.Location.Latitude,
-                secondPlace.Geometry.Location.Longitude
+                secondPlace.Latitude,
+                secondPlace.Longitude
             );
 
         public static string ReadableDistance(double distance)
@@ -74,8 +74,8 @@ namespace C_bool.BLL.Logic
                     DistanceBetweenPlaces(
                         latitude,
                         longitude,
-                        p.Geometry.Location.Latitude,
-                        p.Geometry.Location.Latitude
+                        p.Latitude,
+                        p.Latitude
                     ) <= radius)
                 .ToList();
         }
@@ -91,10 +91,10 @@ namespace C_bool.BLL.Logic
         {
             return places.Where(p =>
                     DistanceBetweenPlaces(
-                        fromPlace.Geometry.Location.Latitude,
-                        fromPlace.Geometry.Location.Longitude,
-                        p.Geometry.Location.Latitude,
-                        p.Geometry.Location.Longitude
+                        fromPlace.Latitude,
+                        fromPlace.Longitude,
+                        p.Latitude,
+                        p.Longitude
                     ) <= radius)
                 .ToList();
         }
