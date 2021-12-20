@@ -1,48 +1,512 @@
-﻿<!DOCTYPE html>
+﻿@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+
+@{ var action = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
+    var controller = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+    var area = (ViewContext.RouteData.DataTokens["area"] ?? "").ToString().ToLower(); }
+<!--
+
+=========================================================
+* Volt Free - Bootstrap 5 Dashboard
+=========================================================
+
+* Product Page: https://themesberg.com/product/admin-dashboard/volt-bootstrap-5-dashboard
+* Copyright 2021 Themesberg (https://www.themesberg.com)
+* License (https://themesberg.com/licensing)
+
+* Designed and coded by https://themesberg.com
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
+
+-->
+
+@inject IOptionsSnapshot<AppSettings> _appSettings;
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - C_bool.WebApp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- Primary Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - Cebulowa gra miejska</title>
+    <meta name="author" content="C_BooL Team">
+    <meta name="description" content="Gra miejska - zdobywaj punkty za odwiedzanie fajnych miejscówek.">
+    <meta name="keywords" content="" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/favicon/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Sweet Alert -->
+    <link type="text/css" href="/vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Notyf -->
+    <link type="text/css" href="/vendor/notyf/notyf.min.css" rel="stylesheet">
+
+    <!-- Volt CSS -->
+    <link type="text/css" href="/css/volt.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="/css/theme.css" />
+
+    <link rel="stylesheet" href="/css/carousel.css">
+
+    <!-- TinyMCE - rich text editor used in new place / gametask description etc. -->
+    <script src="https://cdn.tiny.cloud/1/fffnsvsbas06icv5rsxh3a7ihaa7mkqb6gf3rmofnn2h0jjk/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <!-- GoogleMaps API -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">C_bool.WebApp</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+
+
+    <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
+        <a class="navbar-brand me-lg-5" href="/index.html">
+            <img class="navbar-brand-dark" src="/assets/img/brand/light.svg" alt="Volt logo" /> <img class="navbar-brand-light" src="/assets/img/brand/dark.svg" alt="Volt logo" />
+        </a>
+        <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-lg-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
+        <div class="sidebar-inner px-4 pt-3">
+            <div class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-lg me-4">
+                        <img src="/assets/img/team/profile-picture-3.jpg" class="card-img-top rounded-circle border-white"
+                             alt="Maciej Walas">
+                    </div>
+                    <div class="d-block">
+                        <h2 class="h5 mb-3">Hi, Jane</h2>
+                        <a href="/pages/examples/sign-in.html" class="btn btn-secondary btn-sm d-inline-flex align-items-center">
+                            <svg class="icon icon-xxs me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse-close d-md-none">
+                    <a href="#sidebarMenu" data-bs-toggle="collapse"
+                       data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="true"
+                       aria-label="Toggle navigation">
+                        <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </a>
+                </div>
+            </div>
+            <!-- Sidebar - main page logo and index -->
+            <ul class="nav flex-column pt-3 pt-md-0">
+                <li class="nav-item @(controller == "home" && action == "index" ? "active" : "")">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="sidebar-icon">
+                            <img src="/img/header-logo-name.png" height="66" width="220" alt="C_Bool logo">
+                        </span>
+                    </a>
+                </li>
+                <li role="separator" class="dropdown-divider mt-2 mb-3 border-gray-700"></li>
+                <!-- Sidebar - places -->
+                <li class="nav-item ">
+                    <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                        <span>
+                            <span class="sidebar-icon">
+                                <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>
+                            </span>
+                            <span class="sidebar-text">Miejsca</span>
+                        </span>
+                        <span class="link-arrow">
+                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        </span>
+                    </span>
+                    <div class="multi-level collapse @(controller is "places" or "newplace" ? "show" : "") " role="list"
+                         id="submenu-pages" aria-expanded="false">
+                        <ul class="flex-column nav">
+                            <li class="nav-item @(controller == "places" && action == "index" ? "active" : "")">
+
+                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm82.29 357.6c-3.9 3.88-7.99 7.95-11.31 11.28-2.99 3-5.1 6.7-6.17 10.71-1.51 5.66-2.73 11.38-4.77 16.87l-17.39 46.85c-13.76 3-28 4.69-42.65 4.69v-27.38c1.69-12.62-7.64-36.26-22.63-51.25-6-6-9.37-14.14-9.37-22.63v-32.01c0-11.64-6.27-22.34-16.46-27.97-14.37-7.95-34.81-19.06-48.81-26.11-11.48-5.78-22.1-13.14-31.65-21.75l-.8-.72a114.792 114.792 0 0 1-18.06-20.74c-9.38-13.77-24.66-36.42-34.59-51.14 20.47-45.5 57.36-82.04 103.2-101.89l24.01 12.01C203.48 89.74 216 82.01 216 70.11v-11.3c7.99-1.29 16.12-2.11 24.39-2.42l28.3 28.3c6.25 6.25 6.25 16.38 0 22.63L264 112l-10.34 10.34c-3.12 3.12-3.12 8.19 0 11.31l4.69 4.69c3.12 3.12 3.12 8.19 0 11.31l-8 8a8.008 8.008 0 0 1-5.66 2.34h-8.99c-2.08 0-4.08.81-5.58 2.27l-9.92 9.65a8.008 8.008 0 0 0-1.58 9.31l15.59 31.19c2.66 5.32-1.21 11.58-7.15 11.58h-5.64c-1.93 0-3.79-.7-5.24-1.96l-9.28-8.06a16.017 16.017 0 0 0-15.55-3.1l-31.17 10.39a11.95 11.95 0 0 0-8.17 11.34c0 4.53 2.56 8.66 6.61 10.69l11.08 5.54c9.41 4.71 19.79 7.16 30.31 7.16s22.59 27.29 32 32h66.75c8.49 0 16.62 3.37 22.63 9.37l13.69 13.69a30.503 30.503 0 0 1 8.93 21.57 46.536 46.536 0 0 1-13.72 32.98zM417 274.25c-5.79-1.45-10.84-5-14.15-9.97l-17.98-26.97a23.97 23.97 0 0 1 0-26.62l19.59-29.38c2.32-3.47 5.5-6.29 9.24-8.15l12.98-6.49C440.2 193.59 448 223.87 448 256c0 8.67-.74 17.16-1.82 25.54L417 274.25z" /></svg>
+                                        @*<svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>*@
+                                    </span>
+                                    <span class="sidebar-text">Baza miejsc</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "places" && action == "favourities" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Favourities">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Ulubione</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "newplace" && action == "searchnearby" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="SearchNearby">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Szukaj w pobliżu</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "newplace" && action == "searchbyname" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="SearchByName">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 9a2 2 0 114 0 2 2 0 01-4 0z"></path><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a4 4 0 00-3.446 6.032l-2.261 2.26a1 1 0 101.414 1.415l2.261-2.261A4 4 0 1011 5z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Szukaj po nazwie</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "newplace" && action == "create" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="NewPlace" asp-action="Create">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Dodaj nowe</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Sidebar - game tasks -->
+                <li class="nav-item ">
+                    <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                        <span>
+                            <span class="sidebar-icon">
+                                @*<svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>*@
+                                <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"></path></svg>
+                            </span>
+                            <span class="sidebar-text">Zadania</span>
+                        </span>
+                        <span class="link-arrow">
+                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        </span>
+                    </span>
+                    <div class="multi-level collapse @(controller == "gametasks" ? "show" : "") " role="list"
+                         id="submenu-pages" aria-expanded="false">
+                        <ul class="flex-column nav">
+                            <li class="nav-item @(controller == "gametasks" && action == "index" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compass" viewBox="0 0 496 512"><path fill="currentColor" d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z" /></svg>
+                                       @* <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>*@
+                                    </span>
+                                    <span class="sidebar-text">Zadania w pobliżu</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "gametasks" && action == "mytasks" ? "active" : "")">
+
+                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Moje zadania</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "gametasks" && action == "create" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Create">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Dodaj nowe</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Sidebar - users -->
+                <li class="nav-item ">
+                    <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                        <span>
+                            <span class="sidebar-icon">
+                                <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
+                            </span>
+                            <span class="sidebar-text">Użytkownicy</span>
+                        </span>
+                        <span class="link-arrow">
+                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        </span>
+                    </span>
+                    <div class="multi-level collapse @(controller == "user" ? "show" : "") " role="list"
+                         id="submenu-pages" aria-expanded="false">
+                        <ul class="flex-column nav">
+                            <li class="nav-item @(controller == "user" && action == "index" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                    <span class="sidebar-text">Zarządzaj</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- Sidebar - footer a-like -->
+                <li class="nav-item">
+                    <a class="btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro" asp-area="" asp-controller="Home" asp-action="Privacy">
+                        <span class="sidebar-icon d-inline-flex align-items-center justify-content-center">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.392 10.4362L14.8106 9.0176C14.1031 8.38476 13.169 8 12.145 8C9.93588 8 8.14502 9.79086 8.14502 12C8.14502 14.2091 9.93588 16 12.145 16C13.2563 16 14.2617 15.5468 14.9866 14.8152L13.674 13.5026L13.4646 13.503C13.1124 13.8124 12.6506 14 12.145 14C11.0405 14 10.145 13.1046 10.145 12C10.145 10.8954 11.0405 10 12.145 10C12.6166 10 13.0501 10.1632 13.392 10.4362Z" />
+                                <path fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12 5C15.866 5 19 8.13401 19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5Z" />
+                            </svg>
+                        </span>
+                        <span>2021 team <b>C_BooL</b></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="content">
+
+        <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
+            <div class="container-fluid px-0">
+                <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
+                    <div class="d-flex align-items-center">
+                        <!-- Search form -->
+                        @*<form class="navbar-search form-inline" id="navbar-search-main">
+                                <div class="input-group input-group-merge search-bar">
+                                    <span class="input-group-text" id="topbar-addon">
+                                        <svg class="icon icon-xs" x-description="Heroicon name: solid/search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    <input type="text" class="form-control" id="topbarInputIconLeft" placeholder="Search" aria-label="Search" aria-describedby="topbar-addon">
+                                </div>
+                            </form>*@
+                        <!-- / Search form -->
+                    </div>
+                    <!-- Navbar links -->
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark notification-bell unread dropdown-toggle" data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                <svg class="icon icon-sm text-gray-900" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-center mt-2 py-0">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
+                                    <a href="#" class="list-group-item list-group-item-action border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="/assets/img/team/profile-picture-1.jpg" class="avatar-md rounded">
+                                            </div>
+                                            <div class="col ps-0 ms-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="h6 mb-0 text-small">Jose Leos</h4>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small class="text-danger">a few moments ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="font-small mt-1 mb-0">Added you to an event "Project stand-up" tomorentity at 12:30 AM.</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="/assets/img/team/profile-picture-2.jpg" class="avatar-md rounded">
+                                            </div>
+                                            <div class="col ps-0 ms-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="h6 mb-0 text-small">Neil Sims</h4>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small class="text-danger">2 hrs ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="font-small mt-1 mb-0">You've been assigned a task for "Awesome new project".</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="/assets/img/team/profile-picture-3.jpg" class="avatar-md rounded">
+                                            </div>
+                                            <div class="col ps-0 m-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="h6 mb-0 text-small">Roberta Casas</h4>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small>5 hrs ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="font-small mt-1 mb-0">Tagged you in a document called "Financial plans",</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="/assets/img/team/profile-picture-4.jpg" class="avatar-md rounded">
+                                            </div>
+                                            <div class="col ps-0 ms-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="h6 mb-0 text-small">Joseph Garth</h4>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small>1 d ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="font-small mt-1 mb-0">New message: "Hey, what's up? All set for the presentation?"</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <!-- Avatar -->
+                                                <img alt="Image placeholder" src="/assets/img/team/profile-picture-5.jpg" class="avatar-md rounded">
+                                            </div>
+                                            <div class="col ps-0 ms-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h4 class="h6 mb-0 text-small">Maciej Walas</h4>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small>2 hrs ago</small>
+                                                    </div>
+                                                </div>
+                                                <p class="font-small mt-1 mb-0">New message: "We need to improve the UI/UX for the landing page."</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="dropdown-item text-center fw-bold rounded-bottom py-3">
+                                        <svg class="icon icon-xxs text-gray-400 me-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
+                                        View all
+                                    </a>
+                                </div>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li class="nav-item dropdown ms-lg-3">
+                            <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="media d-flex align-items-center">
+                                    <img class="avatar rounded-circle" alt="Image placeholder" src="/assets/img/team/profile-picture-3.jpg">
+                                    <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
+                                        <span class="mb-0 font-small fw-bold text-gray-900">Maciej Walas</span>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dashboard-dropdown dropdown-menu-end mt-2 py-1">
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+                                    My Profile
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z" clip-rule="evenodd"></path></svg>
+                                    Messages
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.954 0 1.856.223 2.657.619l-1.54 1.54a4.002 4.002 0 00-2.346.033L7.246 4.668zM12 10a2 2 0 11-4 0 2 2 0 014 0z" clip-rule="evenodd"></path></svg>
+                                    Support
+                                </a>
+                                <div role="separator" class="dropdown-divider my-1"></div>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <svg class="dropdown-icon text-danger me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                    Logout
+                                </a>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - C_bool.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+        @RenderBody()
+
+
+    </main>
+
+
+
+
+    <!-- Core -->
+    <script src="/vendor/popperjs/core/dist/umd/popper.min.js"></script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+    <!-- Vendor JS -->
+    <script src="/vendor/onscreen/dist/on-screen.umd.min.js"></script>
+
+    <!-- Slider -->
+    <script src="/vendor/nouislider/distribute/nouislider.min.js"></script>
+
+    <!-- Smooth scroll -->
+    <script src="/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+
+    <!-- Charts -->
+    <script src="/vendor/chartist/dist/chartist.min.js"></script>
+    <script src="/vendor/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+
+    <!-- Datepicker -->
+    <script src="/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+
+    <!-- Sweet Alerts 2 -->
+    <script src="/vendor/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Moment JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+
+    <!-- Vanilla JS Datepicker -->
+    <script src="/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+
+    <!-- Notyf -->
+    <script src="/vendor/notyf/notyf.min.js"></script>
+
+    <!-- Simplebar -->
+    <script src="/vendor/simplebar/dist/simplebar.min.js"></script>
+
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- Volt JS -->
+    <script src="/assets/js/volt.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
+
+    <!-- TinyMCE - rich text editor used in new place / gametask description etc. -->
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: ['advlist autolink lists link image charmap print preview anchor',
+            'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | outdent indent | image',
+            language: 'pl'
+        });
+    </script>
+
 </body>
+
 </html>

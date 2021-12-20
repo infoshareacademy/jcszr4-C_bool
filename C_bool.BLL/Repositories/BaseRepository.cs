@@ -2,36 +2,48 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using C_bool.BLL.Models;
+using C_bool.BLL.DAL.Entities;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Repositories
 {
-    public abstract class BaseRepository<T> where T : IEntity
+    public abstract class BaseRepository<T> : IRepository<T> where T : IEntity
     {
-        public abstract List<T> Repository { get; protected set; }
+
+        protected List<T> Repository { get; } = new();
         public abstract string FileName { get; }
 
-        public void Add(T row)
+        public void Add(T entity)
         {
-            Repository.Add(row);
+            Repository.Add(entity);
         }
 
-        public void Delete(T row)
+        public void AddRange(IEnumerable<T> entities)
         {
-            Repository.Remove(row);
+            Repository.AddRange(entities);
         }
 
-        public void Update(T oldRow, T newRow)
+        public void Delete(T entity)
         {
-            var index = Repository.IndexOf(oldRow);
-            Repository[index] = newRow;
+            Repository.Remove(entity);
         }
 
-        public T SearchById(string searchId)
+        public void Delete(int id)
         {
-            return Repository.FirstOrDefault(x => x.Id == searchId);
+            var product = GetById(id);
+
+            Repository.Remove(product);
+        }
+
+        public void Update(T entity)
+        {
+            var index = Repository.IndexOf(Repository.SingleOrDefault(r => r.Id == entity.Id));
+            Repository[index] = entity;
+        }
+
+        public T GetById(int id)
+        {
+            return Repository.FirstOrDefault(x => x.Id == id);
         }
 
         protected virtual string ConvertFileJsonToString()
@@ -48,22 +60,11 @@ namespace C_bool.BLL.Repositories
             return convertedToString;
         }
 
-        protected string ConvertApiJsonToString(WebRequest webRequest)
-        {
-            webRequest.ContentType = "application/json";
-
-            var response = webRequest.GetResponse().GetResponseStream();
-            var streamReader = new StreamReader(response);
-            var convertedToString = streamReader.ReadToEnd();
-
-            return convertedToString;
-        }
-
         public void AddFileDataToRepository()
         {
             try
             {
-                Repository = JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString());
+                AddRange(JsonConvert.DeserializeObject<List<T>>(ConvertFileJsonToString()));
             }
             catch (FileNotFoundException ex)
             {
@@ -82,6 +83,16 @@ namespace C_bool.BLL.Repositories
         public bool IsRepositoryEmpty(List<T> repository)
         {
             return !repository.Any();
+        }
+
+        public IQueryable<T> GetAllQueryable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }

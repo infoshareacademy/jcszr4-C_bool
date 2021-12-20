@@ -1,0 +1,143 @@
+﻿@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@model C_bool.BLL.DAL.Entities.Place
+@inject IOptionsSnapshot<AppSettings> _appSettings;
+
+<h1>Edytuj miejsce</h1>
+
+<h4>Zmień dane lokalizacji</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form enctype="multipart/form-data" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input id="address" asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShortDescription" class="control-label"></label>
+                <input asp-for="ShortDescription" class="form-control" />
+                <span asp-validation-for="ShortDescription" class="text-danger"></span>
+            </div>
+
+            <!--Upload zdjęcia -->
+            <div class="form-group">
+                <div class="col-md-10">
+                    <p>Dodaj zdjęcie</p>
+                    <input class="form-control" name="file" type="file" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Zapisz" class="btn btn-primary btn-lg" />
+            </div>
+        </form>
+    </div>
+    <div class="col">
+        <div id="map" style="background-color: gainsboro; height: 80vh; width: 100%;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
+
+    <script>
+        var latitude, longitude;
+        var geocoder;
+        var myLatlng;
+
+
+        // initialise Google MapView
+        function initMap() {
+            const latitude = parseFloat(document.getElementById('latitudeForm').value);
+            const longitude = parseFloat(document.getElementById('longitudeForm').value);
+
+            geocoder = new google.maps.Geocoder();
+
+            myLatlng = { lat: latitude, lng: longitude };
+
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 20,
+                    center: myLatlng,
+                });
+
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Kliknij na mapę aby wybrać nowe położenie",
+                position: myLatlng,
+            });
+
+            infoWindow.open(map);
+
+            map.addListener("click",
+                (mapsMouseEvent) => {
+                    infoWindow.close();
+                    infoWindow = new google.maps.InfoWindow({
+                        position: mapsMouseEvent.latLng,
+                    });
+                    infoWindow.setContent("Tu jest moje nowe miejsce");
+                    infoWindow.open(map);
+
+                    document.getElementById('latitudeForm').value = mapsMouseEvent.latLng.lat();
+                    document.getElementById('longitudeForm').value = mapsMouseEvent.latLng.lng();
+
+                    myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
+                    @if (_appSettings.Value.EnableGeocoding)
+                    {
+                        <text>
+                            geocodeLatLng(geocoder, map, infoWindow);
+                        </text>
+                    }
+                });
+
+        }
+
+        // Google Geocode API
+        function geocodeLatLng(geocoder, map, infowindow) {
+            geocoder
+                .geocode({ location: myLatlng })
+                .then((response) => {
+                    if (response.results[0]) {
+                        map.setZoom(11);
+
+                        const marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                        });
+
+                        infowindow.setContent(response.results[0].formatted_address);
+                        infowindow.open(map, marker);
+                        document.getElementById('address').value = response.results[0].formatted_address;
+                    } else {
+                        window.alert("No results found");
+                    }
+                })
+                .catch((e) => window.alert(`Geocoder failed due to: ${e}`));
+        }
+
+        window.addEventListener("load", initMap);
+    </script>
+}

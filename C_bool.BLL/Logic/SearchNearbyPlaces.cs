@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using C_bool.BLL.Models.Places;
+using C_bool.BLL.DAL.Entities;
 
 namespace C_bool.BLL.Logic
 {
@@ -19,7 +19,7 @@ namespace C_bool.BLL.Logic
         /// <param name="place2Latitude">Second place latitude</param>
         /// <param name="place2Longitude">First place longitude</param>
         /// <returns></returns>
-        private static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude,
+        public static double DistanceBetweenPlaces(double place1Latitude, double place1Longitude,
             double place2Latitude, double place2Longitude)
         {
             var sinPlace1Latitude = Math.Sin(Radians(place1Latitude));
@@ -39,13 +39,26 @@ namespace C_bool.BLL.Logic
         /// <param name="firstPlace">First Place object</param>
         /// <param name="secondPlace">Second Place object</param>
         /// <returns></returns>
-        private static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) =>
+        public static double DistanceBetweenPlaces(Place firstPlace, Place secondPlace) =>
             DistanceBetweenPlaces(
-                firstPlace.Geometry.Location.Latitude,
-                firstPlace.Geometry.Location.Longitude,
-                secondPlace.Geometry.Location.Latitude,
-                secondPlace.Geometry.Location.Longitude
+                firstPlace.Latitude,
+                firstPlace.Longitude,
+                secondPlace.Latitude,
+                secondPlace.Longitude
             );
+
+        public static double DistanceBetweenPlaces(string latitude, string longitude, Place secondPlace) =>
+            DistanceBetweenPlaces(
+                double.Parse(latitude),
+                double.Parse(longitude),
+                secondPlace.Latitude,
+                secondPlace.Longitude
+            );
+
+        public static string ReadableDistance(double distance)
+        {
+            return distance >= 1000 ? $"{distance / 1000:F2} km" : $"{distance:F1} m";
+        }
 
         /// <summary>
         /// gets places nearby according to entered coordinates and radius
@@ -61,8 +74,8 @@ namespace C_bool.BLL.Logic
                     DistanceBetweenPlaces(
                         latitude,
                         longitude,
-                        p.Geometry.Location.Latitude,
-                        p.Geometry.Location.Latitude
+                        p.Latitude,
+                        p.Latitude
                     ) <= radius)
                 .ToList();
         }
@@ -78,10 +91,10 @@ namespace C_bool.BLL.Logic
         {
             return places.Where(p =>
                     DistanceBetweenPlaces(
-                        fromPlace.Geometry.Location.Latitude,
-                        fromPlace.Geometry.Location.Longitude,
-                        p.Geometry.Location.Latitude,
-                        p.Geometry.Location.Longitude
+                        fromPlace.Latitude,
+                        fromPlace.Longitude,
+                        p.Latitude,
+                        p.Longitude
                     ) <= radius)
                 .ToList();
         }

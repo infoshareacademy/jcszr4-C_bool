@@ -4,4 +4,45 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="places.json" />
+    <Content Remove="users.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="places.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Views\User\Create.cshtml" />
+    <None Include="Views\User\Delete.cshtml" />
+    <None Include="Views\User\Details.cshtml" />
+    <None Include="Views\User\Edit.cshtml" />
+    <None Include="Views\User\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrap" Version="5.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="TinyMCE" Version="5.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\C_bool.BLL\C_bool.BLL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
 </Project>

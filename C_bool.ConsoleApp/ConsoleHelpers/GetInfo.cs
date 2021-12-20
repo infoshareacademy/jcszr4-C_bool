@@ -46,7 +46,7 @@ namespace C_bool.ConsoleApp.ConsoleHelpers
         {
             foreach (var user in list)
             {
-                var outputString = $"\t| Imię: {user.FirstName}\n\t| Nazwisko: {user.LastName}\n\t| Płeć: {user.Gender}\n\t| Wiek: {user.Age}\n\t| Adres: {user.Address}\n\t| E-mail: {user.Email}\n\t| Telefon: {user.Phone}\n\t| Firma: {user.Company}\n\t------------\n\t| Aktywny: {user.IsActive}\n\t| Szer. geo.: {user.Latitude}\n\t| Wys. geo.: {user.Longitude}\n\t| Punkty: {user.Points}\n";
+                var outputString = $"\t| Imię: {user.FirstName}\n\t| Nazwisko: {user.LastName}\n\t| Płeć: {user.Gender}\n\t| Wiek: {user.Age}\n\t| E-mail: {user.Email}\n\t------------\n\t| Aktywny: {user.IsActive}\n\t| Punkty: {user.Points}\n";
 
                 if (user.Id.Equals(id))
                 {

@@ -1,0 +1,197 @@
+﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
+@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@model IEnumerable<C_bool.BLL.DAL.Entities.Place>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<!-- TabBar for places/map -->
+<div class="nav-wrapper position-relative mb-3">
+    <div class="col-4">
+        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Lista miejsc</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- End of Tab Nav -->
+<!-- Tab Content 1) Places -->
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="tab-content" id="tabcontent1">
+            <div class="tab-pane fade show active" style="" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
+
+                @if (Model != null && Model.Any())
+                {
+                    <!-- Patial with Card style places list -->
+                    <partial name="Partials/PlacesCards" model="Model" />
+                }
+                else
+                {
+                    <div class="alert alert-dismissible alert-warning" style="margin: 10px">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading">Nie bangla!</h4>
+                        <p class="mb-0">Wygląda na to, że nie ma miejsc w bazie...<br>Przedź do <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b> aby coś wyszukać, lub dodaj swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
+                @await Component.InvokeAsync("MapView", new { placesList = Model })
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć wskazane miejsce?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var latitude, longitude;
+
+        function initMap(latitude, longitude) {
+            const point = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 16,
+                    center: point,
+
+                });
+            const marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                icon: "/img/onion.png"
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            }
+        };
+
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+            var postData = { Latitude: latitude, Longitude: longitude };
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "@Url.Action("GetGeoLocation", "Places")",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                    },
+                    error: function(ex) {
+                        alert("Nie udało się przekazać lokalizacji" + ex);
+                    }
+                });
+        };
+
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = {Id: input};
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        showNotif('green', 'OK');
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        //alert(" conection to the server failed ");
+                        showNotif('red', errorthrown);
+                    }
+                });
+        };
+
+        // show notification window
+        function showNotif(background, message) {
+            const notyf = new Notyf({
+                position: {
+                    x: 'right',
+                    y: 'bottom',
+                },
+                types: [
+                    {
+                        type: 'info',
+                        background: background,
+                        icon: {
+                            className: 'fas fa-info-circle',
+                            tagName: 'span',
+                            color: '#fff'
+                        },
+                        dismissible: true
+                    }
+                ],
+                duration: 10000,
+            });
+            notyf.open({
+                type: 'info',
+                message: message
+            });
+        };
+
+        var path_to_delete;
+
+        $(".deleteItem").click(function (e) {
+            path_to_delete = $(this).data('path');
+        });
+
+        $('#btnContinueDelete').click(function () {
+            window.location = path_to_delete;
+        });
+
+        window.addEventListener("load", showNotif('green', '@ViewBag.Message'));
+        window.onload = getLocation();
+    </script>
+}

@@ -1,5 +1,3 @@
-using System;
-
 namespace C_bool.WebApp.Models
 {
     public class ErrorViewModel
