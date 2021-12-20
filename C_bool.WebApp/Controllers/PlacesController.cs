@@ -17,7 +17,7 @@ namespace C_bool.WebApp.Controllers
         private PlacesService _placesService;
         private IRepository<Place> _repository;
         private GeoLocation _geoLocation;
-
+        //TODO: gdzie to trzymać? User ale bez bazy?
         public static double Latitude;
         public static double Longitude;
 

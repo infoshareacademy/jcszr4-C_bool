@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+//TODO: pobawić się automapperem
+//TODO: co to jest IList i dlaczego
 namespace C_bool.BLL.DAL.Entities
 {
     public class Place : Entity
@@ -20,6 +22,6 @@ namespace C_bool.BLL.DAL.Entities
 
         public bool IsUserCreated { get; set; }
 
-        public List<GameTask> Tasks { get; set; }
+        public IList<GameTask> Tasks { get; set; }
     }
 }

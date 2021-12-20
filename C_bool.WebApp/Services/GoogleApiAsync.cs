@@ -8,6 +8,8 @@ using C_bool.BLL.Models.GooglePlaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+
+//TODO: przenieść do BLL, jak się da
 namespace C_bool.WebApp.Services
 {
     public class GoogleApiAsync

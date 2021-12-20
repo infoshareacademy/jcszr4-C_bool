@@ -10,12 +10,8 @@ namespace C_bool.BLL.Models.GooglePlaces
         [JsonProperty(PropertyName = "place_id")]
         public string Id { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
         public Geometry Geometry { get; set; }
-        [Required(ErrorMessage = "Miejsce musi posiadać nazwę")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Miejsce musi posiadać opis")]
-        public string ShortDescription { get; set; } = "Brak opisu";
-        public string Description { get; set; }
         [JsonProperty(PropertyName = "photos")]
         public List<Photo> GooglePhotos { get; set; } = new();
 
@@ -26,13 +22,10 @@ namespace C_bool.BLL.Models.GooglePlaces
         public int UserRatingsTotal { get; set; } = 0;
 
         [JsonProperty(PropertyName = "vicinity")]
-        [Required(ErrorMessage = "Musisz podać adres miejsca, lub jego przybliżoną lokalizację")]
         public string Address { get; set; } = "no_address";
 
         [JsonProperty("formatted_address")]
         private string AddressFormatted { set { Address = value; } }
-
-        public bool IsUserCreated { get; set; }
     }
 
     public class Photo
@@ -46,11 +39,4 @@ namespace C_bool.BLL.Models.GooglePlaces
         public string PhotoReference { get; set; }
         public int Width { get; set; }
     }
-
-    public class PhotoBase64
-    {
-        public string Name { get; set; }
-        public string Data { get; set; } = "";
-    }
-
 }
