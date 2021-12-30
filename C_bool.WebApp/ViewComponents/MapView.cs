@@ -15,9 +15,15 @@ namespace C_bool.WebApp.ViewComponents
             {
                 var viewModel = new PlaceViewModel();
                 viewModel.Id = item.Id;
-                viewModel.Name = item.Name;
+                viewModel.Name = item.Name?.Replace("\"","");
+                viewModel.Address = item.Address?.Replace("\"", "");
+                viewModel.ShortDescription = item.ShortDescription?.Replace("\"", "");
                 viewModel.Latitude = item.Latitude;
                 viewModel.Longitude = item.Longitude;
+                if (item.Tasks != null)
+                {
+                    viewModel.ActiveTaskCount = item.Tasks.Count;
+                }
                 placesViewList.Add(viewModel);
             }
 

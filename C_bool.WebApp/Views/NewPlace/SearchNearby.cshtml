@@ -1,7 +1,7 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model C_bool.WebApp.Models.NearbySearchRequest
-@inject IOptionsSnapshot<AppSettings> _appSettings;
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 
 @{
     ViewData["Title"] = "SearchNearby";
@@ -9,9 +9,12 @@
 
 <h1>Szukaj nowych miejsc</h1>
 
-<h4>Wpentityadź lokalizację wokół której chcesz szukać nowych miejsc</h4>
+<h4>Wprowadź lokalizację wokół której chcesz szukać nowych miejsc</h4>
 <h4>@ViewBag.Message</h4>
 <hr />
+
+<p id="demo"></p>
+
 <div class="row">
     <div class="col-md-3">
         <button id="locationButton" type="button" class="btn btn-primary" onclick="getLocation();">Odśwież lokalizację</button>
@@ -58,17 +61,14 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
     <script>
         var latitude, longitude;
-        getLocation();
 
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(useLocation);
+                navigator.geolocation.getCurrentPosition(useLocation, showGeolocationError);
             } else {
-                alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
+                ShowErrorMessage("Błąd lokalizacji", "Ta przeglądarka nie wspiera geolokalizacji");
             }
         };
 
@@ -80,10 +80,23 @@
             document.getElementById('longitudeForm').value = longitude;
             initMap();
         };
-        window.onload = getLocation();
-    </script>
 
-    <script>
+        function showGeolocationError(error) {
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+                ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
+                break;
+            case error.TIMEOUT:
+                ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
+                break;
+            case error.UNKNOWN_ERROR:
+                ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
+                break;
+            }
+        }
 
         var myLatlng;
 
@@ -94,33 +107,34 @@
 
 
             myLatlng = { lat: latitude, lng: longitude };
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: myLatlng,
-            });
-            // Create the initial InfoWindow.
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 12,
+                    center: myLatlng,
+                });
+
             let infoWindow = new google.maps.InfoWindow({
                 content: "Kliknij na mapę aby wybrać położenie",
                 position: myLatlng,
             });
 
             infoWindow.open(map);
-            // Configure the click listener.
-            map.addListener("click", (mapsMouseEvent) => {
-                // Close the current InfoWindow.
-                infoWindow.close();
-                radiusCircle.setMap(null);
-                myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
 
-                radiusCircle.setOptions({
-                    map,
-                    center: myLatlng,
-                    radius: parseInt(document.getElementById('radiusForm').value),
+            map.addListener("click",
+                (mapsMouseEvent) => {
+                    infoWindow.close();
+                    radiusCircle.setMap(null);
+                    myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
+
+                    radiusCircle.setOptions({
+                        map,
+                        center: myLatlng,
+                        radius: parseInt(document.getElementById('radiusForm').value),
+                    });
+
+                    document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                    document.getElementById('longitudeForm').value = radiusCircle.center.lng();
                 });
-
-                document.getElementById('latitudeForm').value = radiusCircle.center.lat();
-                document.getElementById('longitudeForm').value = radiusCircle.center.lng();
-            });
 
             const radiusCircle = new google.maps.Circle();
             radiusCircle.setOptions({
@@ -138,21 +152,24 @@
 
             var maxRadius = 50000;
 
-            google.maps.event.addListener(radiusCircle, 'radius_changed', function () {
-                if (radiusCircle.getRadius() > maxRadius) {
-                    radiusCircle.setRadius(maxRadius);
-                }
+            google.maps.event.addListener(radiusCircle,
+                'radius_changed',
+                function() {
+                    if (radiusCircle.getRadius() > maxRadius) {
+                        radiusCircle.setRadius(maxRadius);
+                    }
 
-                document.getElementById('radiusForm').value = radiusCircle.getRadius();
-            });
-            google.maps.event.addListener(radiusCircle, 'center_changed', function () {
-                document.getElementById('latitudeForm').value = radiusCircle.center.lat();
-                document.getElementById('longitudeForm').value = radiusCircle.center.lng();
-            });
+                    document.getElementById('radiusForm').value = radiusCircle.getRadius();
+                });
+            google.maps.event.addListener(radiusCircle,
+                'center_changed',
+                function() {
+                    document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                    document.getElementById('longitudeForm').value = radiusCircle.center.lng();
+                });
         }
 
-
-
+        window.onload = getLocation();
         window.addEventListener("load", initMap);
     </script>
 }

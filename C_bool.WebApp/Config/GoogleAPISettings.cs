@@ -2,9 +2,9 @@
 
 namespace C_bool.WebApp.Config
 {
-    public class AppSettings
+    public class GoogleAPISettings
     {
-        public const string Position = "AppSettings";
+        public const string Position = "GoogleAPISettings";
         public string GoogleAPIKey { get; set; }
         public bool EnablePlacePhoto { get; set; }
         public bool EnableGeocoding { get; set; }

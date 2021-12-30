@@ -75,7 +75,7 @@ namespace C_bool.BLL.Logic
                         latitude,
                         longitude,
                         p.Latitude,
-                        p.Latitude
+                        p.Longitude
                     ) <= radius)
                 .ToList();
         }

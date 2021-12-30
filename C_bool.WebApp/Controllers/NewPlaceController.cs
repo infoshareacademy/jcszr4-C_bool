@@ -4,7 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Models.GooglePlaces;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
@@ -19,22 +21,24 @@ namespace C_bool.WebApp.Controllers
         private PlacesService _placesService;
         private GeoLocation _geoLocation;
         private IHttpClientFactory _clientFactory;
-        private AppSettings _appSettings = new();
+        private GoogleAPISettings _googleApiSettings = new();
 
-        private IRepository<Place> _repository;
+        private IRepository<Place> _placesRepository;
 
         public static double Latitude;
         public static double Longitude;
 
-        public IConfiguration Configuration;
+        private IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IHttpClientFactory clientFactory)
+        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IHttpClientFactory clientFactory, IMapper mapper)
         {
             _placesService = placesService;
-            _repository = repository;
-            Configuration = configuration;
-            Configuration.GetSection(AppSettings.Position).Bind(_appSettings);
+            _placesRepository = repository;
+            _configuration = configuration;
+            _configuration.GetSection(GoogleAPISettings.Position).Bind(_googleApiSettings);
             _clientFactory = clientFactory;
+            _mapper = mapper;
         }
 
         // GET: NewPlaceController
@@ -78,14 +82,16 @@ namespace C_bool.WebApp.Controllers
         // GET: NewPlaceController/Create
         public ActionResult Create()
         {
+            //var model = _mapper.Map<Place, PlaceEditModel>(_placesRepository.GetById(id));
             return View();
         }
 
         // POST: NewPlaceController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Place model, IFormFile file)
+        public ActionResult Create(PlaceEditModel model, IFormFile file)
         {
+            var placeModel = _mapper.Map<PlaceEditModel, Place>(model);
             try
             {
                 if (!ModelState.IsValid)
@@ -95,10 +101,10 @@ namespace C_bool.WebApp.Controllers
                     return View(model);
                 }
 
-                model.IsUserCreated = true;
-                model.Photo = (ImageConverter.ConvertImage(file));
-                _repository.Add(model);
-                ViewBag.Message = $"Dodano nowe miejsce: {model.Name}";
+                placeModel.IsUserCreated = true;
+                placeModel.Photo = (ImageConverter.ConvertImage(file));
+                _placesRepository.Add(placeModel);
+                ViewBag.Message = $"Dodano nowe miejsce: {placeModel.Name}";
                 ViewBag.Status = true;
                 return RedirectToAction("Index", "Places");
             }
@@ -113,11 +119,11 @@ namespace C_bool.WebApp.Controllers
         {
             foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
             {
-                var place = _placesService.MapGooglePlaceToPlace(googlePlace);
-                var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
                 var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
-                _repository.Add(place);
+                _placesRepository.Add(place);
             }
             //return View();
 
@@ -129,11 +135,11 @@ namespace C_bool.WebApp.Controllers
         {
             foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
             {
-                var place = _placesService.MapGooglePlaceToPlace(googlePlace);
-                var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
                 var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
-                _repository.Add(place);
+                _placesRepository.Add(place);
             }
             //return View();
 
@@ -145,9 +151,9 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
-            var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
 
-            _placesService.TempGooglePlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _appSettings.GetAllPages);
+            _placesService.TempGooglePlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages);
             var model = _placesService.TempGooglePlaces;
             ViewBag.Message = api.Message;
             ViewBag.QueryStatus = api.QueryStatus;
@@ -159,7 +165,7 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchByNameAsync(NameSearchRequest request)
         {
-            var api = new GoogleApiAsync(_clientFactory, _appSettings.GoogleAPIKey);
+            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
 
             _placesService.TempGooglePlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
             var model = _placesService.TempGooglePlaces;

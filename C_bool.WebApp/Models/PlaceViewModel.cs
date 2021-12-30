@@ -8,5 +8,6 @@
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string Address { get; set; }
+        public int ActiveTaskCount { get; set; }
     }
 }

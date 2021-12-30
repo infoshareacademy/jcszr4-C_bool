@@ -6,19 +6,18 @@ namespace C_bool.BLL.DAL.Entities
 {
     public class Place : Entity
     {
-        //public Geometry Geometry { get; set; }
         public string GoogleId { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Name { get; set; }
-        public string ShortDescription { get; set; } = "Brak opisu";
+        public string ShortDescription { get; set; }
         public string Description { get; set; }
         public string Photo { get; set; }
         public string[] Types { get; set; }
-        public double Rating { get; set; } = 0.0;
+        public double Rating { get; set; }
 
-        public int UserRatingsTotal { get; set; } = 0;
-        public string Address { get; set; } = "no_address";
+        public int UserRatingsTotal { get; set; }
+        public string Address { get; set; }
 
         public bool IsUserCreated { get; set; }
 

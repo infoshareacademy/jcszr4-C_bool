@@ -1,7 +1,7 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
-@model C_bool.BLL.DAL.Entities.Place
-@inject IOptionsSnapshot<AppSettings> _appSettings;
+@model C_bool.WebApp.Models.PlaceEditModel
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 
 <h1>Dodaj nowe miejsce</h1>
 
@@ -74,11 +74,10 @@
         // retrieve geolocation from HTML5 GeoLocation API
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(useLocation);
+                navigator.geolocation.getCurrentPosition(useLocation, showGeolocationError);
             } else {
-                alert("Nie udało się pobrać lokalizacji, upewnij się, że zezwoliłeś na dostęp do lokalziacji");
+                ShowErrorMessage("Błąd lokalizacji", "Ta przeglądarka nie wspiera geolokalizacji");
             }
-
         };
 
         function useLocation(position) {
@@ -88,8 +87,24 @@
             document.getElementById('latitudeForm').value = latitude;
             document.getElementById('longitudeForm').value = longitude;
             initMap();
-
         };
+
+        function showGeolocationError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
+                    break;
+                case error.TIMEOUT:
+                    ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
+                    break;
+            }
+        }
 
         // initialise Google MapView
         function initMap() {
