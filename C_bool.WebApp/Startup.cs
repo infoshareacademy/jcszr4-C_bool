@@ -27,8 +27,9 @@ namespace C_bool.WebApp
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
             services.Configure<GoogleAPISettings>(Configuration.GetSection("GoogleAPISettings"));
-            services.AddSingleton<PlacesService>();
-            
+            services.AddScoped<PlacesService>();
+            services.AddScoped<GameTaskService>();
+
             //Google API Http client
             services.AddHttpClient("GoogleMapsClient", client =>
             {
@@ -47,6 +48,7 @@ namespace C_bool.WebApp
             //automapper
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

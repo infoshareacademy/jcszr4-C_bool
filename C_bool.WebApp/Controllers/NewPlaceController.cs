@@ -11,6 +11,7 @@ using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.Place;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
 

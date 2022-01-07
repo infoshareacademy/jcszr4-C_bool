@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.BLL.Logic
 {
@@ -78,6 +80,18 @@ namespace C_bool.BLL.Logic
                         p.Longitude
                     ) <= radius)
                 .ToList();
+        }
+
+        //TODO: czy można użyć takiej funkcji typu DistanceBetweenPlaces w IQueryable?? Bo chyba nie...
+        public static async Task<IQueryable<Place>> GetPlacesAsync(IQueryable<Place> places, double latitude, double longitude, double radius)
+        {
+            var nearbyPlaces =places.Where(p => DistanceBetweenPlaces(
+                        latitude,
+                        longitude,
+                        p.Latitude,
+                        p.Longitude
+                    ) <= radius);
+            return nearbyPlaces;
         }
 
         /// <summary>

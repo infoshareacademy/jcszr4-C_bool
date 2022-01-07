@@ -9,6 +9,16 @@
     var allPlacesCount = (int)ViewBag.PlacesCount;
 }
 
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
+
 <!--user summary, places, tasks - cards-->
 <div class="row">
     <!--User stats-->
@@ -207,7 +217,7 @@
                 <div class="col">
                     <div class="progress-wrapper">
                         <div class="progress-info">
-                            <div class="h6 mb-0">Rocket - SaaS Template</div>
+                            <div class="h6 mb-0">Placeholder zadania 1</div>
                             <div class="small fw-bold text-gray-500"><span>75 %</span></div>
                         </div>
                         <div class="progress mb-0">
@@ -224,7 +234,7 @@
                 <div class="col">
                     <div class="progress-wrapper">
                         <div class="progress-info">
-                            <div class="h6 mb-0">Themesberg - Design System</div>
+                            <div class="h6 mb-0">Placeholder zadania 2</div>
                             <div class="small fw-bold text-gray-500"><span>60 %</span></div>
                         </div>
                         <div class="progress mb-0">
@@ -241,7 +251,7 @@
                 <div class="col">
                     <div class="progress-wrapper">
                         <div class="progress-info">
-                            <div class="h6 mb-0">Homepage Design in Figma</div>
+                            <div class="h6 mb-0">Placeholder zadania 3</div>
                             <div class="small fw-bold text-gray-500"><span>45 %</span></div>
                         </div>
                         <div class="progress mb-0">
@@ -258,7 +268,7 @@
                 <div class="col">
                     <div class="progress-wrapper">
                         <div class="progress-info">
-                            <div class="h6 mb-0">Backend for Themesberg v2</div>
+                            <div class="h6 mb-0">Placeholder zadania 4</div>
                             <div class="small fw-bold text-gray-500"><span>34 %</span></div>
                         </div>
                         <div class="progress mb-0">
@@ -443,10 +453,12 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: JSON.stringify(postData),
-                    success: function(data) {
+                    success: function (data) {
+                        showNotif('green', 'OK');
                     },
-                    error: function(ex) {
-                        showNotif('red', ex);
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        showNotif('red', errorthrown);
                     }
                 });
         };

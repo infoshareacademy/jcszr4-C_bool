@@ -1,4 +1,4 @@
-﻿namespace C_bool.WebApp.Models
+﻿namespace C_bool.WebApp.Models.Place
 {
     public class PlaceViewModel
     {

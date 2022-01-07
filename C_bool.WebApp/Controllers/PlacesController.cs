@@ -7,6 +7,7 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.Place;
 using C_bool.WebApp.Services;
 using Microsoft.Extensions.Configuration;
 
@@ -14,7 +15,6 @@ namespace C_bool.WebApp.Controllers
 {
     public class PlacesController : Controller
     {
-        // GET: PlacesController
         private PlacesService _placesService;
         private IRepository<Place> _placesRepository;
         private GeoLocation _geoLocation;
@@ -25,10 +25,10 @@ namespace C_bool.WebApp.Controllers
         private IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public PlacesController(IConfiguration configuration, PlacesService placesService, IRepository<Place> repository, IMapper mapper)
+        public PlacesController(IConfiguration configuration, PlacesService placesService, IRepository<Place> placesRepository, IMapper mapper)
         {
             _placesService = placesService;
-            _placesRepository = repository;
+            _placesRepository = placesRepository;
             _configuration = configuration;
             _mapper = mapper;
         }
@@ -51,22 +51,8 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
-        {
-            if (postData.Latitude != 0)
-            {
-                _geoLocation = postData;
-                Latitude = _geoLocation.Latitude;
-                Longitude = _geoLocation.Longitude;
-                ViewBag.Latitude = Latitude;
-                ViewBag.Longitude = Longitude;
-            }
-
-            return Json(postData);
-        }
-
         // GET: PlacesController/Details/5
+
         public ActionResult Details(int id)
         {
             var model = _placesRepository.GetById(id);
@@ -74,12 +60,14 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: PlacesController/Create
+
         public ActionResult Create()
         {
             return View();
         }
 
         // POST: PlacesController/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -103,7 +91,9 @@ namespace C_bool.WebApp.Controllers
             return View("Edit", model);
         }
 
+
         // POST: PlacesController/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, PlaceEditModel model, IFormFile file)
@@ -130,6 +120,21 @@ namespace C_bool.WebApp.Controllers
         {
             _placesRepository.Delete(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
+        {
+            if (postData.Latitude != 0)
+            {
+                _geoLocation = postData;
+                Latitude = _geoLocation.Latitude;
+                Longitude = _geoLocation.Longitude;
+                ViewBag.Latitude = Latitude;
+                ViewBag.Longitude = Longitude;
+            }
+
+            return Json(postData);
         }
     }
 }

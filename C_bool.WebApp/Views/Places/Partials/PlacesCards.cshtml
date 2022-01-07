@@ -46,7 +46,7 @@
                             <l class="bi-three-dots"></l>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="/Places/Edit/@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
                             <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
 
                         </ul>

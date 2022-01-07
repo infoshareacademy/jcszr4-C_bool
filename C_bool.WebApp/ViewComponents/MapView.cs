@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.ViewComponents

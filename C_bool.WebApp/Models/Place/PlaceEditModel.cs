@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace C_bool.WebApp.Models
+namespace C_bool.WebApp.Models.Place
 {
     public class PlaceEditModel
     {
@@ -12,6 +12,7 @@ namespace C_bool.WebApp.Models
         [Required(ErrorMessage = "Miejsce musi posiadać nazwę")]
         public string Name { get; set; }
         [DisplayName("Krótki opis")]
+        [MaxLength(500)]
         [Required(ErrorMessage = "Miejsce musi posiadać opis")]
         public string ShortDescription { get; set; }
         [DisplayName("Rozszerzony opis")]
