@@ -121,19 +121,17 @@ namespace C_bool.BLL.Services
 
         public List<GameTask> GetToDoTasks(User user)
         {
-            var users = _repository.GetAllQueryable();
-            var user = users.Where(u => u.Id == user.Id)
-            return
+            return user.UserGameTasks.Where(e => e.ValidFrom > DateTime.UtcNow).ToList();
         }
 
         public List<GameTask> GetInProgressTasks(User user)
         {
-            throw new NotImplementedException();
+            return user.UserGameTasks.Where(e => e.ValidFrom <= DateTime.UtcNow).ToList();
         }
 
         public List<GameTask> GetDoneTasks(User user)
         {
-            throw new NotImplementedException();
+            return user.UserDoneTasks;
         }
     }
 }
