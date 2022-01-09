@@ -1,23 +1,72 @@
-﻿using C_bool.BLL.DAL.Entities;
+﻿using System.Collections.Generic;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
+using C_bool.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IRepository<User> _userRepository;
+        private readonly IUserService _userService;
+        private static List<User> _searchUser;
+        private static SearchUsersModel _searchUsersModel;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IRepository<User> userRepository, IUserService userService)
         {
             _userRepository = userRepository;
+            _userService = userService;
         }
 
         // GET: UserController
         public ActionResult Index()
         {
             var model = _userRepository.GetAll();
+            
             return View(model);
+        }
+
+        // GET: UserController/SearchUsers
+        public ActionResult SearchUsers()
+        {
+            var model = _searchUser;
+
+            ViewBag.Name = _searchUsersModel.Name;
+            ViewBag.Email = _searchUsersModel.Email;
+            ViewBag.Gender = _searchUsersModel.Gender;
+            ViewBag.IsActive = _searchUsersModel.IsActive;
+            ViewBag.IsDescending = _searchUsersModel.IsDescending;
+
+            return View(model);
+        }
+
+        // POST: UserController/SearchUsers
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SearchUsers(string name, string email, string gender, string isActive, string isDescending)
+        {
+            _searchUser = _userService.SearchUsers(name, email, gender, isActive, isDescending);
+
+            _searchUsersModel = new SearchUsersModel(name, email, gender, isActive, isDescending);
+
+            try
+            {
+                if (name == null && email == null && gender == null && isActive == null && isDescending == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return RedirectToAction(nameof(SearchUsers));
+                }
+                
+            }
+            catch
+            {
+                return View();
+            }
         }
 
         // GET: UserController/Details/5
@@ -43,7 +92,7 @@ namespace C_bool.WebApp.Controllers
                 return View(model);
             }
 
-            _userRepository.AddUser(model);
+            _userService.AddUser(model);
 
             try
             {

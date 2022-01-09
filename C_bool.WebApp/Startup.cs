@@ -9,6 +9,7 @@ using C_bool.BLL.Repositories;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Services;
 using Microsoft.EntityFrameworkCore;
+using C_bool.BLL.Services;
 
 namespace C_bool.WebApp
 {
@@ -29,7 +30,7 @@ namespace C_bool.WebApp
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddSingleton<IPlacesRepository, PlacesRepository>();
             services.AddSingleton<PlacesService>();
-            //services.AddSingleton<IUserRepository, UsersRepository>();
+            services.AddTransient<IUserService, UsersService>();
             services.AddHttpClient("GoogleMapsClient", client =>
             {
                 client.BaseAddress = new Uri("https://maps.googleapis.com/");

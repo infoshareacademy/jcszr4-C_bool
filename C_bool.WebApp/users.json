@@ -14,7 +14,6 @@
     "longitude": 14.678446
   },
   {
-    "Id": "615b4e394fcaaec0ab1cd479",
     "isActive": true,
     "age": 67,
     "name": "CottonBush",
@@ -28,7 +27,6 @@
     "longitude": 19.304024
   },
   {
-    "Id": "615b4e39a9e5546176493f5d",
     "isActive": false,
     "age": 32,
     "name": "DorisChandler",
@@ -42,7 +40,6 @@
     "longitude": 23.759558
   },
   {
-    "Id": "615b4e3971aa9d3586a2df8b",
     "isActive": true,
     "age": 21,
     "name": "AngeliaHarding",
@@ -56,7 +53,6 @@
     "longitude": 19.892574
   },
   {
-    "Id": "615b4e395bb31c48844d8631",
     "isActive": false,
     "age": 38,
     "name": "GillBradford",
@@ -70,7 +66,6 @@
     "longitude": 19.705362
   },
   {
-    "Id": "615b4e39626f8f7feed007c0",
     "isActive": true,
     "age": 45,
     "name": "HuffGarrison",
@@ -84,7 +79,6 @@
     "longitude": 17.827049
   },
   {
-    "Id": "615b4e399c513cdc2359e210",
     "isActive": true,
     "age": 63,
     "name": "DaphneDunn",
@@ -98,7 +92,6 @@
     "longitude": 19.98441
   },
   {
-    "Id": "615b4e395b3db1968ec1b199",
     "isActive": false,
     "age": 61,
     "name": "EleanorBarber",
@@ -112,7 +105,6 @@
     "longitude": 20.398898
   },
   {
-    "Id": "615b4e39b8142557007bfd76",
     "isActive": false,
     "age": 32,
     "name": "LisaGibbs",
@@ -126,7 +118,6 @@
     "longitude": 17.54157
   },
   {
-    "Id": "615b4e3953ef30baedc771a9",
     "isActive": true,
     "age": 36,
     "name": "WalterKlein",
@@ -140,7 +131,6 @@
     "longitude": 21.576651
   },
   {
-    "Id": "615b4e3963746d49cd8cf145",
     "isActive": false,
     "age": 63,
     "name": "DarlaSanchez",
