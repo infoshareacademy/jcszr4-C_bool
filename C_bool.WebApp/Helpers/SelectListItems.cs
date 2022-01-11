@@ -8,6 +8,13 @@ namespace C_bool.WebApp.Helpers
 {
     public class SelectListItems
     {
+
+        //TODO: Natalka tutaj :-)
+        public static List<SelectListItem> gameTaskTypes { get; } = new()
+        {
+            new SelectListItem { Value = "ENUM", Text = "Zrób zdjęcie" },
+        };
+
         public static List<SelectListItem> PlaceSearchRange { get; } = new()
         {
             new SelectListItem { Value = "1000", Text = "do 1 kilometra" },
@@ -27,6 +34,8 @@ namespace C_bool.WebApp.Helpers
             new SelectListItem { Value = "task", Text = "Zadania" },
         };
 
+
+        //TODO: filtrowanie miejsc w widoku miejsc po kategoriach
         private static SelectListGroup _forAdults { get; } = new() { Name = "Dla dorosłych" };
         private static SelectListGroup _placesOfCult { get; } = new() { Name = "Obiekt kultu religijnego" };
         private static SelectListGroup _art { get; } = new() { Name = "Kultura i rozrywka" };

@@ -26,29 +26,37 @@ namespace C_bool.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddDbContext<ApplicationDbContext>(o => 
-                o.UseSqlServer(
-                    Configuration.GetConnectionString("Database")));
+            // app configuration
+            services.Configure<GoogleAPISettings>(Configuration.GetSection("GoogleAPISettings"));
+
+            // repository & database context
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             
-
+            // identity
             services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // razor pages
             services.AddRazorPages();
             
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            // services
             services.AddScoped<PlacesService>();
-            services.Configure<GoogleAPISettings>(Configuration.GetSection("GoogleAPISettings"));
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient<IUserService, UsersService>();            services.AddHttpClient("GoogleMapsClient", client =>
+            services.AddScoped<GameTaskService>();
+            services.AddTransient<IUserService, UsersService>();
+
+
+            //Google API Http client
+            services.AddHttpClient("GoogleMapsClient", client =>
             {
                 client.BaseAddress = new Uri("https://maps.googleapis.com/");
                 client.Timeout = new TimeSpan(0, 0, 30);
                 client.DefaultRequestHeaders.Clear();
             });
-            services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(connectionString));
+
             //automapper
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);

@@ -8,11 +8,13 @@ using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Models.GooglePlaces;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.Place;
 using C_bool.WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
@@ -20,6 +22,7 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private PlacesService _placesService;
+        private UsersService _usersService;
         private GeoLocation _geoLocation;
         private IHttpClientFactory _clientFactory;
         private GoogleAPISettings _googleApiSettings = new();
@@ -32,9 +35,10 @@ namespace C_bool.WebApp.Controllers
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IHttpClientFactory clientFactory, IMapper mapper)
+        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, UsersService userService, IHttpClientFactory clientFactory, IMapper mapper)
         {
             _placesService = placesService;
+            _usersService = userService;
             _placesRepository = repository;
             _configuration = configuration;
             _configuration.GetSection(GoogleAPISettings.Position).Bind(_googleApiSettings);
@@ -124,7 +128,10 @@ namespace C_bool.WebApp.Controllers
                 var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
                 var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
-                _placesRepository.Add(place);
+
+                //var user = _usersService.;
+
+                //_usersService.AddFavPlace();
             }
             //return View();
 
