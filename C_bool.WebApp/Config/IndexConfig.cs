@@ -2,6 +2,6 @@
 {
     public class IndexConfig
     {
-        public AppSettings AppSettings { get; set; }
+        public GoogleAPISettings GoogleApiSettings { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,21 +39,20 @@ namespace C_bool.WebApp
             services.AddRazorPages();
             
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            services.AddControllersWithViews();
-            
+            services.AddScoped<PlacesService>();
+            services.Configure<GoogleAPISettings>(Configuration.GetSection("GoogleAPISettings"));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            //services.AddSingleton<IPlacesRepository, PlacesRepository>();
-            services.AddSingleton<PlacesService>();
-            services.AddTransient<IUserService, UsersService>();
-            
-            services.AddHttpClient("GoogleMapsClient", client =>
+            services.AddTransient<IUserService, UsersService>();            services.AddHttpClient("GoogleMapsClient", client =>
             {
                 client.BaseAddress = new Uri("https://maps.googleapis.com/");
                 client.Timeout = new TimeSpan(0, 0, 30);
                 client.DefaultRequestHeaders.Clear();
             });
-            
-            
+            services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(connectionString));
+            //automapper
+            var profileAssembly = typeof(Startup).Assembly;
+            services.AddAutoMapper(profileAssembly);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

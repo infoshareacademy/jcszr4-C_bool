@@ -5,7 +5,7 @@ using System.Linq;
 using C_bool.BLL.Logic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace C_bool.WebApp.Models
+namespace C_bool.WebApp.Helpers
 {
     public class NearbySearchRequest
     {
@@ -22,13 +22,7 @@ namespace C_bool.WebApp.Models
         public string Keyword { get; set; }
         public string SelectedType { get; set; } = "";
 
-        public List<SelectListItem> ListItems { get; set; }
-        
+        public List<SelectListItem> PlaceCategories { get; set; } = SelectListItems.GooglePlaceCategories;
 
-
-        public NearbySearchRequest()
-        {
-            ListItems = SearchPlaceByCategory.PlaceCategoriesTranslated.OrderBy(x => x.Value).Select(x => new SelectListItem{Text = x.Value, Value = x.Key}).ToList();
-        }
     }
 }

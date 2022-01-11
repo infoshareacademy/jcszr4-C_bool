@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace C_bool.WebApp.Models
+namespace C_bool.WebApp.Helpers
 {
     public class NameSearchRequest
     {
