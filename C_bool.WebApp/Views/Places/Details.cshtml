@@ -1,4 +1,4 @@
-﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
+﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using System.Globalization
@@ -49,7 +49,7 @@
                                         <l class="bi-three-dots"></l>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                        <li><a class="dropdown-item" href="Places/Edit/@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
                                         <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = Model.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
 
                                     </ul>
@@ -106,6 +106,25 @@
     </div>
 </div>
 
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć @Html.DisplayFor(model => model.Name)?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
 
     var latitude, longitude;
@@ -124,9 +143,14 @@
             icon: "/img/onion.png"
         });
     }
-</script>
 
-@*<div>
-        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-        <a asp-action="Index">Back to List</a>
-    </div>*@
+    var path_to_delete;
+
+    $(".deleteItem").click(function (e) {
+        path_to_delete = $(this).data('path');
+    });
+
+    $('#btnContinueDelete').click(function () {
+        window.location = path_to_delete;
+    });
+</script>

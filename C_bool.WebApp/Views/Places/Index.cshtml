@@ -1,4 +1,4 @@
-﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
+﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @model IEnumerable<C_bool.BLL.DAL.Entities.Place>
@@ -21,7 +21,7 @@
 </div>
 <!-- End of Tab Nav -->
 <!-- Tab Content 1) Places -->
-<div class="card border-0">
+<div>
     <div class="card-body p-0">
         <div class="tab-content" id="tabcontent1">
             <div class="tab-pane fade show active" style="" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
@@ -46,44 +46,6 @@
         </div>
     </div>
 </div>
-<!-- MapModal -->
-<div class="modal" id="mapModal">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Delete place Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Czy na pewno chcesz usunąć wskazane miejsce?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 @section Scripts {
@@ -91,6 +53,7 @@
 
         var latitude, longitude;
 
+        //initialize map view - modal
         function initMap(latitude, longitude) {
             const point = { lat: latitude, lng: longitude };
             const map = new google.maps.Map(document.getElementById("map"),
@@ -106,6 +69,7 @@
             });
         }
 
+        // get current location
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(useLocation);
@@ -127,7 +91,7 @@
                     success: function(data) {
                     },
                     error: function(ex) {
-                        alert("Nie udało się przekazać lokalizacji" + ex);
+                        showNotif('red', ex);
                     }
                 });
         };
@@ -148,39 +112,12 @@
                     },
 
                     error: function (xmlhttprequest, textstatus, errorthrown) {
-                        //alert(" conection to the server failed ");
                         showNotif('red', errorthrown);
                     }
                 });
         };
 
-        // show notification window
-        function showNotif(background, message) {
-            const notyf = new Notyf({
-                position: {
-                    x: 'right',
-                    y: 'bottom',
-                },
-                types: [
-                    {
-                        type: 'info',
-                        background: background,
-                        icon: {
-                            className: 'fas fa-info-circle',
-                            tagName: 'span',
-                            color: '#fff'
-                        },
-                        dismissible: true
-                    }
-                ],
-                duration: 10000,
-            });
-            notyf.open({
-                type: 'info',
-                message: message
-            });
-        };
-
+        // delete item for modal
         var path_to_delete;
 
         $(".deleteItem").click(function (e) {
@@ -191,6 +128,7 @@
             window.location = path_to_delete;
         });
 
+        //events listener and load actions
         window.addEventListener("load", showNotif('green', '@ViewBag.Message'));
         window.onload = getLocation();
     </script>

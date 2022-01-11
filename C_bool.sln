@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.ConsoleApp", "C_bool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.BLL", "C_bool.BLL\C_bool.BLL.csproj", "{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_bool.WebApp", "C_bool.WebApp\C_bool.WebApp.csproj", "{351D875C-1538-4DE1-8731-7A68CE43D51D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.WebApp", "C_bool.WebApp\C_bool.WebApp.csproj", "{351D875C-1538-4DE1-8731-7A68CE43D51D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

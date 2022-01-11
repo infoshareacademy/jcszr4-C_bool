@@ -1,27 +1,23 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using C_bool.BLL.Enums;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace C_bool.BLL.DAL.Entities
 {
-    public class User : Entity
+    public class User : IdentityUser<int>, IEntity
     {
-        [Required(ErrorMessage = "Nazwa jest wymagana")]
-        [Range(2, 30, ErrorMessage = "Nazwa powinna zawierać od 2 do 30 znaków")]
-        [Display(Name = "Nazwa użytkownika")]
-        public string Name { get; set; }
-        [Display(Name = "Płeć")]
+        public override int Id { get; set; }
         public Gender Gender { get; set; }
-        [Required(ErrorMessage = "Email jest wymagany")]
-        [EmailAddress]
-        public string Email { get; set; }
-        [Display(Name = "Aktywny")]
+
+        //TODO: banowanie?
         public bool IsActive { get; set; }
-        [JsonProperty(PropertyName = "registered")]
-        [Display(Name = "Data rejestracji")]
         public DateTime CreatedOn { get; set; }
-        [Display(Name = "Liczba punktów")]
         public int Points { get; set; }
+        public virtual List<UserPlace> FavPlaces { get; set; }
+
+        //TODO: sprawdzić - czy IQueryable to łyknie??? :-)
+        public virtual List<UserGameTask> UserGameTasks { get; set; }
     }
 }
