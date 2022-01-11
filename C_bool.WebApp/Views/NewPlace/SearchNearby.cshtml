@@ -1,6 +1,6 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
-@model C_bool.WebApp.Models.NearbySearchRequest
+@model C_bool.WebApp.Helpers.NearbySearchRequest
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 
 @{
@@ -42,7 +42,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Kategoria</label>
-                <select asp-for="SelectedType" asp-items="Model.ListItems" class="form-control">
+                <select asp-for="SelectedType" asp-items="Model.PlaceCategories" class="form-control">
                     <option selected="selected" value="">Brak kategorii</option>
                 </select>
             </div>

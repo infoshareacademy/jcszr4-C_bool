@@ -29,7 +29,7 @@ namespace C_bool.WebApp.Controllers
         public static double Latitude;
         public static double Longitude;
 
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IHttpClientFactory clientFactory, IMapper mapper)
@@ -118,7 +118,7 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task AddToFavs([FromBody] ReturnString request)
         {
-            foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var googlePlace in GooglePlaceHolder._tempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
                 var place = _mapper.Map<GooglePlace, Place>(googlePlace);
                 var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
@@ -134,7 +134,7 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task AddToRepository([FromBody] ReturnString request)
         {
-            foreach (var googlePlace in _placesService.TempGooglePlaces.Where(place => place.Id.Equals(request.Id)))
+            foreach (var googlePlace in GooglePlaceHolder._tempPlaces.Where(place => place.Id.Equals(request.Id)))
             {
                 var place = _mapper.Map<GooglePlace, Place>(googlePlace);
                 var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
@@ -147,29 +147,27 @@ namespace C_bool.WebApp.Controllers
             return;
         }
 
-        // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
             var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
 
-            _placesService.TempGooglePlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages);
-            var model = _placesService.TempGooglePlaces;
+            GooglePlaceHolder._tempPlaces = await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages);
+            var model = GooglePlaceHolder._tempPlaces;
             ViewBag.Message = api.Message;
             ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
-        // POST: PlacesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchByNameAsync(NameSearchRequest request)
         {
             var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
 
-            _placesService.TempGooglePlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
-            var model = _placesService.TempGooglePlaces;
+            GooglePlaceHolder._tempPlaces = await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl");
+            var model = GooglePlaceHolder._tempPlaces;
             ViewBag.Message = api.Message;
             ViewBag.QueryStatus = api.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);

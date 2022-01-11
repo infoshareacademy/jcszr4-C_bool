@@ -1,6 +1,7 @@
 ﻿@using System.Globalization
 @using C_bool.BLL.DAL.Entities
 @using C_bool.BLL.Logic
+@using C_bool.WebApp.Helpers
 @model IEnumerable<C_bool.BLL.DAL.Entities.Place>
 
 @{
@@ -8,16 +9,6 @@
     var nearbyPlaces = (List<Place>)ViewBag.NearbyPlaces;
     var allPlacesCount = (int)ViewBag.PlacesCount;
 }
-
-<form asp-action="Index" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" /> |
-            <a asp-action="Index">Back to Full List</a>
-        </p>
-    </div>
-</form>
 
 <!--user summary, places, tasks - cards-->
 <div class="row">
@@ -105,18 +96,24 @@
             </div>
         </div>
     </div>
+    <!--search & filter form-->
+    <form asp-action="Index" method="get">
+        <div class="input-group input-group-lg mb-3 form-actions no-color border-0 shadow">
+            <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
+            <select class="form-select" asp-items="SelectListItems.SearchForType" name="SearchType" asp-for="@ViewData["CurrentType"]" id="inputGroupSelectType"></select>
+            <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie miejsca" value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
+            <a asp-action="Index" class="btn btn-outline-secondary" >Wyczyść</a>
+            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+        </div>
+    </form>
     <!--Map-->
     <div class="col-12 mb-4">
         <div class="card bg-google-100 border-0 shadow">
             <div class="card-header d-sm-flex flex-row align-items-center flex-0">
                 <div class="d-block mb-3 mb-sm-0">
                     <div class="fs-5 fw-normal mb-2">Zadania i miejsca w pobliżu</div>
-                    <h2 class="fs-3 fw-extrabold">W odległości 5km od ciebie jest @Html.DisplayFor(x => nearbyPlaces.Count) miejsc z aktywnymi zadaniami</h2>
-                    <div class="small mt-2">
-                        <span class="fw-normal me-2">Yesterday</span>
-                        <span class="fas fa-angle-up text-success"></span>
-                        <span class="text-success fw-bold">10.57%</span>
-                    </div>
+                    
+                    <h2 class="fs-3 fw-extrabold">W odległości @ViewBag.Range km od ciebie jest @Html.DisplayFor(x => nearbyPlaces.Count) miejsc z aktywnymi zadaniami</h2>
                 </div>
                 <div class="d-flex ms-auto">
                     <a href="#" class="btn btn-primary btn-lg me-2">Wszystkie miejsca</a>
@@ -124,7 +121,7 @@
             </div>
             <div class="card-body p-2">
                 <!--Map view component-->
-                @await Component.InvokeAsync("MapView", new { placesList = nearbyPlaces })
+                @await Component.InvokeAsync("MapView", new { placesList = nearbyPlaces, range = @ViewData["MapZoom"] })
             </div>
         </div>
     </div>

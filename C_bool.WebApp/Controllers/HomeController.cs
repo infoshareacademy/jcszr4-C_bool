@@ -10,6 +10,8 @@ using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
+using C_bool.WebApp.Helpers;
+using C_bool.WebApp.Models.Place;
 using C_bool.WebApp.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,44 +43,54 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> IndexAsync_test(string searchString, string limit)
+        public async Task<IActionResult> IndexAsync(string searchString, string searchType, double range)
         {
-            //ViewBag.NearbyPlaces = await _placesService.GetNearbyPlaces(Latitude, Longitude, 10000);
             ViewBag.Latitude = Latitude;
             ViewBag.Longitude = Longitude;
 
+            if (range == 0) range = 5000;
+            ViewBag.Range = range / 1000;
+
             ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentType"] = searchType;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
 
             var places = _placesRepository.GetAllQueryable();
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                places = places.Where(s => s.Name.Contains(searchString)
-                                               || s.Address.Contains(searchString));
-            }
+            //query only properties used to calculate range ang get place Id
+            var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
+            var nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, Latitude, Longitude, range);
+            places = places.Where(s => nearbyPlacesIds.Contains(s.Id));
 
-            if (!String.IsNullOrEmpty(limit))
+            //search queries, based on user input
+            if (!string.IsNullOrEmpty(searchString))
             {
-                places = places.Where(s => s.Name.Contains(searchString)
-                                           || s.Address.Contains(searchString));
+                switch (searchType)
+                {
+                    case "place":
+                        places = places.Where(s => s.Name.Contains(searchString)
+                                                   || s.Address.Contains(searchString)
+                                                   || s.ShortDescription.Contains(searchString));
+                        break;
+                    case "task":
+                        places = places.Where(s => s.Tasks.Any(task => task.Name.Contains(searchString)) 
+                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
+                        break;
+                    default:
+                        places = places.Where(s => s.Name.Contains(searchString)
+                                                   || s.Address.Contains(searchString)
+                                                   || s.ShortDescription.Contains(searchString)
+                                                   || s.Tasks.Any(task => task.Name.Contains(searchString)) 
+                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
+                        break;
+                }
             }
-
 
             var placesList = await places.AsNoTracking().ToListAsync();
             ViewBag.PlacesCount = places.Count();
-            var nearbyPlaces = SearchNearbyPlaces.GetPlaces(placesList, Latitude, Longitude, 10000);
-            ViewBag.NearbyPlaces = nearbyPlaces;
+            ViewBag.NearbyPlaces = placesList;
 
-            return View();
-
-        }
-
-        public IActionResult Index()
-        {
-            ViewBag.PlacesCount = _placesRepository.GetAll().Count();
-            ViewBag.NearbyPlaces = _placesService.GetNearbyPlaces(Latitude, Longitude, 10000);
-            ViewBag.Latitude = Latitude;
-            ViewBag.Longitude = Longitude;
             return View();
         }
 
