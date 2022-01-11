@@ -12,6 +12,11 @@ namespace C_bool.BLL.DAL.Entities
         public virtual User User { get; set; }
         public virtual Place Place { get; set; }
 
+        public UserPlace()
+        {
+            
+        }
+
         public UserPlace(User user, Place place)
         {
             User = user;

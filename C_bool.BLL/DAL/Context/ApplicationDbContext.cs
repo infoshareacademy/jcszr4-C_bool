@@ -17,6 +17,16 @@ namespace C_bool.BLL.DAL.Context
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+            
+            modelBuilder.Entity<UserPlace>().HasKey(table => new {
+                table.UserId,
+                table.PlaceId
+            });
+
+            modelBuilder.Entity<UserGameTask>().HasKey(table => new {
+                table.UserId,
+                table.GameTaskId
+            });
         }
     }
 }
