@@ -1,6 +1,6 @@
 ﻿@using System.Linq
 @using C_bool.BLL.Enums
-@model List<C_bool.BLL.DAL.Entities.User>
+@model IEnumerable<C_bool.BLL.DAL.Entities.User>
 
 @{
     ViewData["Title"] = "Lista użytkowników";
@@ -13,13 +13,13 @@
 </p>
 
 <div class="container">
-    <form asp-action="Index">
+    <form asp-action="SearchUsers">
         <table class="table">
             <tr>
                 <td>
                     <div class="form-group">
                         <label class="control-label small">Nazwa:</label>
-                        <input class="form-control small" type="text" name="lastName" placeholder="Wpisz" />
+                        <input class="form-control small" type="text" name="name" placeholder="Wpisz" />
                     </div>
                 </td>
                 <td>
@@ -32,7 +32,7 @@
                     <div class="form-group">
                         <label class="control-label small">Płeć:</label>
                         <select class="form-control small" name="gender">
-                            <option value="true" selected>Wybierz</option>
+                            <option value="" selected>Wybierz</option>
                             <option value="@Gender.Male">Mężczyźni</option>
                             <option value="@Gender.Female">Kobiety</option>
                         </select>
@@ -42,7 +42,7 @@
                     <div class="form-group">
                         <label class="control-label small">Aktywny:</label>
                         <select class="form-control small" name="isActive">
-                            <option value="true" selected>Wybierz</option>
+                            <option value="" selected>Wybierz</option>
                             <option value="true">Tylko aktywni</option>
                             <option value="false">Tylko nieaktywni</option>
                         </select>
@@ -52,9 +52,9 @@
                     <div class="form-group">
                         <label class="control-label small">Sortuj punkty</label>
                         <select class="form-control small" name="isDescending">
-                            <option value="true" selected>Wybierz</option>
-                            <option value="@bool.TrueString">Malejąco</option>
-                            <option value="@bool.FalseString">Rosnąco</option>
+                            <option value="" selected>Wybierz</option>
+                            <option value="true">Malejąco</option>
+                            <option value="false">Rosnąco</option>
                         </select>
                     </div>
                 </td>
@@ -74,7 +74,7 @@
     <thead>
     <tr>
         <th>
-            <label asp-for="First().Name"></label>
+            <label asp-for="First().UserName"></label>
         </th>
         <th>
             <label asp-for="First().Email"></label>
@@ -96,7 +96,7 @@
         {
         <tr>
             <td>
-                @item.Name
+                @item.UserName
             </td>
             <td>
                 @item.Email

@@ -1,4 +1,4 @@
-﻿@inject IOptionsSnapshot<AppSettings> _appSettings;
+﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using Status = C_bool.WebApp.Services.Status
@@ -43,7 +43,7 @@ else
 </div>
 
 @section Scripts {
-    @*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>*@
+    @*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_googleApiSettings.Value.GoogleAPIKey"></script>*@
     <script>
 
         // show map in modal

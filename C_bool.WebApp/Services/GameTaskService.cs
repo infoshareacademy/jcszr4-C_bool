@@ -1,11 +1,10 @@
-﻿using C_bool.WebApp.Interfaces;
-using System;
+﻿using System;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 
 namespace C_bool.WebApp.Services
 {
-    public class GameTaskService : IGameTaskService
+    public class GameTaskService
     {
         private IRepository<GameTask> _gameTasksRepository;
 
@@ -14,7 +13,7 @@ namespace C_bool.WebApp.Services
             _gameTasksRepository = gameTasksRepository;
         }
 
-        public GameTask CreateANewTask()
+        public GameTask CreateNewTask()
         {
             string selectFromTaskType = "FirstComeFirstServed";
             //if (selectFromTaskType.Equals(TaskType.FirstComeFirstServed))
@@ -27,8 +26,6 @@ namespace C_bool.WebApp.Services
         {
             throw new NotImplementedException();
         }
-
-        // takie coś kaząło mi utworzyć...
 
         public void ManuallyCompleteTask()
         {

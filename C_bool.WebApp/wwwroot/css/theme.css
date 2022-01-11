@@ -6461,6 +6461,10 @@ textarea.form-control-lg {
     background-image: var(--bs-gradient) !important
 }
 
+.bg-google-100 {
+    background-color: #f5f5f2 !important;
+}
+
 .user-select-all {
     user-select: all !important
 }
@@ -9855,4 +9859,10 @@ textarea.form-control-lg {
     .d-print-none {
         display: none !important
     }
+}
+
+/*cebulowe itemsy*/
+
+.cebool-list-main-screen:hover {
+    background-color: #f7f7f7;
 }

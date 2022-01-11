@@ -1,4 +1,4 @@
-﻿@model C_bool.WebApp.Models.NameSearchRequest
+﻿@model C_bool.WebApp.Helpers.NameSearchRequest
 
 <h1>Wyszukaj nowe miejsca</h1>
 
@@ -7,7 +7,7 @@
 <hr />
 
 <form asp-action="SearchByName">
-    <div class="input-group mb-3">
+    <div class="input-group input-group-lg mb-3">
         <input asp-for="SearchPhrase" type="text" class="form-control" placeholder="Czego szukasz?" aria-label="Recipient's username" aria-describedby="button-addon2">
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Szukaj!</button>
     </div>

@@ -1,27 +1,32 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Logic;
 using C_bool.BLL.Models.GooglePlaces;
+using C_bool.BLL.Repositories;
+using C_bool.WebApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.WebApp.Services
 {
     public class PlacesService
     {
+        private IRepository<Place> _placeRepository;
+
+        public PlacesService(IRepository<Place> placeRepository)
+        {
+            _placeRepository = placeRepository;
+        }
+
         public List<GooglePlace> TempGooglePlaces;
 
-        public Place MapGooglePlaceToPlace(GooglePlace googlePlace)
+
+        public List<Place> GetNearbyPlaces(double latitude, double longitude, double radius)
         {
-            var place = new Place
-            {
-                GoogleId = googlePlace.Id,
-                Name = googlePlace.Name,
-                Latitude = googlePlace.Geometry.Location.Latitude,
-                Longitude = googlePlace.Geometry.Location.Longitude,
-                Types = googlePlace.Types.ToArray(),
-                Rating = googlePlace.Rating,
-                UserRatingsTotal = googlePlace.UserRatingsTotal,
-                Address = googlePlace.Address
-            };
-            return place;
+            var queryPlaces = _placeRepository.GetAllQueryable();
+            return SearchNearbyPlaces.GetPlaces(queryPlaces.ToList(), latitude, longitude, radius);
+
         }
     }
 }

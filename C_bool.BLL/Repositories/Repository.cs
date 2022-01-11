@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.BLL.Repositories
 {
-    public class Repository <T> : IRepository<T> where T: Entity
+    public class Repository <T> : IRepository<T> where T: class, IEntity
     {
         private readonly ApplicationDbContext _context;
         private readonly DbSet<T> _entities;
