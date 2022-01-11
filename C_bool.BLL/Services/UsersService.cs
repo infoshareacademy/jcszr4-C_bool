@@ -20,7 +20,7 @@ namespace C_bool.BLL.Services
         public List<User> SearchByName(string name)
         {
             var users = _repository.GetAllQueryable();
-            return users.Where(u => u.Name.Equals(name)).ToList();
+            return users.Where(u => u.UserName.Equals(name)).ToList();
             //users.Where(u => u.Name.Equals(name)).ToList();
         }
 
@@ -76,7 +76,7 @@ namespace C_bool.BLL.Services
             if (name != null)
             {
                 
-                users = users.Where(u => u.Name.Contains(name));
+                users = users.Where(u => u.UserName.Contains(name));
             }
             if (email != null)
             {
@@ -100,38 +100,56 @@ namespace C_bool.BLL.Services
 
         public void AddFavPlace(User user, Place place)
         {
-            user.FavPlaces.Add(place);
+            user.FavPlaces.Add(new UserPlace(user, place));
             _repository.Update(user);
         }
 
         public void AddTaskToUser(User user, GameTask gameTask)
         {
-            user.UserGameTasks.Add(gameTask);
+            user.UserGameTasks.Add(new UserGameTask(user, gameTask));
             _repository.Update(user);
         }
 
         public void SetTaskAsDone(User user, GameTask gameTask)
         {
-            if (user.UserGameTasks.Contains(gameTask))
-            {
-                user.UserDoneTasks.Add(gameTask);
-                _repository.Update(user);
-            }
+            var users = _repository.GetAllQueryable();
+
+            var gameTaskToBeDone =
+                users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks.SingleOrDefault(ugt => ugt.Id == gameTask.Id);
+            gameTaskToBeDone.IsDone = true;
+            _repository.Update(user);
+                
         }
 
         public List<GameTask> GetToDoTasks(User user)
         {
-            return user.UserGameTasks.Where(e => e.ValidFrom > DateTime.UtcNow).ToList();
+            var users = _repository.GetAllQueryable();
+
+            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+                .Where(ugt =>
+                    ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
 
         public List<GameTask> GetInProgressTasks(User user)
         {
-            return user.UserGameTasks.Where(e => e.ValidFrom <= DateTime.UtcNow).ToList();
+            var users = _repository.GetAllQueryable();
+
+            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+                .Where(ugt => ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
 
         public List<GameTask> GetDoneTasks(User user)
         {
-            return user.UserDoneTasks;
+            var users = _repository.GetAllQueryable();
+
+            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+                .Where(ugt => ugt.IsDone == true);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
     }
 }

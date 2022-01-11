@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using C_bool.BLL.Enums;
 
 namespace C_bool.BLL.DAL.Entities
@@ -16,6 +17,7 @@ namespace C_bool.BLL.DAL.Entities
         public bool IsActive { get; set; }
         public string CreatedById { get; set; }
         public string CreatedByName { get; set; }
+        public virtual List<UserGameTask> UserGameTasks { get; set; }
     }
 
     //Metoda jeżeli kryterium jest spełnione {}

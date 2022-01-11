@@ -3,6 +3,7 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.Controllers
@@ -21,6 +22,7 @@ namespace C_bool.WebApp.Controllers
         }
 
         // GET: UserController
+        [Authorize]
         public ActionResult Index()
         {
             var model = _userRepository.GetAll();
