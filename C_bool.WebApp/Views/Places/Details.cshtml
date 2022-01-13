@@ -51,22 +51,20 @@
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
                                         <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = Model.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
-
                                     </ul>
                                 </div>
-                                @*<button asp-action="Delete" asp-route-id="@item.Id" type="submit" class="btn btn-primary" style="margin: 4px;"><l class="bi bi-trash"> Usuń</l></button>*@
                             </form>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="col-12">
+            <!--<div class="col-12">
                 <div class="card card-body border-0 shadow mb-4">
                     <h2 class="h5 mb-4">Wybierz zdjęcie</h2>
                     <div class="d-flex align-items-center">
-                        <div class="me-3">
+                        <div class="me-3">-->
                             <!-- Avatar -->
-                            <img class="rounded avatar-xl" src="../assets/img/team/profile-picture-3.jpg" alt="zdjęcie miejsca">
+                            <!--<img class="rounded avatar-xl" src="../assets/img/team/profile-picture-3.jpg" alt="zdjęcie miejsca">
                         </div>
                         <div class="file-field">
                             <div class="d-flex justify-content-xl-center ms-xl-3">
@@ -82,7 +80,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>

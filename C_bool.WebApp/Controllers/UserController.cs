@@ -4,6 +4,7 @@ using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.Controllers
@@ -12,13 +13,24 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
+
+        
+
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
-        public UserController(IRepository<User> userRepository, IUserService userService)
+        private readonly UserManager<User> _userManager;
+        private GeoLocation _geoLocation;
+
+        public UserController(
+            IRepository<User> userRepository, 
+            IUserService userService,
+            UserManager<User> userManager
+            )
         {
             _userRepository = userRepository;
             _userService = userService;
+            _userManager = userManager;
         }
 
         // GET: UserController
@@ -157,6 +169,21 @@ namespace C_bool.WebApp.Controllers
             catch
             {
                 return View(model);
+            }
+        }
+
+        [HttpPost]
+        public void UpdateUserLocation([FromBody] GeoLocation postData)
+        {
+            if (postData.Latitude != 0)
+            {
+                _geoLocation = postData;
+                var userId = _userManager.GetUserId(User);
+                if (userId == null) return;
+                var user = _userRepository.GetById(int.Parse(userId));
+                user.Latitude = _geoLocation.Latitude;
+                user.Longitude = _geoLocation.Longitude;
+                _userRepository.Update(user);
             }
         }
     }

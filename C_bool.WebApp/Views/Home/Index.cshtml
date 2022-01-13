@@ -5,7 +5,7 @@
 @model IEnumerable<C_bool.BLL.DAL.Entities.Place>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Strona główna";
     var nearbyPlaces = (List<Place>)ViewBag.NearbyPlaces;
     var allPlacesCount = (int)ViewBag.PlacesCount;
 }
@@ -442,22 +442,6 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
 
-            var postData = { Latitude: latitude, Longitude: longitude };
-            $.ajax(
-                {
-                    type: "POST",
-                    url: "@Url.Action("GetGeoLocation", "Home")",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function (data) {
-                        showNotif('green', 'OK');
-                    },
-
-                    error: function (xmlhttprequest, textstatus, errorthrown) {
-                        showNotif('red', errorthrown);
-                    }
-                });
         };
 
         //post data to controller

@@ -14,11 +14,15 @@ namespace C_bool.BLL.DAL.Entities
         //TODO: banowanie?
         public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
+        public string Photo { get; set; }
         public int Points { get; set; }
         public virtual List<UserPlace> FavPlaces { get; set; }
 
         //TODO: sprawdzić - czy IQueryable to łyknie??? :-)
         public virtual List<UserGameTask> UserGameTasks { get; set; }
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         public User()
         {

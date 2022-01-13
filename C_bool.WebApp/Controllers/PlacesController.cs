@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.Place;
-using C_bool.WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
 namespace C_bool.WebApp.Controllers
@@ -33,6 +34,7 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         public ActionResult Index()
         {
             var model = _placesRepository.GetAll();
@@ -43,6 +45,7 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult Favourities()
         {
             var model = _placesRepository.GetAll();
@@ -51,23 +54,20 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
-        // GET: PlacesController/Details/5
-
+        [Authorize]
         public ActionResult Details(int id)
         {
             var model = _placesRepository.GetById(id);
             return View(model);
         }
 
-        // GET: PlacesController/Create
-
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: PlacesController/Create
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -82,6 +82,7 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             //var model = _placesRepository.GetById(id);
@@ -91,9 +92,7 @@ namespace C_bool.WebApp.Controllers
             return View("Edit", model);
         }
 
-
-        // POST: PlacesController/Edit/5
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, PlaceEditModel model, IFormFile file)
@@ -116,12 +115,14 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             _placesRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
         {
