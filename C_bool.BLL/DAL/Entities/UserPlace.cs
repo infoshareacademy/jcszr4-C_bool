@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C_bool.BLL.DAL.Entities
 {
-    public class UserPlace : Entity
+    public class UserPlace
     {
         [Key, Column(Order = 0)]
         public int UserId { get; set; }

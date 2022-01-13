@@ -22,7 +22,7 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private PlacesService _placesService;
-        private UsersService _usersService;
+        private IUserService _usersService;
         private GeoLocation _geoLocation;
         private IHttpClientFactory _clientFactory;
         private GoogleAPISettings _googleApiSettings = new();
@@ -35,7 +35,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, UsersService userService, IHttpClientFactory clientFactory, IMapper mapper)
+        public NewPlaceController(IConfiguration configuration, IRepository<Place> repository, PlacesService placesService, IUserService userService, IHttpClientFactory clientFactory, IMapper mapper)
         {
             _placesService = placesService;
             _usersService = userService;
@@ -128,10 +128,9 @@ namespace C_bool.WebApp.Controllers
                 var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
                 var photo = await api.DownloadImageAsync(googlePlace, "600");
                 place.Photo = photo;
+                var currentUser = _usersService.GetCurrentUser();
 
-                //var user = _usersService.;
-
-                //_usersService.AddFavPlace();
+                _usersService.AddFavPlace(currentUser, place);
             }
             //return View();
 
