@@ -9,7 +9,6 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
-using C_bool.WebApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.WebApp
@@ -47,6 +46,7 @@ namespace C_bool.WebApp
             services.AddScoped<PlacesService>();
             services.AddScoped<GameTaskService>();
             services.AddTransient<IUserService, UsersService>();
+            services.AddScoped<UsersService>();
 
 
             //Google API Http client

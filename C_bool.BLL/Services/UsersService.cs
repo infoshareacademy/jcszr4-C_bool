@@ -100,12 +100,14 @@ namespace C_bool.BLL.Services
 
         public void AddFavPlace(User user, Place place)
         {
+            user.FavPlaces ??= new List<UserPlace>();
             user.FavPlaces.Add(new UserPlace(user, place));
             _repository.Update(user);
         }
 
         public void AddTaskToUser(User user, GameTask gameTask)
         {
+            user.UserGameTasks ??= new List<UserGameTask>();
             user.UserGameTasks.Add(new UserGameTask(user, gameTask));
             _repository.Update(user);
         }

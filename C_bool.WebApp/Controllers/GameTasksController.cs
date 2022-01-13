@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
-using C_bool.WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -37,25 +38,25 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
         }
 
-        // GET: GameTasksController
+        [Authorize]
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: GameTasksController/Details/5
+        [Authorize]
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: GameTasksController/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: GameTasksController/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -70,13 +71,13 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: GameTasksController/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: GameTasksController/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -91,13 +92,13 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: GameTasksController/Delete/5
+        [Authorize]
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: GameTasksController/Delete/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
@@ -112,6 +113,7 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
         {
