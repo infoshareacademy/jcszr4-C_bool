@@ -26,6 +26,14 @@ namespace C_bool.WebApp.Helpers
             new SelectListItem { Value = "50000", Text = "do 50 kilometrów"  },
             new SelectListItem { Value = "100000", Text = "do 100 kilometrów"  },
             new SelectListItem { Value = "1000000", Text = "do 1000 kilometrów"  },
+            new SelectListItem
+            {
+                Disabled = false,
+                Group = null,
+                Selected = false,
+                Text = null,
+                Value = null
+            }
         };
 
         public static List<SelectListItem> SearchForType { get; } = new()

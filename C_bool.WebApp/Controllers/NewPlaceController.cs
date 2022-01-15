@@ -34,7 +34,7 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
         private PlacesService _placesService;
-        private UsersService _usersService;
+        private IUserService _usersService;
         private readonly UserManager<User> _userManager;
 
         private IHttpClientFactory _clientFactory;
@@ -49,7 +49,7 @@ namespace C_bool.WebApp.Controllers
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
             PlacesService placesService,
-            UsersService userService,
+            IUserService userService,
             UserManager<User> userManager,
             IHttpClientFactory clientFactory
         )
