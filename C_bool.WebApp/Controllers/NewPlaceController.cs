@@ -149,7 +149,7 @@ namespace C_bool.WebApp.Controllers
                     place.Photo = photo;
 
                     _placesRepository.Add(place);
-                    _usersService.AddFavPlace(_usersRepository.GetById(userId), place);
+                    _usersService.AddFavPlace(place);
                 }
         }
 

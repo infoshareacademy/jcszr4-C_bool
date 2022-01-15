@@ -46,7 +46,6 @@ namespace C_bool.WebApp
             services.AddScoped<PlacesService>();
             services.AddScoped<GameTaskService>();
             services.AddTransient<IUserService, UsersService>();
-            services.AddScoped<UsersService>();
 
 
             //Google API Http client

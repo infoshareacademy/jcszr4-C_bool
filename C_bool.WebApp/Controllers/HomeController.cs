@@ -33,7 +33,7 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
         private readonly PlacesService _placesService;
-        private readonly UsersService _userService;
+        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
 
@@ -46,7 +46,7 @@ namespace C_bool.WebApp.Controllers
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
             PlacesService placesService,
-            UsersService usersService,
+            IUserService usersService,
             UserManager<User> userManager)
         {
             _logger = logger;

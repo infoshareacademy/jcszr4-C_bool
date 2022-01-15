@@ -15,7 +15,7 @@ namespace C_bool.BLL.Services
         List<User> OrderByPoints(bool isDescending);
         void AddFileDataToRepository();
         void AddUser(User user);
-        void AddPoints(User user);
+        void SetPoints(User user);
         List<User> SearchUsers(string name, string email, string gender, string isActive, string isDescending);
         void AddFavPlace(User user, Place place);
         void AddTaskToUser(User user, GameTask gameTask);
