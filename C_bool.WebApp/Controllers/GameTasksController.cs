@@ -12,8 +12,8 @@ namespace C_bool.WebApp.Controllers
 {
     public class GameTasksController : Controller
     {
-        private GameTaskService _tasksService;
-        private PlacesService _placesService;
+        private IGameTaskService _tasksService;
+        private IPlaceService _placesService;
 
         private IRepository<GameTask> _tasksRepository;
         private IRepository<Place> _placesRepository;
@@ -26,7 +26,7 @@ namespace C_bool.WebApp.Controllers
         private IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public GameTasksController(IConfiguration configuration, GameTaskService tasksService, PlacesService placesService, IRepository<GameTask> tasksRepository, IRepository<Place> placesRepository, IMapper mapper)
+        public GameTasksController(IConfiguration configuration, IGameTaskService tasksService, IPlaceService placesService, IRepository<GameTask> tasksRepository, IRepository<Place> placesRepository, IMapper mapper)
         {
             _tasksService = tasksService;
             _placesService = placesService;

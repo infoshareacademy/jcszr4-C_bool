@@ -16,7 +16,7 @@ namespace C_bool.WebApp.Controllers
 {
     public class PlacesController : Controller
     {
-        private PlacesService _placesService;
+        private IPlaceService _placesService;
         private IRepository<Place> _placesRepository;
         private GeoLocation _geoLocation;
         //TODO: gdzie to trzymać? User ale bez bazy?
@@ -26,7 +26,7 @@ namespace C_bool.WebApp.Controllers
         private IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public PlacesController(IConfiguration configuration, PlacesService placesService, IRepository<Place> placesRepository, IMapper mapper)
+        public PlacesController(IConfiguration configuration, IPlaceService placesService, IRepository<Place> placesRepository, IMapper mapper)
         {
             _placesService = placesService;
             _placesRepository = placesRepository;

@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace C_bool.BLL.Services
 {
-    public class UsersService : IUserService
+    public class UserService : IUserService
     {
         private readonly IRepository<User> _repository;
         private IHttpContextAccessor _httpContextAccessor;
 
-        public UsersService(IRepository<User> repository, IHttpContextAccessor httpContextAccessor)
+        public UserService(IRepository<User> repository, IHttpContextAccessor httpContextAccessor, IPlaceService placesService)
         {
             _repository = repository;
             _httpContextAccessor = httpContextAccessor;
@@ -112,7 +112,6 @@ namespace C_bool.BLL.Services
         public void AddFavPlace(Place place)
         {
             var currentUser = GetCurrentUser();
-
             currentUser.FavPlaces.Add(new UserPlace(currentUser, place));
             _repository.Update(currentUser);
         }
