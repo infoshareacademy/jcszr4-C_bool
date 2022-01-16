@@ -1,73 +1,215 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
+using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.Place;
-using C_bool.WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace C_bool.WebApp.Controllers
 {
     public class PlacesController : Controller
     {
-        private PlacesService _placesService;
-        private IRepository<Place> _placesRepository;
-        private GeoLocation _geoLocation;
-        //TODO: gdzie to trzymać? User ale bez bazy?
-        public static double Latitude;
-        public static double Longitude;
+        private readonly ILogger<PlacesController> _logger;
 
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public PlacesController(IConfiguration configuration, PlacesService placesService, IRepository<Place> placesRepository, IMapper mapper)
+        private readonly ApplicationDbContext _context;
+        private IRepository<Place> _placesRepository;
+        private IRepository<User> _usersRepository;
+        private IRepository<GameTask> _gameTasksRepository;
+
+        private PlacesService _placesService;
+        private UsersService _usersService;
+        private readonly UserManager<User> _userManager;
+
+        private IHttpClientFactory _clientFactory;
+
+        public PlacesController(
+            ILogger<PlacesController> logger,
+            IMapper mapper,
+            IConfiguration configuration,
+            ApplicationDbContext context,
+            IRepository<Place> placesRepository,
+            IRepository<User> usersRepository,
+            IRepository<GameTask> gameTasksRepository,
+            PlacesService placesService,
+            UsersService userService,
+            UserManager<User> userManager,
+            IHttpClientFactory clientFactory
+            )
         {
-            _placesService = placesService;
-            _placesRepository = placesRepository;
-            _configuration = configuration;
+            _logger = logger;
             _mapper = mapper;
+            _configuration = configuration;
+            _context = context;
+            _placesRepository = placesRepository;
+            _usersRepository = usersRepository;
+            _gameTasksRepository = gameTasksRepository;
+            _placesService = placesService;
+            _usersService = userService;
+            _userManager = userManager;
+            _clientFactory = clientFactory;
         }
 
-        public ActionResult Index()
+        [Authorize]
+        public async Task<IActionResult> Index(string searchString, bool searchOnlyFavs, bool searchOnlyWithTasks, double range)
         {
-            var model = _placesRepository.GetAll();
-            ViewBag.Message = $"Ilość miejsc w bazie: {model.ToList().Count}";
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var user = _usersRepository.GetById(userId);
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+            if (range == 0) range = 100000;
+
+            ViewBag.Range = range / 1000;
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["OnlyFavs"] = searchOnlyFavs;
+            ViewData["OnlyTask"] = searchOnlyWithTasks;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
+
+            //var user = _userManager.GetUserId(User);
+
+            var places = _placesRepository.GetAllQueryable();
+
+            //query only properties used to calculate range ang get place Id
+            var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
+            var nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            places = places.Where(s => nearbyPlacesIds.Contains(s.Id));
+
+            //search queries, based on user input
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                places = places.Where(s => s.Name.Contains(searchString)
+                                           || s.Address.Contains(searchString)
+                                           || s.ShortDescription.Contains(searchString));
+
+            }
+
+            if (searchOnlyFavs)
+            {
+                if (user.FavPlaces != null)
+                {
+                    var favPlacesIds = user.FavPlaces.Select(x => x.PlaceId).ToArray();
+                    places = places.Where(s => favPlacesIds.Contains(s.Id));
+                }
+            }
+
+            if (searchOnlyWithTasks)
+            {
+
+                places = places.Where(x => x.Tasks.Any());
+
+            }
+
+            var model = await places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToListAsync();
+            ViewBag.PlacesCount = places.Count();
+
+            ViewBag.Message = $"Znaleziono {model.ToList().Count} pasujących miejsc";
             ViewBag.Status = true;
-            ViewBag.Latitude = Latitude;
-            ViewBag.Longitude = Longitude;
+
             return View(model);
         }
 
-        public ActionResult Favourities()
+        [Authorize]
+        public async Task<IActionResult> Index_bak(string searchString, string searchType, double range)
         {
-            var model = _placesRepository.GetAll();
-            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.ToList().Count}";
-            ViewBag.Status = true;
-            return View(model);
+            var userId = int.Parse(_userManager.GetUserId(User));
+            var user = _usersRepository.GetById(userId);
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+            if (range == 0) range = 5000;
+
+            //list of UserViewModel with top 10 users (by points count)
+            var usersCount = _usersRepository.GetAllQueryable().Count();
+            ViewBag.UserRank = _usersService.OrderByPoints(false).GetRange(0, usersCount < 10 ? usersCount : 10).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
+
+            ViewBag.UserPoints = user.Points;
+            ViewBag.UserRankPosition = _usersRepository.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
+
+
+            ViewBag.Range = range / 1000;
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentType"] = searchType;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
+
+            //var user = _userManager.GetUserId(User);
+
+            var places = _placesRepository.GetAllQueryable();
+
+            //query only properties used to calculate range ang get place Id
+            var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
+            var nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            places = places.Where(s => nearbyPlacesIds.Contains(s.Id));
+
+            //search queries, based on user input
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                switch (searchType)
+                {
+                    case "place":
+                        places = places.Where(s => s.Name.Contains(searchString)
+                                                   || s.Address.Contains(searchString)
+                                                   || s.ShortDescription.Contains(searchString));
+                        break;
+                    case "task":
+                        places = places.Where(s => s.Tasks.Any(task => task.Name.Contains(searchString))
+                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
+                        break;
+                    default:
+                        places = places.Where(s => s.Name.Contains(searchString)
+                                                   || s.Address.Contains(searchString)
+                                                   || s.ShortDescription.Contains(searchString)
+                                                   || s.Tasks.Any(task => task.Name.Contains(searchString))
+                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
+                        break;
+                }
+            }
+
+
+            var placesList = await places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToListAsync();
+            ViewBag.PlacesCount = places.Count();
+            ViewBag.NearbyPlaces = placesList;
+
+            return View();
         }
 
-        // GET: PlacesController/Details/5
 
+        [Authorize]
         public ActionResult Details(int id)
         {
             var model = _placesRepository.GetById(id);
+            ViewBag.HasAnyActiveTasks = model.Tasks != null && model.Tasks.Any(x => x.IsActive);
             return View(model);
         }
 
-        // GET: PlacesController/Create
-
+        [Authorize]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: PlacesController/Create
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -82,6 +224,7 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             //var model = _placesRepository.GetById(id);
@@ -91,9 +234,7 @@ namespace C_bool.WebApp.Controllers
             return View("Edit", model);
         }
 
-
-        // POST: PlacesController/Edit/5
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, PlaceEditModel model, IFormFile file)
@@ -116,25 +257,11 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             _placesRepository.Delete(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public JsonResult GetGeoLocation([FromBody] GeoLocation postData)
-        {
-            if (postData.Latitude != 0)
-            {
-                _geoLocation = postData;
-                Latitude = _geoLocation.Latitude;
-                Longitude = _geoLocation.Longitude;
-                ViewBag.Latitude = Latitude;
-                ViewBag.Longitude = Longitude;
-            }
-
-            return Json(postData);
         }
     }
 }

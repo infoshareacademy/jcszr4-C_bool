@@ -1,25 +1,44 @@
 ﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @using C_bool.WebApp.Config
+@using C_bool.WebApp.Helpers
 @using Microsoft.Extensions.Options
-@model IEnumerable<C_bool.BLL.DAL.Entities.Place>
+@model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Baza miejsc";
 }
-<!-- TabBar for places/map -->
-<div class="nav-wrapper position-relative mb-3">
-    <div class="col-4">
-        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Lista miejsc</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Mapa</a>
-            </li>
-        </ul>
+
+
+<!--search & filter form-->
+<form asp-action="Index" method="get">
+    <div class="input-group input-group-lg border-0 shadow mb-3 sticky-top">
+        <span class="input-group-text">
+            <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true"><b>Lista</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false"><b>Mapa</b></a>
+                </li>
+            </ul>
+        </span>
+        <span class="input-group-text">
+            <input class="form-check-input" id="favCheckbox" name="SearchOnlyFavs" type="checkbox" asp-for="@ViewData["OnlyFavs"]" aria-label="Checkbox for following text input">
+            <br />
+            <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"></label>
+        </span>
+        <span class="input-group-text">
+            <input class="form-check-input" id="tasksCheckbox" name="SearchOnlyWithTasks" type="checkbox" asp-for="@ViewData["OnlyTask"]" aria-label="Checkbox for following text input">
+            <br />
+            <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="fas fa-trophy"></label>
+        </span>
+        <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
+        <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie miejsca" value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
+        @*<a asp-action="Index" class="btn btn-outline-secondary" role="button">Wyczyść</a>*@
+        <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
     </div>
-</div>
-<!-- End of Tab Nav -->
+</form>
 <!-- Tab Content 1) Places -->
 <div>
     <div class="card-body p-0">
@@ -36,12 +55,14 @@
                     <div class="alert alert-dismissible alert-warning" style="margin: 10px">
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         <h4 class="alert-heading">Nie bangla!</h4>
-                        <p class="mb-0">Wygląda na to, że nie ma miejsc w bazie...<br>Przedź do <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b> aby coś wyszukać, lub dodaj swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
+                        <p class="mb-0">Wygląda na to, że nie ma takich miejsc w bazie...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz wyszukać tysiące nowych miejsc w menu <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b>, lub dodać swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
                     </div>
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                @await Component.InvokeAsync("MapView", new { placesList = Model })
+                <div  style="height: calc(100vh - 160px);">
+                    @await Component.InvokeAsync("MapView", new { placesList = (Model ?? Array.Empty<C_bool.WebApp.Models.Place.PlaceViewModel>()).ToList(), range = @ViewData["MapZoom"] })
+                </div>
             </div>
         </div>
     </div>
@@ -80,20 +101,6 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
 
-            var postData = { Latitude: latitude, Longitude: longitude };
-            $.ajax(
-                {
-                    type: "POST",
-                    url: "@Url.Action("GetGeoLocation", "Places")",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function(data) {
-                    },
-                    error: function(ex) {
-                        showNotif('red', ex);
-                    }
-                });
         };
 
         //post data to controller

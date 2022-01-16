@@ -8,6 +8,11 @@ namespace C_bool.WebApp.Helpers
 {
     public class GooglePlaceHolder
     {
-        public static List<GooglePlace> _tempPlaces = new List<GooglePlace>();
+        public static Dictionary<int, List<GooglePlace>> _tempPlaces = new();
+
+        public static void CreateNewOrUpdateExisting<TKey, TValue>(IDictionary<TKey, TValue> map, TKey key, TValue value)
+        {
+            map[key] = value;
+        }
     }
 }

@@ -3,22 +3,23 @@
 @using System.Globalization
 @using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
-@model IEnumerable<C_bool.BLL.DAL.Entities.Place>
+@model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
 
 @{
 }
 
-<div class="card-deck" style="height: 80vh; align-content: center">
+<div class="card-group">
+    @*<div class="card-deck" style="height: 80vh; align-content: center">*@
     @foreach (var item in Model)
     {
-        <div class="card mb-3 shadow" style="float: left; min-width: 450px; max-width: 500px; width: 50%; height: 550px; margin: 10px;">
-            <a href="Places/Details/@item.Id" class="card-title">
-                <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+        <div class="card mb-3 shadow" style="min-width: 450px; max-width: 600px; margin: 10px;">
+            <a href="Places/Details/@item.Id" class="card-title text-decoration-none">
+                <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
             </a>
             <div class="card-body">
                 <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
 
-                <h6 class="card-subtitle text-muted">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude.ToString(), ViewBag.Longitude.ToString(), item)) od Ciebie</h6>
+                <h6 class="card-subtitle text-muted">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, item.Latitude, item.Longitude)) od Ciebie</h6>
             </div>
             @if (item.Photo is not null)
             {
@@ -84,6 +85,7 @@
             </div>
         </div>
     }
+    @*</div>*@
 </div>
 
 <!-- MapModal -->

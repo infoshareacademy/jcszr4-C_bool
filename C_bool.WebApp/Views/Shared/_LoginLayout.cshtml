@@ -1,0 +1,159 @@
+﻿@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Identity
+@using C_bool.BLL.DAL.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{ var action = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
+    var controller = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+    var area = (ViewContext.RouteData.DataTokens["area"] ?? "").ToString().ToLower(); }
+<!--
+
+=========================================================
+* Volt Free - Bootstrap 5 Dashboard
+=========================================================
+
+* Product Page: https://themesberg.com/product/admin-dashboard/volt-bootstrap-5-dashboard
+* Copyright 2021 Themesberg (https://www.themesberg.com)
+* License (https://themesberg.com/licensing)
+
+* Designed and coded by https://themesberg.com
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- Primary Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - Cebulowa gra miejska</title>
+    <meta name="author" content="C_BooL Team">
+    <meta name="description" content="Gra miejska - zdobywaj punkty za odwiedzanie fajnych miejscówek.">
+    <meta name="keywords" content="" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Sweet Alert -->
+    <link type="text/css" href="/vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Notyf -->
+    <link type="text/css" href="/vendor/notyf/notyf.min.css" rel="stylesheet">
+
+    <!-- Volt CSS -->
+    <link type="text/css" href="/css/volt.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/theme.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #2b2b2b;
+            background-image: url("https://loremflickr.com//800/600/city,landscape");
+            backdrop-filter: blur(10px) saturate(30%);
+            background-position: center;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+    </style>
+
+    <!-- Notification popup. -->
+    <script>
+        function showNotif(background, message) {
+            const notyf = new Notyf({
+                position: {
+                    x: 'right',
+                    y: 'bottom',
+                },
+                types: [
+                    {
+                        type: 'info',
+                        background: background,
+                        icon: {
+                            className: 'fas fa-info-circle',
+                            tagName: 'span',
+                            color: '#fff'
+                        },
+                        dismissible: true
+                    }
+                ],
+                duration: 10000,
+            });
+            notyf.open({
+                type: 'info',
+                message: message
+            });
+        };
+    </script>
+
+</head>
+
+<body>
+<main>
+    @RenderBody()
+</main>
+
+    <!-- Core -->
+    <script src="/vendor/popperjs/core/dist/umd/popper.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Vendor JS -->
+    <script src="/vendor/onscreen/dist/on-screen.umd.min.js"></script>
+
+    <!-- Slider -->
+    <script src="/vendor/nouislider/distribute/nouislider.min.js"></script>
+
+    <!-- Smooth scroll -->
+    <script src="/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+
+    <!-- Charts -->
+    <script src="/vendor/chartist/dist/chartist.min.js"></script>
+    <script src="/vendor/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+
+    <!-- Datepicker -->
+    <script src="/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+
+    <!-- Sweet Alerts 2 -->
+    <script src="/vendor/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Moment JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+
+    <!-- Vanilla JS Datepicker -->
+    <script src="/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+
+    <!-- Notyf -->
+    <script src="/vendor/notyf/notyf.min.js"></script>
+
+    <!-- Simplebar -->
+    <script src="/vendor/simplebar/dist/simplebar.min.js"></script>
+
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- Volt JS -->
+    <script src="/assets/js/volt.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+
+
+</body>
+
+</html>

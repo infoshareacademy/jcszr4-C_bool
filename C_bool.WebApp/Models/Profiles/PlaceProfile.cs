@@ -13,7 +13,8 @@ namespace C_bool.WebApp.Models.Profiles
     {
         public PlaceProfile()
         {
-            CreateMap<BLL.DAL.Entities.Place, PlaceViewModel>();
+            CreateMap<BLL.DAL.Entities.Place, PlaceViewModel>()
+                .ForMember(dest => dest.ActiveTaskCount, o => o.MapFrom(src => src.Tasks.Count));
             CreateMap<BLL.DAL.Entities.Place, PlaceEditModel>();
             CreateMap<PlaceEditModel, BLL.DAL.Entities.Place>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
