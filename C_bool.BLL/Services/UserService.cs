@@ -1,27 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
-using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace C_bool.BLL.Services
 {
-    public class UsersService : IUserService
+    public class UserService : IUserService
     {
         private readonly IRepository<User> _repository;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UsersService(IRepository<User> repository)
+        public UserService(IRepository<User> repository, IHttpContextAccessor httpContextAccessor, IPlaceService placesService)
         {
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+
+        public User GetCurrentUser()
+        {
+            var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return _repository.GetById(userId);
         }
 
         public List<User> SearchByName(string name)
         {
             var users = _repository.GetAllQueryable();
             return users.Where(u => u.UserName.Equals(name)).ToList();
-            //users.Where(u => u.Name.Equals(name)).ToList();
         }
 
         public List<User> SearchByEmail(string email)
@@ -53,15 +62,18 @@ namespace C_bool.BLL.Services
 
         public void AddUser(User user)
         {
-            //user.Id = Guid.NewGuid().ToString().Replace("-", "");
             user.CreatedOn = DateTime.UtcNow;
             _repository.Add(user);
         }
 
         //TODO should be implemented by sum of points from completed GameTasks list 
-        public void AddPoints(User user)
+        public void SetPoints(User user)
         {
-            throw new NotImplementedException();
+            var users = _repository.GetAllQueryable();
+
+            users.Single(u => u.Id == user.Id).Points = users.Single(u => u.Id == user.Id).UserGameTasks.Sum(ugt => ugt.GameTask.Points);
+
+            _repository.Update(user);
         }
 
         public void AddFileDataToRepository()
@@ -75,7 +87,6 @@ namespace C_bool.BLL.Services
 
             if (name != null)
             {
-                
                 users = users.Where(u => u.UserName.Contains(name));
             }
             if (email != null)
@@ -98,19 +109,46 @@ namespace C_bool.BLL.Services
             return users.ToList();
         }
 
-        //TODO: może zamiast User tylko UserId???
+        public void AddFavPlace(Place place)
+        {
+            var currentUser = GetCurrentUser();
+            currentUser.FavPlaces.Add(new UserPlace(currentUser, place));
+            _repository.Update(currentUser);
+        }
+
         public void AddFavPlace(User user, Place place)
         {
-            user.FavPlaces ??= new List<UserPlace>();
             user.FavPlaces.Add(new UserPlace(user, place));
             _repository.Update(user);
         }
 
+        public void AddTaskToUser(GameTask gameTask)
+        {
+            var currentUser = GetCurrentUser();
+
+            currentUser.UserGameTasks.Add(new UserGameTask(currentUser, gameTask));
+            _repository.Update(currentUser);
+        }
+
         public void AddTaskToUser(User user, GameTask gameTask)
         {
-            user.UserGameTasks ??= new List<UserGameTask>();
             user.UserGameTasks.Add(new UserGameTask(user, gameTask));
             _repository.Update(user);
+        }
+
+        public void SetTaskAsDone(GameTask gameTask)
+        {
+            var users = _repository.GetAllQueryable();
+            var currentUser = GetCurrentUser();
+
+            var gameTaskToBeDone =
+                users.Single(u => u.Id == currentUser.Id).UserGameTasks.Single(ugt => ugt.GameTask.Id == gameTask.Id);
+            gameTaskToBeDone.IsDone = true;
+
+            SetPoints(currentUser);
+
+            _repository.Update(currentUser);
+
         }
 
         public void SetTaskAsDone(User user, GameTask gameTask)
@@ -118,19 +156,45 @@ namespace C_bool.BLL.Services
             var users = _repository.GetAllQueryable();
 
             var gameTaskToBeDone =
-                users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks.SingleOrDefault(ugt => ugt.Id == gameTask.Id);
+                users.Single(u => u.Id == user.Id).UserGameTasks.Single(ugt => ugt.GameTask.Id == gameTask.Id);
             gameTaskToBeDone.IsDone = true;
+
+            SetPoints(user);
+
             _repository.Update(user);
                 
+        }
+
+        public List<GameTask> GetToDoTasks()
+        {
+            var users = _repository.GetAllQueryable();
+            var currentUser = GetCurrentUser();
+
+            var userGameTasks = users.Single(u => u.Id == currentUser.Id).UserGameTasks
+                .Where(ugt =>
+                    ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
 
         public List<GameTask> GetToDoTasks(User user)
         {
             var users = _repository.GetAllQueryable();
 
-            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+            var userGameTasks = users.Single(u => u.Id == user.Id).UserGameTasks
                 .Where(ugt =>
                     ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
+        }
+
+        public List<GameTask> GetInProgressTasks()
+        {
+            var users = _repository.GetAllQueryable();
+            var currentUser = GetCurrentUser();
+
+            var userGameTasks = users.Single(u => u.Id == currentUser.Id).UserGameTasks
+                .Where(ugt => ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
 
             return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
@@ -139,8 +203,19 @@ namespace C_bool.BLL.Services
         {
             var users = _repository.GetAllQueryable();
 
-            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+            var userGameTasks = users.Single(u => u.Id == user.Id).UserGameTasks
                 .Where(ugt => ugt.GameTask.ValidFrom <= DateTime.UtcNow && ugt.GameTask.IsActive && ugt.IsDone == false);
+
+            return userGameTasks.Select(ugt => ugt.GameTask).ToList();
+        }
+
+        public List<GameTask> GetDoneTasks()
+        {
+            var users = _repository.GetAllQueryable();
+            var currentUser = GetCurrentUser();
+
+            var userGameTasks = users.Single(u => u.Id == currentUser.Id).UserGameTasks
+                .Where(ugt => ugt.IsDone == true);
 
             return userGameTasks.Select(ugt => ugt.GameTask).ToList();
         }
@@ -149,7 +224,7 @@ namespace C_bool.BLL.Services
         {
             var users = _repository.GetAllQueryable();
 
-            var userGameTasks = users.SingleOrDefault(u => u.Id == user.Id)?.UserGameTasks
+            var userGameTasks = users.Single(u => u.Id == user.Id).UserGameTasks
                 .Where(ugt => ugt.IsDone == true);
 
             return userGameTasks.Select(ugt => ugt.GameTask).ToList();

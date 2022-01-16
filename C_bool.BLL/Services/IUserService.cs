@@ -7,6 +7,7 @@ namespace C_bool.BLL.Services
 {
     public interface IUserService
     {
+        User GetCurrentUser();
         List<User> SearchByName(string name);
         List<User> SearchByEmail(string email);
         List<User> SearchByGender(Gender gender);
@@ -14,8 +15,9 @@ namespace C_bool.BLL.Services
         List<User> OrderByPoints(bool isDescending);
         void AddFileDataToRepository();
         void AddUser(User user);
-        void AddPoints(User user);
+        void SetPoints(User user);
         List<User> SearchUsers(string name, string email, string gender, string isActive, string isDescending);
+        void AddFavPlace(Place place);
         void AddFavPlace(User user, Place place);
         void AddTaskToUser(User user, GameTask gameTask);
         void SetTaskAsDone(User user, GameTask gameTask);

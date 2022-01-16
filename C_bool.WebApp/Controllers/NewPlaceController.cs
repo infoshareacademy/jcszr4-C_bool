@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Helpers;
 using C_bool.BLL.Models.GooglePlaces;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
@@ -24,33 +23,35 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        
 
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        private readonly ApplicationDbContext _context;
-        private IRepository<Place> _placesRepository;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
 
-        private PlacesService _placesService;
-        private UsersService _usersService;
-        private readonly UserManager<User> _userManager;
+        private readonly IRepository<Place> _placesRepository;
+        private readonly IRepository<User> _usersRepository;
+        private readonly IRepository<GameTask> _gameTasksRepository;
 
-        private IHttpClientFactory _clientFactory;
-        private GoogleAPISettings _googleApiSettings = new();
+        private readonly IPlaceService _placesService;
+        private readonly IGooglePlaceService _googlePlaceService;
+        private readonly IUserService _usersService;
+
+        private readonly IHttpClientFactory _clientFactory;
+        
+        private readonly GoogleAPISettings _googleApiSettings = new();
+        private readonly GoogleApiAsync _googleApiAsync;
 
         public NewPlaceController(
             ILogger<HomeController> logger,
             IMapper mapper,
             IConfiguration configuration,
-            ApplicationDbContext context,
             IRepository<Place> placesRepository,
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
-            PlacesService placesService,
-            UsersService userService,
-            UserManager<User> userManager,
+            IPlaceService placesService,
+            IUserService userService,
+            IGooglePlaceService googlePlaceService,
             IHttpClientFactory clientFactory
         )
         {
@@ -58,28 +59,27 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
             _configuration = configuration;
             _configuration.GetSection(GoogleAPISettings.Position).Bind(_googleApiSettings);
-            _context = context;
             _placesRepository = placesRepository;
             _usersRepository = usersRepository;
             _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _usersService = userService;
-            _userManager = userManager;
             _clientFactory = clientFactory;
+            _googlePlaceService = googlePlaceService;
+            _googleApiAsync = new GoogleApiAsync(clientFactory, _googleApiSettings);
         }
 
         [Authorize]
         public ActionResult Index()
         {
-            var model = _placesService.TempGooglePlaces;
-            return View();
+            var model = _googlePlaceService.GetGooglePlacesForUser();
+            return View(model);
         }
 
         [Authorize]
         public ActionResult SearchNearby()
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
-            var user = _usersRepository.GetById(userId);
+            var user = _usersService.GetCurrentUser();
             var model = new NearbySearchRequest
             {
 
@@ -138,34 +138,21 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task AddToFavs([FromBody] ReturnString request)
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
-            var places = _placesRepository.GetAllQueryable();
-            var googlePlace = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault()!.FirstOrDefault(x => x.Id.Contains(request.Id));
-            if (googlePlace == null) return;
-            await AddGooglePlaceToRepository(googlePlace);
+            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
+            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+            _usersService.AddFavPlace(place);
+
         }
 
         [Authorize]
         [HttpPost]
         public async Task AddToRepository([FromBody] ReturnString request)
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
-            var places = _placesRepository.GetAllQueryable();
-            var googlePlace = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault()!.FirstOrDefault(x => x.Id.Contains(request.Id));
-            if (googlePlace == null) return;
-            await AddGooglePlaceToRepository(googlePlace);
-
-        }
-
-        public async Task AddGooglePlaceToRepository(GooglePlace googlePlace)
-        {
-            var places = _placesRepository.GetAllQueryable();
+            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
             var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-            place.CreatedById = _userManager.GetUserId(User);
-            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
-            var photo = await api.DownloadImageAsync(googlePlace, "600");
-            place.Photo = photo;
-            _placesRepository.Add(place);
+            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+            _placesService.AddPlace(place);
         }
 
         [Authorize]
@@ -173,13 +160,12 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
-            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
-            var userId = int.Parse(_userManager.GetUserId(User));
-            GooglePlaceHolder.CreateNewOrUpdateExisting(GooglePlaceHolder._tempPlaces, userId, await api.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages));
+            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages));
 
-            var model = GooglePlaceHolder._tempPlaces.Where(x => userId.Equals(x.Key)).Select(x => x.Value).FirstOrDefault();
-            ViewBag.Message = api.Message;
-            ViewBag.QueryStatus = api.QueryStatus;
+            var model = _googlePlaceService.GetGooglePlacesForUser();
+
+            ViewBag.Message = _googleApiAsync.Message;
+            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
@@ -188,13 +174,11 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchByNameAsync(NameSearchRequest request)
         {
-            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
-            var userId = int.Parse(_userManager.GetUserId(User));
-            GooglePlaceHolder.CreateNewOrUpdateExisting(GooglePlaceHolder._tempPlaces, userId, await api.GetBySearchQuery(query: request.SearchPhrase, language: "pl"));
+            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetBySearchQuery(query: request.SearchPhrase, language: "pl"));
 
-            var model = GooglePlaceHolder._tempPlaces.Where(x => userId.Equals(x.Key)).Select(x => x.Value).FirstOrDefault();
-            ViewBag.Message = api.Message;
-            ViewBag.QueryStatus = api.QueryStatus;
+            var model = _googlePlaceService.GetGooglePlacesForUser();
+            ViewBag.Message = _googleApiAsync.Message;
+            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 

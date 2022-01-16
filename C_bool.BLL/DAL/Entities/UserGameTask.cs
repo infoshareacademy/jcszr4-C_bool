@@ -1,10 +1,14 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C_bool.BLL.DAL.Entities
 {
-    public class UserGameTask : Entity
+    public class UserGameTask
     {
+        [Key, Column(Order = 0)]
         public int UserId { get; set; }
+        [Key, Column(Order = 1)]
         public int GameTaskId { get; set; }
         public virtual User User { get; set; }
         public virtual GameTask GameTask { get; set; }
