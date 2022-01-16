@@ -21,7 +21,6 @@ namespace C_bool.BLL.Services
         {
             var queryPlaces = _placeRepository.GetAllQueryable();
             return SearchNearbyPlaces.GetPlaces(queryPlaces.ToList(), latitude, longitude, radius);
-
         }
 
         public Place GetPlaceById(int placeId)

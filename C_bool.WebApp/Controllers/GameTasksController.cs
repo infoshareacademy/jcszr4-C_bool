@@ -27,7 +27,7 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
 
-        private readonly IUsersService _userService;
+        private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
         private readonly UserManager<User> _userManager;
 
@@ -40,8 +40,8 @@ namespace C_bool.WebApp.Controllers
             IRepository<Place> placesRepository,
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
-            IPlacesService placesService,
-            IUsersService usersService,
+            IPlaceService placesService,
+            IUserService usersService,
             IGameTaskService gameTaskService,
             UserManager<User> userManager)
         {

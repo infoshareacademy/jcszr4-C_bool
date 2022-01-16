@@ -7,6 +7,7 @@ namespace C_bool.BLL.Services
 {
     public interface IUserService
     {
+        int GetCurrentUserId();
         User GetCurrentUser();
         List<User> SearchByName(string name);
         List<User> SearchByEmail(string email);

@@ -25,6 +25,7 @@ namespace C_bool.WebApp.Controllers
     public class PlacesController : Controller
     {
         private readonly ILogger<PlacesController> _logger;
+        private IUserService _userService;
         private IPlaceService _placesService;
         private IRepository<Place> _placesRepository;
 
@@ -33,12 +34,9 @@ namespace C_bool.WebApp.Controllers
         private readonly IMapper _mapper;
 
         private readonly ApplicationDbContext _context;
-        private IRepository<Place> _placesRepository;
         private IRepository<User> _usersRepository;
         private IRepository<GameTask> _gameTasksRepository;
 
-        private PlacesService _placesService;
-        private UsersService _usersService;
         private readonly UserManager<User> _userManager;
 
         private IHttpClientFactory _clientFactory;
@@ -51,8 +49,8 @@ namespace C_bool.WebApp.Controllers
             IRepository<Place> placesRepository,
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
-            PlacesService placesService,
-            UsersService userService,
+            IPlaceService placesService,
+            IUserService userService,
             UserManager<User> userManager,
             IHttpClientFactory clientFactory
             )
@@ -65,7 +63,7 @@ namespace C_bool.WebApp.Controllers
             _usersRepository = usersRepository;
             _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
-            _usersService = userService;
+            _userService = userService;
             _userManager = userManager;
             _clientFactory = clientFactory;
         }

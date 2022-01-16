@@ -20,6 +20,11 @@ namespace C_bool.BLL.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        //Andrzeju dopisałem
+        public int GetCurrentUserId()
+        {
+            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        }
 
         public User GetCurrentUser()
         {
