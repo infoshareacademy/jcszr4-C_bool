@@ -18,10 +18,17 @@ namespace C_bool.BLL.Repositories
         }
         public void Add(T entity)
         {
+            //check if place with Googleid is in database (same place) - if so, don't add to repository
+            if (typeof(Place).IsAssignableFrom(typeof(T)))
+            {
+                var place = entity as Place;
+                if (_context.Places.Any(x => place.GoogleId.Contains(x.GoogleId))) return;
+            }
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
             }
+            entity.CreatedOn = DateTime.Now;
             _entities.Add(entity);
             _context.SaveChanges();
         }
@@ -53,7 +60,6 @@ namespace C_bool.BLL.Repositories
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-
             _entities.Update(entity);
             _context.SaveChanges();
         }

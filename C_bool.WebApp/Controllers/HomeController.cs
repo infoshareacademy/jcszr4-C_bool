@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Logic;
@@ -33,7 +34,7 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
         private readonly PlacesService _placesService;
-        private readonly UsersService _userService;
+        private readonly UsersService _usersService;
         private readonly UserManager<User> _userManager;
 
 
@@ -57,12 +58,12 @@ namespace C_bool.WebApp.Controllers
             _usersRepository = usersRepository;
             _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
-            _userService = usersService;
+            _usersService = usersService;
             _userManager = userManager;
         }
 
         [Authorize]
-        public async Task<IActionResult> IndexAsync(string searchString, string searchType, double range)
+        public async Task<IActionResult> Index(string searchString, string searchType, double range)
         {
             var userId = int.Parse(_userManager.GetUserId(User));
             var user = _usersRepository.GetById(userId);
@@ -77,9 +78,22 @@ namespace C_bool.WebApp.Controllers
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
 
-            //var user = _userManager.GetUserId(User);
+            //list of UserViewModel with top 10 users (by points count)
+            var usersCount = _usersRepository.GetAllQueryable().Count();
+            ViewBag.UserRank = _usersService.OrderByPoints(true).GetRange(0,usersCount < 10 ? usersCount : 10 ).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
 
+            ViewBag.UserPoints = user.Points;
+            ViewBag.UserRankPosition = _usersRepository.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
+
+            //list of all places - count, last added
             var places = _placesRepository.GetAllQueryable();
+            ViewBag.AllPlacesCount = places.Count();
+            ViewBag.LastAddedPlace = _mapper.Map<PlaceViewModel>(places.OrderBy(x=> x.CreatedOn).LastOrDefault());
+
+            //list of all gametasks in places - count
+            var gameTasks = _gameTasksRepository.GetAllQueryable();
+            ViewBag.ActiveTasksCount = gameTasks.Count(x => x.IsActive);
+            ViewBag.LastAddedGameTask = gameTasks.OrderBy(x => x.CreatedOn).LastOrDefault();
 
             //query only properties used to calculate range ang get place Id
             var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
@@ -110,8 +124,9 @@ namespace C_bool.WebApp.Controllers
                 }
             }
 
-            var placesList = await places.AsNoTracking().ToListAsync();
-            ViewBag.PlacesCount = places.Count();
+
+            var placesList = await places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToListAsync();
+            ViewBag.NearbyPlacesCount = places.Count();
             ViewBag.NearbyPlaces = placesList;
 
             return View();

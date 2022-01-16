@@ -1,17 +1,16 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using System.Text.Json
-@using C_bool.BLL.DAL.Entities
 @model List<C_bool.WebApp.Models.Place.PlaceViewModel>
-@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings
 
-    @{
-        var userLatitude = ViewBag.Latitude;
-        var userLongitude = ViewBag.Longitude;
-        var mapZoom = ViewBag.MapZoom;
-    }
+@{
+    var userLatitude = ViewBag.Latitude;
+    var userLongitude = ViewBag.Longitude;
+    var mapZoom = ViewBag.MapZoom;
+}
 
-<div id="dvMap" style="width: 100%; height: 60vh; border-radius: 20px 20px 20px 20px;"></div>
+<div id="dvMap" style="width: 100%; height: 100%; border-radius: 20px 20px 20px 20px;"></div>
 
 <script type="text/javascript">
     var markers = JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model))');
@@ -50,18 +49,6 @@
 
             (function (marker, data) {
 
-                var contentString2 =
-                    '<div id="content">' +
-                        '<div id="siteNotice">' +
-                        "</div>" +
-                        '<h1 id="firstHeading" class="firstHeading">'+ data.Name +'</h1>' +
-                        '<div id="bodyContent">' +
-                    "<p><b>" + data.Address + "</b></p>" +
-                    "<p>" + data.ShortDescription + "</p>" +
-                    "<p>Ma aktywnych " + data.ActiveTaskCount + " zadań</p>" +
-                        "</div>" +
-                    "</div>";
-
                 var contentString =
                     "<div class=\"card-body\">" +
                     "<h2 class=\"fs-5 fw-bold mb-1\">" + data.Name + "</h2>" +
@@ -77,8 +64,9 @@
                                 "</div>" +
                             "</div>" +
                     "</div></br>" +
+                    "<a href=\"/Places/Details/" + data.Id + "\" class=\"btn btn-sm btn-primary\">Szczegóły miejsca</a><a> </a>" +
                     "<a href=\"#\" class=\"btn btn-sm btn-primary\">Przejdź do zadań</a><a> </a>" +
-                    "<a href=\"https://www.google.com/maps/search/?api=1&query=" + data.Latitude + "%2C" + data.Longitude + "\" class=\"btn btn-sm btn-primary\" target=\"_blank\" rel=\"noopener\">Pokaż na Google Maps</a>" +
+                    "<a href=\"https://www.google.com/maps/dir/?api=1&origin=" + @Html.Raw(userLatitude) + "%2C" + @Html.Raw(userLongitude) + "&destination=" + data.Latitude + "%2C" + data.Longitude + "\" class=\"btn btn-sm btn-primary\" target=\"_blank\" rel=\"noopener\">Pokaż na Google Maps</a>" +
                     "</div>";
 
                 google.maps.event.addListener(marker,

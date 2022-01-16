@@ -98,6 +98,7 @@ namespace C_bool.BLL.Services
             return users.ToList();
         }
 
+        //TODO: może zamiast User tylko UserId???
         public void AddFavPlace(User user, Place place)
         {
             user.FavPlaces ??= new List<UserPlace>();

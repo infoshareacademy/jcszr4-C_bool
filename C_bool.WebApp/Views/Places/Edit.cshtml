@@ -3,61 +3,111 @@
 @model C_bool.WebApp.Models.Place.PlaceEditModel
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 
-<h1>Edytuj miejsce</h1>
+@{
+    ViewData["Title"] = "Edytuj miejsce";
+}
 
-<h4>Zmień dane lokalizacji</h4>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form enctype="multipart/form-data" asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input id="address" asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ShortDescription" class="control-label"></label>
-                <input asp-for="ShortDescription" class="form-control" />
-                <span asp-validation-for="ShortDescription" class="text-danger"></span>
-            </div>
-
-            <!--Upload zdjęcia -->
-            <div class="form-group">
-                <div class="col-md-10">
-                    <p>Dodaj zdjęcie</p>
-                    <input class="form-control" name="file" type="file" />
+<form enctype="multipart/form-data" asp-action="Edit">
+    <div class="row">
+        <div class="col-12">
+            <!-- Tab -->
+            <div class="row">
+                <div class="col-md-4">
+                    <h1>Edytuj miejsce</h1>
+                    <h4>Zmień dane wybranego miejsca</h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="nav-wrapper position-relative">
+                        <ul class="nav nav-pills nav-pill-circle mb-3" id="tab-34" role="tablist">
+                            <li class="nav-item me-3 me-md-0">
+                                <a class="nav-link text-sm-center active" aria-label="first navigation tab" id="tab-create-map" data-bs-toggle="tab" href="#create-map" role="tab" aria-controls="create-map" aria-selected="true">
+                                    <span class="nav-link-icon d-block">
+                                        <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item me-3 me-md-0">
+                                <a class="nav-link text-sm-center" aria-label="second navigation tab" id="tab-create-data" data-bs-toggle="tab" href="#create-data" role="tab" aria-controls="create-data" aria-selected="false">
+                                    <span class="nav-link-icon d-block">
+                                        <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item me-3 me-md-0">
+                                <a class="nav-link text-sm-center" aria-label="third navigation tab" id="tab-create-description" data-bs-toggle="tab" href="#create-description" role="tab" aria-controls="create-description" aria-selected="false">
+                                    <span class="nav-link-icon d-block">
+                                        <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path></svg>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item me-3 me-md-0 align-items-center">
+                                <div class="form-group">
+                                    <input type="submit" value="Zapisz zmiany" class="btn btn-danger btn-lg d-block" style="margin-top: 15px;" />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            <!-- End of Tab Nav -->
+            <!-- Tab Content -->
+            <div>
+                <div class="card-body p-0">
+                    <div class="tab-content" id="tabcontentexample-5" style="height: calc(100vh - 210px);">
+                        <div class="tab-pane fade show active" id="create-map" role="tabpanel" aria-labelledby="tab-link-example-13">
+                            <div id="map" style="background-color: gainsboro; width: 100%; height: calc(100vh - 210px);"></div>
+                        </div>
+                        <div class="tab-pane fade" id="create-data" role="tabpanel" aria-labelledby="tab-link-example-14">
 
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="Name" class="control-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Address" class="control-label"></label>
+                                <input id="address" asp-for="Address" value="Brak adresu" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <!--Upload zdjęcia -->
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <p>Dodaj zdjęcie</p>
+                                    <input class="form-control" name="file" type="file" accept="image/png, image/jpeg" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ShortDescription" class="control-label"></label>
+                                <textarea asp-for="ShortDescription" class="form-control"></textarea>
+                                <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                            </div>
 
-            <div class="form-group">
-                <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
+                            <div class="form-group">
+                                <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
+                            </div>
+
+                        </div>
+                        <div class="tab-pane fade" id="create-description" role="tabpanel" aria-labelledby="tab-link-example-15">
+                            <div class="form-group">
+                                <label asp-for="Description" class="control-label"></label>
+                                <textarea id="description" asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
-            </div>
-            <br />
-            <div class="form-group">
-                <input type="submit" value="Zapisz" class="btn btn-primary btn-lg" />
-            </div>
-        </form>
+            <!-- End of Tab -->
+        </div>
     </div>
-    <div class="col">
-        <div id="map" style="background-color: gainsboro; height: 80vh; width: 100%;"></div>
-    </div>
-</div>
+
+
+</form>
+
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
@@ -70,18 +120,36 @@
         var myLatlng;
 
 
+        function showGeolocationError(error) {
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+                ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
+                break;
+            case error.TIMEOUT:
+                ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
+                break;
+            case error.UNKNOWN_ERROR:
+                ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
+                break;
+            }
+        }
+
         // initialise Google MapView
         function initMap() {
-            const latitude = parseFloat(document.getElementById('latitudeForm').value);
-            const longitude = parseFloat(document.getElementById('longitudeForm').value);
+            const placelatitude = parseFloat(document.getElementById('latitudeForm').value);
+            const placelongitude = parseFloat(document.getElementById('longitudeForm').value);
 
             geocoder = new google.maps.Geocoder();
 
-            myLatlng = { lat: latitude, lng: longitude };
+            myLatlng = { lat: placelatitude, lng: placelongitude };
 
             const map = new google.maps.Map(document.getElementById("map"),
                 {
-                    zoom: 20,
+                    zoom: 16,
+                    mapId: 'c67cdd640e77cc91',
                     center: myLatlng,
                 });
 
@@ -139,5 +207,31 @@
         }
 
         window.addEventListener("load", initMap);
+    </script>
+
+    <!-- TinyMCE - rich text editor used in new place / gametask description etc. -->
+    <script>
+        tinymce.init({
+            selector: '#description',
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | outdent indent | image',
+            language: 'pl',
+            height: 600
+        });
+        tinymce.init({
+            selector: '#short-description',
+            plugins: [
+                'advlist autolink lists preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'wordcount'
+            ],
+            toolbar: 'undo redo | bold italic ',
+            language: 'pl',
+            height: 300
+        });
     </script>
 }

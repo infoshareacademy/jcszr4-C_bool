@@ -177,7 +177,7 @@
                                 </a>
                             </li>
                             <li class="nav-item @(controller == "places" && action == "favourities" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Favourities">
+                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index" asp-route-SearchOnlyFavs="true">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                                     </span>
@@ -235,7 +235,7 @@
                                         <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compass" viewBox="0 0 496 512"><path fill="currentColor" d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z" /></svg>
                                         @* <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>*@
                                     </span>
-                                    <span class="sidebar-text">Zadania w pobliżu</span>
+                                    <span class="sidebar-text">W pobliżu</span>
                                 </a>
                             </li>
                             <li class="nav-item @(controller == "gametasks" && action == "mytasks" ? "active" : "")">
@@ -308,20 +308,9 @@
 
         <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
             <div class="container-fluid px-0">
-                <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
+                <div class="d-flex justify-content-between w-100 mb-2" id="navbarSupportedContent">
                     <div class="d-flex align-items-center">
-                        <!-- Search form -->
-                        @*<form class="navbar-search form-inline" id="navbar-search-main">
-                                <div class="input-group input-group-merge search-bar">
-                                    <span class="input-group-text" id="topbar-addon">
-                                        <svg class="icon icon-xs" x-description="Heroicon name: solid/search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="text" class="form-control" id="topbarInputIconLeft" placeholder="Search" aria-label="Search" aria-describedby="topbar-addon">
-                                </div>
-                            </form>*@
-                        <!-- / Search form -->
+
                     </div>
                     <!-- user navbar -->
                     @if (SignInManager.IsSignedIn(User))
@@ -332,7 +321,7 @@
                                     <div class="media d-flex align-items-center">
                                         <img class="avatar rounded-circle" alt="Image placeholder" src="/assets/img/team/profile-picture-3.jpg">
                                         <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
-                                            <span class="mb-0 fw-bold text-gray-900">@User.Identity.Name</span>
+                                            <span class="mb-0 fw-bold text-gray-900">@User.Identity?.Name</span>
                                         </div>
                                     </div>
                                 </a>
@@ -408,18 +397,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 
-    <!-- TinyMCE - rich text editor used in new place / gametask description etc. -->
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            plugins: ['advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-            ],
-            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | outdent indent | image',
-            language: 'pl'
-        });
-    </script>
 
     <!-- Notification window. -->
     <script>

@@ -9,26 +9,14 @@ namespace C_bool.WebApp.ViewComponents
 {
     public class MapView : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<Place> placesList, double range)
+        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range)
         {
-            List<PlaceViewModel> placesViewList = new();
             foreach (var item in placesList)
             {
-                var viewModel = new PlaceViewModel();
-                viewModel.Id = item.Id;
-                viewModel.Name = item.Name?.Replace("\"","");
-                viewModel.Address = item.Address?.Replace("\"", "");
-                viewModel.ShortDescription = item.ShortDescription?.Replace("\"", "");
-                viewModel.Latitude = item.Latitude;
-                viewModel.Longitude = item.Longitude;
-                if (item.Tasks != null)
-                {
-                    viewModel.ActiveTaskCount = item.Tasks.Count;
-                }
-                placesViewList.Add(viewModel);
+                item.Name = item.Name?.Replace("\"","");
+                item.Address = item.Address?.Replace("\"", "");
+                item.ShortDescription = item.ShortDescription?.Replace("\"", "");
             }
-
-            range = range;
 
             var zoom = range switch
             {
@@ -42,13 +30,13 @@ namespace C_bool.WebApp.ViewComponents
                 > 200000 and <= 400000 => 8,
                 > 400000 and <= 800000 => 7,
                 > 800000 and <= 1600000 => 6,
-                > 1600000 => 5,
+                > 1600000 => 4,
                 _ => 15
             };
 
             ViewBag.MapZoom = zoom;
 
-            return View("MapView", placesViewList);
+            return View("MapView", placesList);
         }
     }
 }

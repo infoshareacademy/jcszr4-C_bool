@@ -139,18 +139,10 @@ namespace C_bool.WebApp.Controllers
         public async Task AddToFavs([FromBody] ReturnString request)
         {
             var userId = int.Parse(_userManager.GetUserId(User));
-            var placesList = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault();
-            if (placesList != null)
-                foreach (var googlePlace in placesList)
-                {
-                    var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-                    var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
-                    var photo = await api.DownloadImageAsync(googlePlace, "600");
-                    place.Photo = photo;
-
-                    _placesRepository.Add(place);
-                    _usersService.AddFavPlace(_usersRepository.GetById(userId), place);
-                }
+            var places = _placesRepository.GetAllQueryable();
+            var googlePlace = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault()!.FirstOrDefault(x => x.Id.Contains(request.Id));
+            if (googlePlace == null) return;
+            await AddGooglePlaceToRepository(googlePlace);
         }
 
         [Authorize]
@@ -158,16 +150,22 @@ namespace C_bool.WebApp.Controllers
         public async Task AddToRepository([FromBody] ReturnString request)
         {
             var userId = int.Parse(_userManager.GetUserId(User));
-            var placesList = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault();
-            if (placesList != null)
-                foreach (var googlePlace in placesList)
-                {
-                    var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-                    var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
-                    var photo = await api.DownloadImageAsync(googlePlace, "600");
-                    place.Photo = photo;
-                    _placesRepository.Add(place);
-                }
+            var places = _placesRepository.GetAllQueryable();
+            var googlePlace = GooglePlaceHolder._tempPlaces.Where(place => userId.Equals(place.Key)).Select(x => x.Value).FirstOrDefault()!.FirstOrDefault(x => x.Id.Contains(request.Id));
+            if (googlePlace == null) return;
+            await AddGooglePlaceToRepository(googlePlace);
+
+        }
+
+        public async Task AddGooglePlaceToRepository(GooglePlace googlePlace)
+        {
+            var places = _placesRepository.GetAllQueryable();
+            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+            place.CreatedById = _userManager.GetUserId(User);
+            var api = new GoogleApiAsync(_clientFactory, _googleApiSettings.GoogleAPIKey);
+            var photo = await api.DownloadImageAsync(googlePlace, "600");
+            place.Photo = photo;
+            _placesRepository.Add(place);
         }
 
         [Authorize]
