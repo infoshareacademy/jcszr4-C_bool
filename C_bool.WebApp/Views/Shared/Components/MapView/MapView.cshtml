@@ -1,6 +1,7 @@
 ﻿@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using System.Text.Json
+@using C_bool.WebApp.ViewComponents
 @model List<C_bool.WebApp.Models.Place.PlaceViewModel>
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings
 
@@ -8,6 +9,7 @@
     var userLatitude = ViewBag.Latitude;
     var userLongitude = ViewBag.Longitude;
     var mapZoom = ViewBag.MapZoom;
+    var mapBounds = (MapBounds)ViewBag.Bounds;
 }
 
 <div id="dvMap" style="width: 100%; height: 100%; border-radius: 20px 20px 20px 20px;"></div>
@@ -19,11 +21,23 @@
 
     function initMarkersMap() {
         var userLatlng = new google.maps.LatLng(@Html.Raw(userLatitude), @Html.Raw(userLongitude));
+
+        var MAP_BOUNDS = {
+            north: @Html.Raw(mapBounds.North),
+            south: @Html.Raw(mapBounds.South),
+            west: @Html.Raw(mapBounds.West),
+            east: @Html.Raw(mapBounds.East),
+        };
+
         var mapOptions = {
             center: userLatlng,
+            restriction: {
+                latLngBounds: MAP_BOUNDS,
+                strictBounds: false,
+            },
             zoom: @Html.Raw(mapZoom),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            mapId: 'c67cdd640e77cc91'
+            mapId: '@Html.Raw(_appSettings.Value.CustomMapId)'
         };
 
         var infoWindow = new google.maps.InfoWindow();

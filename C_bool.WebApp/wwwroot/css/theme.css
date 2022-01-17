@@ -2653,7 +2653,18 @@ textarea.form-control-lg {
     border-radius: .25rem
 }
 
-    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: #2f3c48
+    }
+
+.nav-pills-border .nav-link {
+    background: #ffffff;
+    border: 5px slategray;
+    border-radius: .25rem
+}
+
+    .nav-pills-border .nav-link.active, .nav-pills-border .show > .nav-link {
         color: #fff;
         background-color: #2f3c48
     }

@@ -6,49 +6,55 @@
 @model IEnumerable<C_bool.BLL.Models.GooglePlaces.GooglePlace>
 
 @{
+    var userLatitude = (double)ViewBag.Latitude;
+    var userLongitude = (double)ViewBag.Longitude;
 }
 
-<div class="card-deck" style="align-content: center">
+<div class="card-group">
     @foreach (var item in Model)
     {
-        <div class="card mb-3" style="float: left; min-width: 450px; max-width: 500px; width: 50%; height: 550px; margin: 10px;">
-            <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-            <div class="card-body">
-                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-                <h6 class="card-subtitle text-muted">Ocena: @Html.DisplayFor(modelItem => item.Rating) / (@Html.DisplayFor(modelItem => item.UserRatingsTotal)) wszystkich ocen</h6>
-            </div>
-            @if (item.GooglePhotos is { Count: > 0 } && _appSettings.Value.EnablePlacePhoto)
-            {
-                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                     src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.GooglePhotos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
-            }
-            else
-            {
-                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                     src="/img/image-placeholder.jpg" alt="Card image cap">
-            }
-            <div class="card-body">
-                <p class="card-text"></p>
-            </div>
-            <ul class="list-group list-group-flush">
-                <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-                    <div class="btn-group">
-                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <l class="bi-file-plus"> Dodaj</l>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToRepository','@item.Id')"><l class="bi-heart"> Do bazy</l></a></li>
-                            <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToFavs','@item.Id')"><l class="bi-heart"> Do ulubionych</l></a></li>
-                            <li><a class="dropdown-item" onclick="postToController('NewPlace','AddNewGameTask','@item.Id')"><l class="bi-heart"> Zadanie</l></a></li>
-                        </ul>
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                    @*<button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="postToController('NewPlace','AddToFavs','@item.Id')"><l class="bi-heart"> Ulubione</l></button>*@
-                </div>
-            </ul>
-            <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    <div class="card mb-3 shadow" style="min-width: 450px; max-width: 600px; margin: 10px;">
+        <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+        <div class="card-body">
+            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
 
-                @foreach (var type in item.Types)
+            <h6 class="card-subtitle text-muted">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(userLatitude, userLongitude, item.Geometry.Location.Latitude, item.Geometry.Location.Longitude)) od Ciebie</h6>
+        </div>
+        @if (item.GooglePhotos is { Count: > 0 } && _appSettings.Value.EnablePlacePhoto)
+        {
+            <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                 src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=@Html.DisplayFor(modelItem => item.GooglePhotos[0].PhotoReference)&key=@_appSettings.Value.GoogleAPIKey" alt="Card image cap">
+        }
+        else
+        {
+            <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                 src="/img/image-placeholder.jpg" alt="Card image cap">
+        }
+        <div class="card-body">
+            <p class="card-text"></p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+                <div class="btn-group">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <l class="bi-file-plus"> Dodaj</l>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToRepository','@item.Id')"><l class="bi-heart"> Do bazy</l></a></li>
+                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToFavs','@item.Id')"><l class="bi-heart"> Do ulubionych</l></a></li>
+                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddNewGameTask','@item.Id')"><l class="bi-heart"> Zadanie</l></a></li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+            </div>
+        </ul>
+
+
+        <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+
+            @if (item.Types != null)
+            {
+                foreach (var type in item.Types)
                 {
                     if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
                     {
@@ -62,16 +68,35 @@
                     }
                     else
                     {
-                        <label style="color:silver"> @type |</label>
+                        <label style="color: silver"> @type |</label>
                     }
                 }
-                @if (item.Types.Count == 0)
-                {
-                    <label>Brak kategorii</label>
-                }
+            }
+            else
+            {
+                <label>Brak kategorii</label>
+            }
+        </div>
+    </div>
+    }
+    @*</div>*@
+</div>
 
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
             </div>
         </div>
-    }
-
+    </div>
 </div>
