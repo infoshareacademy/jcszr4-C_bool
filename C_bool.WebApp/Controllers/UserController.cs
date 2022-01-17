@@ -106,7 +106,7 @@ namespace C_bool.WebApp.Controllers
                 return View(model);
             }
 
-            _userService.AddUser(model);
+            _userRepository.Add(model);
 
             try
             {
