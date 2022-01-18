@@ -106,7 +106,7 @@
 
     <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
         <a class="navbar-brand me-lg-5" href="/index.html">
-            <img class="navbar-brand-dark" src="/img/header-logo-name.png" alt="Cebool" /> <img class="navbar-brand-light" src="/assets/img/brand/dark.svg" alt="Volt logo" />
+            <img class="navbar-brand-dark" src="/img/header-logo-name.png" alt="Cebool" /> <img class="navbar-brand-light" src="/img/header-logo-name.png" alt="Volt logo" />
         </a>
         <div class="d-flex align-items-center">
             <button class="navbar-toggler d-lg-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,7 +152,7 @@
                 <!-- Sidebar - places -->
                 <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
-                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages-places">
                         <span>
                             <span class="sidebar-icon">
                                 <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>
@@ -164,7 +164,7 @@
                         </span>
                     </span>
                     <div class="multi-level collapse @(controller is "places" or "newplace" ? "show" : "") " role="list"
-                         id="submenu-pages" aria-expanded="false">
+                         id="submenu-pages-places" aria-expanded="false">
                         <ul class="flex-column nav">
                             <li class="nav-item @(controller == "places" && action == "index" ? "active" : "")">
 
@@ -214,7 +214,7 @@
                 <!-- Sidebar - game tasks -->
                 <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
-                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages-gametask">
                         <span>
                             <span class="sidebar-icon">
                                 @*<svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>*@
@@ -227,7 +227,7 @@
                         </span>
                     </span>
                     <div class="multi-level collapse @(controller == "gametasks" ? "show" : "") " role="list"
-                         id="submenu-pages" aria-expanded="false">
+                         id="submenu-pages-gametask" aria-expanded="false">
                         <ul class="flex-column nav">
                             <li class="nav-item @(controller == "gametasks" && action == "index" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index">
@@ -261,7 +261,7 @@
                 <!-- Sidebar - users -->
                 <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
-                          data-bs-toggle="collapse" data-bs-target="#submenu-pages">
+                          data-bs-toggle="collapse" data-bs-target="#submenu-pages-admin">
                         <span>
                             <span class="sidebar-icon">
                                 <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
@@ -273,7 +273,7 @@
                         </span>
                     </span>
                     <div class="multi-level collapse @(controller == "user" ? "show" : "") " role="list"
-                         id="submenu-pages" aria-expanded="false">
+                         id="submenu-pages-admin" aria-expanded="false">
                         <ul class="flex-column nav">
                             <li class="nav-item @(controller == "user" && action == "index" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">
