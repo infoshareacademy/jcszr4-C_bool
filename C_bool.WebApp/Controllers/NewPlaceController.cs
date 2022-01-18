@@ -75,6 +75,8 @@ namespace C_bool.WebApp.Controllers
             var user = _usersService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
+            ViewBag.Message = "Nie udało się utworzyć miejsca";
+            ViewBag.Status = true;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
             return View(model);

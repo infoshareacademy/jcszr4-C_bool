@@ -85,26 +85,26 @@ namespace C_bool.WebApp.Controllers
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
 
-            var places = _placesService.GetNearbyPlaces(user.Latitude, user.Longitude, range).ToList();
+            var places = _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range);
 
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
             {
                 //TODO: tu leci wyjatek bo opis czesto jest nulem 
-                places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString)).ToList();
+                places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
 
             if (searchOnlyFavs)
             {
                 if (user.FavPlaces != null)
                 {
-                    places = places.Where(p => _userService.GetFavPlaces().Contains(p)).ToList();
+                    places = places.Where(p => _userService.GetFavPlaces().Contains(p));
                 }
             }
 
             if (searchOnlyWithTasks)
             {
-                places = places.Where(p => p.Tasks.Any()).ToList();
+                places = places.Where(p => p.Tasks.Any());
             }
 
             var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();

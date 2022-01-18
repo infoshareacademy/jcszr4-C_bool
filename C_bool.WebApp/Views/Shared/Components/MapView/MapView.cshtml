@@ -9,7 +9,7 @@
     var userLatitude = ViewBag.Latitude;
     var userLongitude = ViewBag.Longitude;
     var mapZoom = ViewBag.MapZoom;
-    var mapBounds = (MapBounds)ViewBag.Bounds;
+    var noBounds = (bool)ViewBag.NoBounds;
 }
 
 <div id="dvMap" style="width: 100%; height: 100%; border-radius: 20px 20px 20px 20px;"></div>
@@ -22,19 +22,11 @@
     function initMarkersMap() {
         var userLatlng = new google.maps.LatLng(@Html.Raw(userLatitude), @Html.Raw(userLongitude));
 
-        var MAP_BOUNDS = {
-            north: @Html.Raw(mapBounds.North),
-            south: @Html.Raw(mapBounds.South),
-            west: @Html.Raw(mapBounds.West),
-            east: @Html.Raw(mapBounds.East),
-        };
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(userLatlng);
 
         var mapOptions = {
             center: userLatlng,
-            restriction: {
-                latLngBounds: MAP_BOUNDS,
-                strictBounds: false,
-            },
             zoom: @Html.Raw(mapZoom),
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             mapId: '@Html.Raw(_appSettings.Value.CustomMapId)'
@@ -53,6 +45,9 @@
         for (i = 0; i < markers.length; i++) {
             var data = markers[i];
             var myLatlng = new google.maps.LatLng(data.Latitude, data.Longitude);
+
+            bounds.extend(myLatlng);
+
             var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
@@ -90,6 +85,11 @@
                         infoWindow.open(map, marker);
                     });
             })(marker, data);
+        }
+
+        @if (!noBounds)
+        {
+            @Html.Raw("map.fitBounds(bounds);");
         }
     }
 

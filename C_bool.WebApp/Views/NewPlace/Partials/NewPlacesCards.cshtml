@@ -13,7 +13,7 @@
 <div class="card-group">
     @foreach (var item in Model)
     {
-    <div class="card mb-3 shadow" style="min-width: 450px; max-width: 600px; margin: 10px;">
+    <div class="card mb-3 shadow animation-scale" style="min-width: 450px; max-width: 600px; margin: 10px;">
         <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
         <div class="card-body">
             <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>

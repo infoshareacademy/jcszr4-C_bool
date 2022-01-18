@@ -10,7 +10,7 @@ namespace C_bool.WebApp.ViewComponents
 {
     public class MapView : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range)
+        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range, bool noBounds = false)
         {
             foreach (var item in placesList)
             {
@@ -30,41 +30,15 @@ namespace C_bool.WebApp.ViewComponents
                 > 100000 and <= 200000 => 9,
                 > 200000 and <= 400000 => 8,
                 > 400000 and <= 800000 => 7,
-                > 800000 and <= 1600000 => 6,
-                > 1600000 => 4,
+                > 800000 and <= 1600000 => 5,
+                > 1600000 => 3,
                 _ => 15
             };
 
-            var bounds = new MapBounds();
-
-            if (placesList.Count > 0)
-            {
-
-                bounds.North = placesList.Max(x => x.Latitude) + 0.1;
-                bounds.South = placesList.Min(x => x.Latitude) - 0.1;
-                bounds.West = placesList.Min(x => x.Longitude) - 0.1;
-                bounds.East = placesList.Max(x => x.Longitude) + 0.1;
-            }
-            else
-            {
-                bounds.North = 90;
-                bounds.South = -90;
-                bounds.West = -180;
-                bounds.East = 180;
-            }
-
             ViewBag.MapZoom = zoom;
-            ViewBag.Bounds = bounds;
+            ViewBag.NoBounds = noBounds;
 
             return View("MapView", placesList);
         }
-    }
-
-    public class MapBounds
-    {
-        public double North { get; set; }
-        public double South { get; set; }
-        public double West { get; set; }
-        public double East { get; set; }
     }
 }

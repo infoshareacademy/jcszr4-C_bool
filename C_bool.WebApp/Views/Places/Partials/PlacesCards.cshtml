@@ -12,7 +12,7 @@
     @*<div class="card-deck" style="height: 80vh; align-content: center">*@
     @foreach (var item in Model)
     {
-        <div class="card mb-3 shadow" style="min-width: 450px; max-width: 600px; margin: 10px;">
+        <div class="card mb-3 shadow animation-scale" style="min-width: 450px; max-width: 600px; margin: 10px;">
             <a href="Places/Details/@item.Id" class="card-title text-decoration-none">
                 <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
             </a>

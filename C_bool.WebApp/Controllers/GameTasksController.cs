@@ -17,6 +17,8 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly ILogger<GameTasksController> _logger;
         private IPlaceService _placesService;
+        private readonly IUserService _userService;
+        private readonly IGameTaskService _gameTaskService;
 
         private readonly IMapper _mapper;
         private IConfiguration _configuration;
@@ -27,8 +29,6 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
 
-        private readonly IUserService _userService;
-        private readonly IGameTaskService _gameTaskService;
         private readonly UserManager<User> _userManager;
 
 

@@ -61,7 +61,7 @@
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
                 <div  style="height: calc(100vh - 160px);">
-                    @await Component.InvokeAsync("MapView", new { placesList = (Model ?? Array.Empty<C_bool.WebApp.Models.Place.PlaceViewModel>()).ToList(), range = @ViewData["MapZoom"] })
+                    @await Component.InvokeAsync("MapView", new { placesList = (Model ?? Array.Empty<C_bool.WebApp.Models.Place.PlaceViewModel>()).ToList(), range = @ViewData["MapZoom"], noBounds = true })
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
         //initialize map view - modal
         function initMap(latitude, longitude) {
             const point = { lat: latitude, lng: longitude };
-            const map = new google.maps.Map(document.getElementById("map"),
+            const modalMap = new google.maps.Map(document.getElementById("map"),
                 {
                     zoom: 16,
                     mapId: '@Html.Raw(_appSettings.Value.CustomMapId)',
@@ -86,7 +86,7 @@
                 });
             const marker = new google.maps.Marker({
                 position: point,
-                map: map,
+                map: modalMap,
                 icon: "/img/onion.png"
             });
         }
