@@ -14,7 +14,7 @@ namespace C_bool.BLL.Logic
             { TaskType.FirstComeFirstServed, "Kto pierwszy ten lepszy" },
             { TaskType.TakeAPhoto, "Zrób zdjęcie" },
             { TaskType.CheckInToALocation, "Zamelduj się w wybranym miejscu" },
-            { TaskType.CheckInAtTheSpecifiedTime, "Zameldowanie o określonej godzinie" },
+            { TaskType.Event, "Zameldowanie o określonej godzinie" },
             { TaskType.TextEntry, "Wprowadź tekst" }
         };
     }

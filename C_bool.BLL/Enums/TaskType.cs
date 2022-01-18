@@ -5,7 +5,7 @@
         FirstComeFirstServed,
         TakeAPhoto,
         CheckInToALocation,
-        CheckInAtTheSpecifiedTime,
+        Event,
         TextEntry
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.Models.GameTask;
+using GameTaskViewModel = C_bool.WebApp.Models.GameTask.GameTaskViewModel;
 
 namespace C_bool.WebApp.Models.Profiles
 {

@@ -17,10 +17,13 @@ namespace C_bool.BLL.Services
             _gameTasksRepository = gameTasks;
             _userRepository = userRepository;
         }
+
         public void ManuallyCompleteTask(int taskId, int userId)
         {
-
+            //jak text entry - tylko manualnie
             //pojawienie się informacji dla użytkownika, że pojawiło mu się zadanie do zatwierdzenia. (stworzyć klasę)
+
+            //dodajemy do UserGameTask - zdjecie stringa
             var user = _userRepository.GetById(userId);
             var gameTask = _gameTasksRepository.GetById(taskId);
             if (gameTask.Type == TaskType.TakeAPhoto)
@@ -46,11 +49,15 @@ namespace C_bool.BLL.Services
             var userGameTask = _userRepository.GetAllQueryable().Select(u => u.Id).Count();
             var gameTask = _gameTasksRepository.GetById(taskId);
 
+            // nie ma ram czasowych i nie wymaga lokalizacji - tylko okazania dowodu w postaci tekstu
+            // zaliczenie automatyczne - taki sam (tylko z malych liter albo duzych albo bez polskich znakow)
             if (gameTask.Type == TaskType.TextEntry)
             {
                 if (isActive == gameTask.IsActive == true && textToConfirm.ToLower().Contains(gameTask.TextCriterion.ToLower()))
                 {
                     user.Points += gameTask.Points;
+
+                    //z user service - set as done
                     user.UserGameTasks.Add(new UserGameTask()
                     {
                         UserId = user.Id,
@@ -60,7 +67,9 @@ namespace C_bool.BLL.Services
                     });
                 }
             }
-            //flaga do zadania. ->MaxCount
+
+            // to zadanie zakłada że twórca określa ilość osób które mogą wykonać zadanie - znaczy się zameldować
+            // wywalić ten typ, tylko dodać property do GameTask
             if (gameTask.Type == TaskType.FirstComeFirstServed && userGameTask == 0)
             {
                 if (isActive == gameTask.IsActive == true)
@@ -76,9 +85,13 @@ namespace C_bool.BLL.Services
                 }
                 gameTask.IsActive = false;
             }
-            if (gameTask.Type == TaskType.CheckInAtTheSpecifiedTime)
+            //TODO:
+            //zadanie tego typu ma ustawione ramy czasowe ValidFrom i ValidThru, czyli można to traktować jako wydarzenie
+            //np osoba tworzaca zadanie ustawia ze dnia 1 lutego o godzinie 20 -22 jest koncert Zenka, na któym możesz się pojawić
+            //tego typu zadania miałyby "kalendarz" na stronie głównej
+            if (gameTask.Type == TaskType.Event)
             {
-                if (gameTask.IsActive == true && timeOfVisit.Date.ToString("d") == gameTask.ValidThru.Date.ToString("d"))
+                if (gameTask.IsActive == true && (timeOfVisit.Date <= gameTask.ValidThru.Date) && timeOfVisit.Date > gameTask.ValidFrom)
                 {
                     user.Points += gameTask.Points;
                     user.UserGameTasks.Add(new UserGameTask()
@@ -90,6 +103,8 @@ namespace C_bool.BLL.Services
                     });
                 }
             }
+
+            //to zadanie zakłąda że użytkownik odwiedzi lokalizację i może je zaliczyć tylko jak w niej jest, podobne jak event tylko bez ram czasowych
             if (gameTask.Type == TaskType.CheckInToALocation)
             {
                 var range = SearchNearbyPlaces.DistanceBetweenPlaces(user.Latitude, user.Longitude,
