@@ -67,7 +67,7 @@ namespace C_bool.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment()  || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();

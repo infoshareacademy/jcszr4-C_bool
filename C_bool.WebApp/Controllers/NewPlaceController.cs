@@ -72,6 +72,12 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Index()
         {
+            var user = _usersService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+            ViewBag.Message = "Nie udało się utworzyć miejsca";
+            ViewBag.Status = true;
+
             var model = _googlePlaceService.GetGooglePlacesForUser();
             return View(model);
         }
@@ -164,6 +170,10 @@ namespace C_bool.WebApp.Controllers
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
 
+            var user = _usersService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
             ViewBag.Message = _googleApiAsync.Message;
             ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
             return View("~/Views/NewPlace/Index.cshtml", model);
@@ -175,6 +185,10 @@ namespace C_bool.WebApp.Controllers
         public async Task<ActionResult> SearchByNameAsync(NameSearchRequest request)
         {
             _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetBySearchQuery(query: request.SearchPhrase, language: "pl"));
+
+            var user = _usersService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
             ViewBag.Message = _googleApiAsync.Message;

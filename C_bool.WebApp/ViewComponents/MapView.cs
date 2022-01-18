@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.WebApp.Models;
@@ -9,7 +10,7 @@ namespace C_bool.WebApp.ViewComponents
 {
     public class MapView : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range)
+        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range, bool noBounds = false)
         {
             foreach (var item in placesList)
             {
@@ -29,12 +30,13 @@ namespace C_bool.WebApp.ViewComponents
                 > 100000 and <= 200000 => 9,
                 > 200000 and <= 400000 => 8,
                 > 400000 and <= 800000 => 7,
-                > 800000 and <= 1600000 => 6,
-                > 1600000 => 4,
+                > 800000 and <= 1600000 => 5,
+                > 1600000 => 3,
                 _ => 15
             };
 
             ViewBag.MapZoom = zoom;
+            ViewBag.NoBounds = noBounds;
 
             return View("MapView", placesList);
         }

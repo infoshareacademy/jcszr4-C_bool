@@ -4112,7 +4112,8 @@ input[type="button"].btn-block {
   border-top-right-radius: 0;
 }
 
-.nav-pills .nav-link {
+
+.nav-link {
   border-radius: 0.25rem;
 }
 

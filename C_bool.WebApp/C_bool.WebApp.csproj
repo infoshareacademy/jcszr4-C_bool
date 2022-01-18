@@ -56,4 +56,49 @@
     <Folder Include="wwwroot\img\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings - Copy %282%29 - Copy.Maciej.Development.json">
+      <DependentUpon>appsettings - Copy (2).Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy %282%29 - Copy.Maciej.json">
+      <DependentUpon>appsettings - Copy (2).Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy %282%29.Maciej.Development.json">
+      <DependentUpon>appsettings.Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy %282%29.Maciej.json">
+      <DependentUpon>appsettings.Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy %282%29.Maciej.Development.json">
+      <DependentUpon>appsettings - Copy.Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy %282%29.Maciej.json">
+      <DependentUpon>appsettings - Copy.Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy - Copy.Maciej.Development.json">
+      <DependentUpon>appsettings - Copy - Copy.Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy - Copy.Maciej.json">
+      <DependentUpon>appsettings - Copy - Copy.Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy.Maciej.Development.json">
+      <DependentUpon>appsettings - Copy.Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy - Copy.Maciej.json">
+      <DependentUpon>appsettings - Copy.Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy.Maciej.Development.json">
+      <DependentUpon>appsettings.Maciej.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy.Maciej.json">
+      <DependentUpon>appsettings.Maciej.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy.Natalia.Development.json">
+      <DependentUpon>appsettings.Natalia.Development.json</DependentUpon>
+    </Content>
+    <Content Update="appsettings - Copy.Natalia.json">
+      <DependentUpon>appsettings.Natalia.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+
 </Project>
