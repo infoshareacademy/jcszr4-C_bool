@@ -1,0 +1,121 @@
+﻿@using System.Linq
+@using C_bool.BLL.Enums
+@model IEnumerable<C_bool.BLL.DAL.Entities.User>
+
+@{
+    ViewData["Title"] = "Lista użytkowników";
+}
+
+<h1>Lista użytkowników</h1>
+
+<p>
+    <a asp-action="Create">Dodaj nowego użytkownika</a>
+</p>
+
+<div class="container">
+    <form asp-action="SearchUsers">
+        <table class="table">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Nazwa:</label>
+                        <input class="form-control small" type="text" name="name" placeholder="Wpisz" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Email:</label>
+                        <input class="form-control small" type="text" name="email" placeholder="Wpisz" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Płeć:</label>
+                        <select class="form-control small" name="gender">
+                            <option value="" selected>Wybierz</option>
+                            <option value="@Gender.Male">Mężczyźni</option>
+                            <option value="@Gender.Female">Kobiety</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Aktywny:</label>
+                        <select class="form-control small" name="isActive">
+                            <option value="" selected>Wybierz</option>
+                            <option value="true">Tylko aktywni</option>
+                            <option value="false">Tylko nieaktywni</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <label class="control-label small">Sortuj punkty</label>
+                        <select class="form-control small" name="isDescending">
+                            <option value="" selected>Wybierz</option>
+                            <option value="true">Malejąco</option>
+                            <option value="false">Rosnąco</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <input type="submit" value="Szukaj" class="btn btn-primary" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            <label asp-for="First().UserName"></label>
+        </th>
+        <th>
+            <label asp-for="First().Email"></label>
+        </th>
+        <th>
+            <label asp-for="First().Gender"></label>
+        </th>
+        <th>
+            <label asp-for="First().IsActive"></label>
+        </th>
+        <th>
+            <label asp-for="First().Points"></label>
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @item.UserName
+            </td>
+            <td>
+                @item.Email
+            </td>
+            <td>
+                @item.Gender
+            </td>
+            <td>
+                @item.IsActive
+            </td>
+            <td>
+                @item.Points
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Pokaż szczegóły</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

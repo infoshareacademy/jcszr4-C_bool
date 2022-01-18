@@ -1,0 +1,143 @@
+﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@using C_bool.WebApp.Config
+@using C_bool.WebApp.Helpers
+@using Microsoft.Extensions.Options
+@model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
+
+@{
+    ViewData["Title"] = "Baza miejsc";
+}
+
+
+<!--search & filter form-->
+<form asp-action="Index" method="get">
+    <div class="input-group input-group-lg border-0 shadow mb-3 sticky-top">
+        <span class="input-group-text">
+            <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true"><b>Lista</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-bs-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false"><b>Mapa</b></a>
+                </li>
+            </ul>
+        </span>
+        <span class="input-group-text">
+            <input class="form-check-input" id="favCheckbox" name="SearchOnlyFavs" type="checkbox" asp-for="@ViewData["OnlyFavs"]" aria-label="Checkbox for following text input">
+            <br />
+            <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"></label>
+        </span>
+        <span class="input-group-text">
+            <input class="form-check-input" id="tasksCheckbox" name="SearchOnlyWithTasks" type="checkbox" asp-for="@ViewData["OnlyTask"]" aria-label="Checkbox for following text input">
+            <br />
+            <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="fas fa-trophy"></label>
+        </span>
+        <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
+        <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie miejsca" value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
+        @*<a asp-action="Index" class="btn btn-outline-secondary" role="button">Wyczyść</a>*@
+        <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+    </div>
+</form>
+<!-- Tab Content 1) Places -->
+<div>
+    <div class="card-body p-0">
+        <div class="tab-content" id="tabcontent1">
+            <div class="tab-pane fade show active" style="" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
+
+                @if (Model != null && Model.Any())
+                {
+                    <!-- Patial with Card style places list -->
+                    <partial name="Partials/PlacesCards" model="Model" />
+                }
+                else
+                {
+                    <div class="alert alert-dismissible alert-warning" style="margin: 10px">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <h4 class="alert-heading">Nie bangla!</h4>
+                        <p class="mb-0">Wygląda na to, że nie ma takich miejsc w bazie...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz wyszukać tysiące nowych miejsc w menu <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b>, lub dodać swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
+                <div  style="height: calc(100vh - 160px);">
+                    @await Component.InvokeAsync("MapView", new { placesList = (Model ?? Array.Empty<C_bool.WebApp.Models.Place.PlaceViewModel>()).ToList(), range = @ViewData["MapZoom"], noBounds = true })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        var latitude, longitude;
+
+        //initialize map view - modal
+        function initMap(latitude, longitude) {
+            const point = { lat: latitude, lng: longitude };
+            const modalMap = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 16,
+                    mapId: '@Html.Raw(_appSettings.Value.CustomMapId)',
+                    center: point,
+
+                });
+            const marker = new google.maps.Marker({
+                position: point,
+                map: modalMap,
+                icon: "/img/onion.png"
+            });
+        }
+
+        // get current location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
+            }
+        };
+
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+        };
+
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = {Id: input};
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        showNotif('green', 'OK');
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        showNotif('red', errorthrown);
+                    }
+                });
+        };
+
+        // delete item for modal
+        var path_to_delete;
+
+        $(".deleteItem").click(function (e) {
+            path_to_delete = $(this).data('path');
+        });
+
+        $('#btnContinueDelete').click(function () {
+            window.location = path_to_delete;
+        });
+
+        //events listener and load actions
+        window.addEventListener("load", showNotif('green', '@ViewBag.Message'));
+        window.onload = getLocation();
+    </script>
+}

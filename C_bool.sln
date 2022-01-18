@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_bool.ConsoleApp", "C_bool.ConsoleApp\C_bool.ConsoleApp.csproj", "{76F1ADE5-5E63-49D3-948D-8BD0D229A4E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.ConsoleApp", "C_bool.ConsoleApp\C_bool.ConsoleApp.csproj", "{76F1ADE5-5E63-49D3-948D-8BD0D229A4E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_bool.BLL", "C_bool.BLL\C_bool.BLL.csproj", "{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.BLL", "C_bool.BLL\C_bool.BLL.csproj", "{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.WebApp", "C_bool.WebApp\C_bool.WebApp.csproj", "{351D875C-1538-4DE1-8731-7A68CE43D51D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F102907E-BE5E-4E53-ADB6-CB2AF19EF154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{351D875C-1538-4DE1-8731-7A68CE43D51D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351D875C-1538-4DE1-8731-7A68CE43D51D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351D875C-1538-4DE1-8731-7A68CE43D51D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351D875C-1538-4DE1-8731-7A68CE43D51D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

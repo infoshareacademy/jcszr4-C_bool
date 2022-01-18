@@ -1,0 +1,1024 @@
+﻿{
+  "html_attributions": [],
+  "next_page_token": "Aap_uEDSdBDsVgj5uaopmimMShtWfsIPtmNml6BtqkV8hYqa7J6zz8hH-_7Sw1H_Xeq1ybxW0qWprtEZIf571rkx7lxMSXRoBNjBDpzFCv9FCk6MVcE-5k844_1YYY9pODw-yWVV7dw-5nhP6QjeKpTUJa_veMr95mR8zeFlj5TfyCqikvQSd1vCznUkG343DY01lh0DQyeDav_0OxxE-Xb7aIBBnV4MNfgn92D2WLsnptIA6Le3PrdjVGDWEbLUZyZTqWqn4gzMwPZ3tLYeXL9DCcGewwKpsyXXpzm_3dEzLLenlbcM5t2OZImS4fAplPyWZ3BFhXYnZokYaaSI9rgJwdi64I98XsGsVb0MKo7GXOUDC401UtEjwtfWlny5NcNhuoD93Sa4u87fRtKfLLUAq5daw9MCp8mPWasG2Loo8CPM",
+  "results": [
+    {
+      "geometry": {
+        "location": {
+          "lat": 50.26489189999999,
+          "lng": 19.0237815
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2973176471578,
+            "lng": 19.12291896395016
+          },
+          "southwest": {
+            "lat": 50.13002717297118,
+            "lng": 18.89146640564267
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Katowice",
+      "photos": [
+        {
+          "height": 1468,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/105020884831088290983\">Tomasz Walaszek</a>"
+          ],
+          "photo_reference": "Aap_uEBZisxzAo4cWit2mJFPmap3uddFf_su58g2a9q0dG2YXpeL9CHoGmq1LaEbKirzngj3beMFUgRGb2AnlYRU_QV7GMct_C5ZJpFDtlIyTO5pt21LWlIvvoOQjr2WCTgu1vl-TEx-8pfXTfFfocqIc2uS4iNGQEEUI01zp8hrOCDS4y-Z",
+          "width": 3264
+        }
+      ],
+      "place_id": "ChIJ0cyhNiPOFkcRu_pZBTUqr7k",
+      "reference": "ChIJ0cyhNiPOFkcRu_pZBTUqr7k",
+      "scope": "GOOGLE",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "vicinity": "Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26650900000001,
+          "lng": 19.02621
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26836348029151,
+            "lng": 19.0269500802915
+          },
+          "southwest": {
+            "lat": 50.26566551970851,
+            "lng": 19.0242521197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+      "icon_background_color": "#909CE1",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/hotel_pinlet",
+      "name": "Hotel Diament",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 1152,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/115260844926695436790\">Diament</a>"
+          ],
+          "photo_reference": "Aap_uED8Inef5037MCmrj9jc-cFj_xOfzTpLSbdKdRTr4gEdSg0kxNogAm7vVD-wbOdTXUODsSODl2exEgqEynMOQpFiuRkJn5S5-YNkgpi0HPUUzuc0JQRsRxM0hVaFjOx3sM_JFib5IO8JGIno13sx-AxkUwXP_YA67erpVqvPKIB7-sFP",
+          "width": 2048
+        }
+      ],
+      "place_id": "ChIJ1-ZSfzDOFkcRKvemd3njSxQ",
+      "plus_code": {
+        "compound_code": "728G+JF Katowice, Poland",
+        "global_code": "9F2X728G+JF"
+      },
+      "rating": 4.3,
+      "reference": "ChIJ1-ZSfzDOFkcRKvemd3njSxQ",
+      "scope": "GOOGLE",
+      "types": [
+        "lodging",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 648,
+      "vicinity": "aleja Wojciecha Korfantego 35, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26203109999999,
+          "lng": 19.0236423
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2634733302915,
+            "lng": 19.0247944302915
+          },
+          "southwest": {
+            "lat": 50.2607753697085,
+            "lng": 19.0220964697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+      "icon_background_color": "#909CE1",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/hotel_pinlet",
+      "name": "Hotel Katowice",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 1323,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/115372602425206642700\">Hotel Katowice</a>"
+          ],
+          "photo_reference": "Aap_uEA-RyFg2BPJddbkzCgQUc4OWDQaeUhx2lZpW1naDh2vxQSD_69avl2WLd8y0_ddHZSBPgE_DjrwUbxqSSFozH9Gor-cYevMlciUkRfdi7OTwvcbUw5Q-TAcqBUsg1QQWr4cZoeqvaLmWdgILs2vsRu1CX5rn4WtNZYywGpE1dc-bawh",
+          "width": 1984
+        }
+      ],
+      "place_id": "ChIJlYKaQjfOFkcRi1gsMiLwxgE",
+      "plus_code": {
+        "compound_code": "726F+RF Katowice, Poland",
+        "global_code": "9F2X726F+RF"
+      },
+      "rating": 3.8,
+      "reference": "ChIJlYKaQjfOFkcRi1gsMiLwxgE",
+      "scope": "GOOGLE",
+      "types": [
+        "lodging",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 1938,
+      "vicinity": "aleja Wojciecha Korfantego 9, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.262526,
+          "lng": 19.028492
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2637302302915,
+            "lng": 19.0297257802915
+          },
+          "southwest": {
+            "lat": 50.2610322697085,
+            "lng": 19.0270278197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/lodging-71.png",
+      "icon_background_color": "#909CE1",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/hotel_pinlet",
+      "name": "Katowice Centrum",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2933,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/102945847225117397893\">Jarosław Bralla</a>"
+          ],
+          "photo_reference": "Aap_uEAV2QGtObweMYO2Ponj6-Np0jCW2IFVY_xrzbiDToiE7mblRqPqJ2Mf1P_alY1isjnk7SuI9ST4VVUMrHDO6FkMr-P-4ukMiW6JiQKhJeIiuj4g5sNMwzLkeTyuQpsXqSfWjm5Tw374OEbObGaiFZwXXFNpJnlvNEe0mmDvXZUQnSfV",
+          "width": 3911
+        }
+      ],
+      "place_id": "ChIJG5nEyjbOFkcRx42e-sgMsLc",
+      "plus_code": {
+        "compound_code": "727H+29 Katowice, Poland",
+        "global_code": "9F2X727H+29"
+      },
+      "rating": 4.5,
+      "reference": "ChIJG5nEyjbOFkcRx42e-sgMsLc",
+      "scope": "GOOGLE",
+      "types": [
+        "lodging",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 176,
+      "vicinity": "Uniwersytecka 25 119, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.265297,
+          "lng": 19.026563
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2666873802915,
+            "lng": 19.0277277302915
+          },
+          "southwest": {
+            "lat": 50.2639894197085,
+            "lng": 19.0250297697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#13B5C7",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "MegaClub Katowice",
+      "opening_hours": {
+        "open_now": false
+      },
+      "photos": [
+        {
+          "height": 639,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/110819915379655064662\">MegaClub Katowice</a>"
+          ],
+          "photo_reference": "Aap_uEBOIb3ZKYh-sN84lb04sNcyut7_0HpwVK6G_qb39QJmzhla9BRHbaCQ6r0sF5UiPqbjG-1pL4RwPjTCQdtqMbZa1PFwBqWjDetCDf3anIgFqZhnX70IM_wfdT6OHxBihMPE7PzuSknj0Ju_3JwCLy4haGKmDQiORW2uzgrc4KqQ2Ihf",
+          "width": 960
+        }
+      ],
+      "place_id": "ChIJ1SFGwBXOFkcR1-0lwa_GQgM",
+      "plus_code": {
+        "compound_code": "728G+4J Katowice, Poland",
+        "global_code": "9F2X728G+4J"
+      },
+      "rating": 4.3,
+      "reference": "ChIJ1SFGwBXOFkcR1-0lwa_GQgM",
+      "scope": "GOOGLE",
+      "types": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 964,
+      "vicinity": "plac Sławika i Antalla 1, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2683581,
+          "lng": 19.0219345
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2699570302915,
+            "lng": 19.0233192302915
+          },
+          "southwest": {
+            "lat": 50.2672590697085,
+            "lng": 19.0206212697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Rodzina",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 3120,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/105922659704279756311\">rafal szlezak</a>"
+          ],
+          "photo_reference": "Aap_uECne1w2dr2x0lKyiKRH7X7XnRO62ITQbuXnPRID-imvr6q5qozp38DOJv-01nJlnyiR6azi9nGl7Q-jy10j7AyUEejY4nPk3MW3Lo9e4bzJWp0P5KrmAkmoftVY-fM_2r4lh1LwQUDLkgGxS2fFj7CvNbk26dS6CBhhq-AeU3EfoBHa",
+          "width": 4160
+        }
+      ],
+      "place_id": "ChIJQyVeSDvOFkcRjKinkTtnBQ0",
+      "plus_code": {
+        "compound_code": "729C+8Q Katowice, Poland",
+        "global_code": "9F2X729C+8Q"
+      },
+      "rating": 5,
+      "reference": "ChIJQyVeSDvOFkcRjKinkTtnBQ0",
+      "scope": "GOOGLE",
+      "types": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 1,
+      "vicinity": "plac Grunwaldzki, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2618701,
+          "lng": 19.0218604
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2632427802915,
+            "lng": 19.02321693029151
+          },
+          "southwest": {
+            "lat": 50.2605448197085,
+            "lng": 19.0205189697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Specialized Medical Center Polimed",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2268,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/110666685901187159934\">X Darek</a>"
+          ],
+          "photo_reference": "Aap_uEDLL5g8dsYgHPtSlVoIVJ5AgaiwojThBHO5dzmZS7hi6lfuuH32Ix0eC5EuXNaoRckQgKQO6OaqG7OhJ3ktWbGf_3VwvV_ZQ1_upmvYdmduDRU-wrd43dp9DdI8IzT0HMhUK9lAy2_gi4Z6cmp7Lq9U9GPiVE1PhbK2jMJpPoECTB4V",
+          "width": 4032
+        }
+      ],
+      "place_id": "ChIJW6pS1jnOFkcRkmo3-3sIqek",
+      "plus_code": {
+        "compound_code": "726C+PP Katowice, Poland",
+        "global_code": "9F2X726C+PP"
+      },
+      "rating": 3.1,
+      "reference": "ChIJW6pS1jnOFkcRkmo3-3sIqek",
+      "scope": "GOOGLE",
+      "types": [
+        "health",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 50,
+      "vicinity": "aleja Wojciecha Korfantego 2, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26389379999999,
+          "lng": 19.0201657
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26530078029149,
+            "lng": 19.0217660302915
+          },
+          "southwest": {
+            "lat": 50.26260281970849,
+            "lng": 19.0190680697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bank-71.png",
+      "icon_background_color": "#909CE1",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/bank-intl_pinlet",
+      "name": "PKO Bank Polski S.A. - Oddział 3 w Katowicach",
+      "opening_hours": {
+        "open_now": false
+      },
+      "photos": [
+        {
+          "height": 2463,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/111051095429429738012\">jan kala</a>"
+          ],
+          "photo_reference": "Aap_uEA81i4zoF46NzTYl1Xvgz4JGTXYTokOuHYpYCUwu-jKIuKdVk6OxazVgImcTe_HqCdkOrsHJGOWC_aXVbwjGvv1fqWscnR2nfkOyCgX56tGrFSPE8oP8Jmg9ePc5Hh4JgMZEIPfKC0EFGrUPYUH-qj_tKnDyPMYoQARCUbXInaxSYvy",
+          "width": 4052
+        }
+      ],
+      "place_id": "ChIJNdIJbzjOFkcRWAVBBXRy0GQ",
+      "plus_code": {
+        "compound_code": "727C+H3 Katowice, Poland",
+        "global_code": "9F2X727C+H3"
+      },
+      "rating": 4.4,
+      "reference": "ChIJNdIJbzjOFkcRWAVBBXRy0GQ",
+      "scope": "GOOGLE",
+      "types": [
+        "bank",
+        "atm",
+        "finance",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 45,
+      "vicinity": "Chorzowska 6, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2624224,
+          "lng": 19.0241645
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2636203302915,
+            "lng": 19.0255884302915
+          },
+          "southwest": {
+            "lat": 50.2609223697085,
+            "lng": 19.0228904697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icon_background_color": "#FF9E67",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+      "name": "Pizza Hut",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 3456,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/107455909657433183970\">Leszek Morawiec</a>"
+          ],
+          "photo_reference": "Aap_uECRFeeiI8UXaeIGjU_iiK8p20UR8Ok7XwTXzbX8qi_9wgLi5-ANe6HaKDYeGVBAcNY5xhKTaHk0nx1hqOHraKeqvDyN900kjpHlTu3rpwUxTWh3nnyR2QVEYPzVDwJr3CPm4AeecVxwL70OgXpVDnKYjnebgoM1S3HDCowtLbLrWld-",
+          "width": 4608
+        }
+      ],
+      "place_id": "ChIJaeSVRTfOFkcRqjJtYvv53rs",
+      "plus_code": {
+        "compound_code": "726F+XM Katowice, Poland",
+        "global_code": "9F2X726F+XM"
+      },
+      "price_level": 2,
+      "rating": 4.2,
+      "reference": "ChIJaeSVRTfOFkcRqjJtYvv53rs",
+      "scope": "GOOGLE",
+      "types": [
+        "meal_delivery",
+        "meal_takeaway",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 3067,
+      "vicinity": "aleja Wojciecha Korfantego 9A, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2655444,
+          "lng": 19.0209769
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26697078029149,
+            "lng": 19.0221573302915
+          },
+          "southwest": {
+            "lat": 50.2642728197085,
+            "lng": 19.0194593697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icon_background_color": "#FF9E67",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+      "name": "Bistro Pizza Bzik",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2268,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/107871679338547715909\">Bistro Pizza Bzik</a>"
+          ],
+          "photo_reference": "Aap_uECiQxupLd-XD0YvsYtoDrZ6xNYvM1iLgUqeIUsRpxNhs0KR3o1ZBAL3eqcbACtooWpuXi7DBV0RYUYg9IT-GStle0jXG6mEwzRZvHahgIb6s_a8e4aPB42LxSIQVmjpWTkO_3RCAdwV3nCMZX7uoRrtqyDhemxAZLaa8tfaW-hpnOYd",
+          "width": 4032
+        }
+      ],
+      "place_id": "ChIJlTh2TDrOFkcRZSOeHK0R1PA",
+      "plus_code": {
+        "compound_code": "728C+69 Katowice, Poland",
+        "global_code": "9F2X728C+69"
+      },
+      "price_level": 2,
+      "rating": 4.1,
+      "reference": "ChIJlTh2TDrOFkcRZSOeHK0R1PA",
+      "scope": "GOOGLE",
+      "types": [
+        "meal_delivery",
+        "meal_takeaway",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 2065,
+      "vicinity": "Chorzowska 7, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2658297,
+          "lng": 19.0195393
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2670363302915,
+            "lng": 19.0208041302915
+          },
+          "southwest": {
+            "lat": 50.2643383697085,
+            "lng": 19.0181061697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icon_background_color": "#FF9E67",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+      "name": "City Rock Katowice",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2952,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/104158750857035462676\">City Rock Katowice</a>"
+          ],
+          "photo_reference": "Aap_uEDD_mOa2HKriqGY0diciOcqQOOJrfjDD39hpSoHikLlJIFAFF3Potv1_JP_qNVNd8gHgt9cHEJnlhtmCxzkWCeWaL58bKrDU7VLIKWpVo8OGvkdFehq3KfcjVXwYYqVek23BiDK14vAUqM5nJpHQCWoMRKNU3aVyeQjdw7JRoS-8Jli",
+          "width": 4460
+        }
+      ],
+      "place_id": "ChIJ72CLuzvOFkcRi7-KLMLwlJY",
+      "plus_code": {
+        "compound_code": "7289+8R Katowice, Poland",
+        "global_code": "9F2X7289+8R"
+      },
+      "price_level": 2,
+      "rating": 4.2,
+      "reference": "ChIJ72CLuzvOFkcRi7-KLMLwlJY",
+      "scope": "GOOGLE",
+      "types": [
+        "restaurant",
+        "bar",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 1504,
+      "vicinity": "Chorzowska 9B, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2639772,
+          "lng": 19.0195488
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2653127302915,
+            "lng": 19.0208853802915
+          },
+          "southwest": {
+            "lat": 50.26261476970851,
+            "lng": 19.0181874197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/hospital-71.png",
+      "icon_background_color": "#F88181",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/hospital-H_pinlet",
+      "name": "CM LUX MED",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 467,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/101651362648646323145\">CM LUX MED</a>"
+          ],
+          "photo_reference": "Aap_uEBLnmhrxTfocaKAKqLHZLoGZqEgRR2zbbBhRxN4xab4kmkjvAk7T5ttbIxy8tSirGjJGP3f7Z1FPx5raz1hQnYfYZl9UGScn5PJrzXpLBkcgoOHJbeRcBm3FhtGJKVdsO0dGCLPLQRzgaJpXT5_j6k-CHJtx92Nw5QXMr8ltIqPj97r",
+          "width": 700
+        }
+      ],
+      "place_id": "ChIJF9UlgjnOFkcRcvEOhqOEhM4",
+      "plus_code": {
+        "compound_code": "7279+HR Katowice, Poland",
+        "global_code": "9F2X7279+HR"
+      },
+      "rating": 3.9,
+      "reference": "ChIJF9UlgjnOFkcRcvEOhqOEhM4",
+      "scope": "GOOGLE",
+      "types": [
+        "hospital",
+        "health",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 164,
+      "vicinity": "Sokolska 29, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2615558,
+          "lng": 19.0241811
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2631446802915,
+            "lng": 19.0259276302915
+          },
+          "southwest": {
+            "lat": 50.2604467197085,
+            "lng": 19.0232296697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Get Fit Fitness",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 1536,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/107998990787351065611\">Altus Fitness</a>"
+          ],
+          "photo_reference": "Aap_uED7zWXo8PkD_E6_QNq-QgyPyBDUAp5cfbKTm2g-hVATrf6h8yJX-5Ij5nquz7poIdtvPFWq6BgOeQ-avVya-iMUijNdWn0iaa_UJ-aVN1ql7iA0OIMHFG-_VlBoTo9NhrRvzYFYzSiTGx7w96uPIU5PsoI43Jtmo3sNbtjKxTp0U8s",
+          "width": 2048
+        }
+      ],
+      "place_id": "ChIJQ8Y7FzfOFkcReRt2k3ctJns",
+      "plus_code": {
+        "compound_code": "726F+JM Katowice, Poland",
+        "global_code": "9F2X726F+JM"
+      },
+      "rating": 4.6,
+      "reference": "ChIJQ8Y7FzfOFkcReRt2k3ctJns",
+      "scope": "GOOGLE",
+      "types": [
+        "gym",
+        "health",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 546,
+      "vicinity": "Uniwersytecka 13, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2620136,
+          "lng": 19.0260513
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26324153029149,
+            "lng": 19.0272103802915
+          },
+          "southwest": {
+            "lat": 50.2605435697085,
+            "lng": 19.0245124197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+      "icon_background_color": "#4B96F3",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shoppingcart_pinlet",
+      "name": "Biedronka",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2448,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/102846808040595514061\">Murat Cehreli</a>"
+          ],
+          "photo_reference": "Aap_uEAQ1-RXydoN87HpvX1M3D10-bH-LrebhAfw7J1iYQnrN1WtfPNyZ5S0RdYjtC6DcsJkGaqvZSZsdsIcMLdPDFMcCNE32Wjsngw8un9h5R7ivP_OzP7BeVUMPSHWOQeU9tPQ0N_Yum3R-fp9qaeSHLiae70zAsEmz5YKdOtsDd-WrXKo",
+          "width": 3264
+        }
+      ],
+      "place_id": "ChIJy9ApITfOFkcRnztfHKc1WlQ",
+      "plus_code": {
+        "compound_code": "726G+RC Katowice, Poland",
+        "global_code": "9F2X726G+RC"
+      },
+      "rating": 3.7,
+      "reference": "ChIJy9ApITfOFkcRnztfHKc1WlQ",
+      "scope": "GOOGLE",
+      "types": [
+        "supermarket",
+        "grocery_or_supermarket",
+        "food",
+        "point_of_interest",
+        "store",
+        "establishment"
+      ],
+      "user_ratings_total": 1641,
+      "vicinity": "Uniwersytecka 12, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2678653,
+          "lng": 19.024886
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2690993302915,
+            "lng": 19.0262397302915
+          },
+          "southwest": {
+            "lat": 50.2664013697085,
+            "lng": 19.0235417697085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Lufthansa City Center Travel Club. Bilety lotnicze",
+      "photos": [
+        {
+          "height": 480,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/108622535373244691043\">Jacek FitLine</a>"
+          ],
+          "photo_reference": "Aap_uEDysmgaEsLUu6Xj7AqIT6pQsrDZiA-pTebIx04TWFL0EX62fyWz_lcVO2lpTIGpt6KoY3_XD8tRZCe3cNRl7wT3ABVS6MTWag733vsb5PLmu96U-DWjqMM8R9y6tCguzdFmKpPPdKnEgt-NyCoY07FPO6-Dq4CA8Zc1n5_Rc-zB2gK-",
+          "width": 640
+        }
+      ],
+      "place_id": "ChIJz7X9uTrOFkcRPLWybXuKa0s",
+      "plus_code": {
+        "compound_code": "729F+4X Katowice, Poland",
+        "global_code": "9F2X729F+4X"
+      },
+      "rating": 2,
+      "reference": "ChIJz7X9uTrOFkcRPLWybXuKa0s",
+      "scope": "GOOGLE",
+      "types": [
+        "travel_agency",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 1,
+      "vicinity": "aleja Wojciecha Korfantego 51, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26774399999999,
+          "lng": 19.0250378
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2690312802915,
+            "lng": 19.0263416802915
+          },
+          "southwest": {
+            "lat": 50.26633331970851,
+            "lng": 19.0236437197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Int Travel",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 2451,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/111051095429429738012\">jan kala</a>"
+          ],
+          "photo_reference": "Aap_uEDLl53ZZImQLajeJ7t0EfIpT_IznIh4us4sLtEh19xdWTpGN_LpeMLmDPj2QJgsDd9GUbzIpe9N-2TzsAU-93PTeVmpAgOl47aJ3a0rAX02cFZ70vOYAiVEf7byOf8TX51CVip5iU9iEfegmmDNeMMk8-LdVpddVjfEjfUQN2JjVFBZ",
+          "width": 3024
+        }
+      ],
+      "place_id": "ChIJz7X9uTrOFkcRXxmVAxd2iAU",
+      "plus_code": {
+        "compound_code": "729G+32 Katowice, Poland",
+        "global_code": "9F2X729G+32"
+      },
+      "rating": 5,
+      "reference": "ChIJz7X9uTrOFkcRXxmVAxd2iAU",
+      "scope": "GOOGLE",
+      "types": [
+        "travel_agency",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 6,
+      "vicinity": "aleja Wojciecha Korfantego 51, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.2681558,
+          "lng": 19.0247073
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26951478029149,
+            "lng": 19.0258902302915
+          },
+          "southwest": {
+            "lat": 50.2668168197085,
+            "lng": 19.02319226970849
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Kserkop Sp. z o.o.",
+      "opening_hours": {
+        "open_now": false
+      },
+      "photos": [
+        {
+          "height": 2448,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/103574064569979796359\">Kamil Płatek</a>"
+          ],
+          "photo_reference": "Aap_uED1plz1paZZwPyV1cohRpYxBpij3Ks6h7v4OCLYVv8y3NyV5qazU-SBck2XT8ldjCUYA1JUTsMQItyexzebmpvDcQGdiXxtKuA095SEEWe8I-9VZKq66OBu9TKPkfkPhKa0cXX7GHR1qqnoZFF0hVouxGRbel3ZUe8DAejKU4yw__As",
+          "width": 3264
+        }
+      ],
+      "place_id": "ChIJtV2SyTrOFkcRkX-g3gJA8gQ",
+      "plus_code": {
+        "compound_code": "729F+7V Katowice, Poland",
+        "global_code": "9F2X729F+7V"
+      },
+      "rating": 3.7,
+      "reference": "ChIJtV2SyTrOFkcRkX-g3gJA8gQ",
+      "scope": "GOOGLE",
+      "types": [
+        "point_of_interest",
+        "store",
+        "establishment"
+      ],
+      "user_ratings_total": 26,
+      "vicinity": "aleja Wojciecha Korfantego 51, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26515449999999,
+          "lng": 19.0177419
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.2664151802915,
+            "lng": 19.0194817802915
+          },
+          "southwest": {
+            "lat": 50.2637172197085,
+            "lng": 19.0167838197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bank-71.png",
+      "icon_background_color": "#909CE1",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/bank-intl_pinlet",
+      "name": "ING Bank Slaski, Katowice Branch",
+      "opening_hours": {
+        "open_now": false
+      },
+      "photos": [
+        {
+          "height": 2511,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/109479417515570280641\">Asteniusz Myśliwiec</a>"
+          ],
+          "photo_reference": "Aap_uECdQsxLtJGjW1bT6oA4rqV-EhFUI5QM7-SYg7jA41xykjhOaFQPKzmQLTYwd4QXurMGHpAWskl6HqPhYLOJ8gMcaMo7xsbDv522aN_F1Qi6EQAf7xu9R93l-TdYTyBuu_TzNwU10uxzzL812Oixx-iI97_ruiO_mTaPUJpZOv97-qV2",
+          "width": 4030
+        }
+      ],
+      "place_id": "ChIJOSCZ7zvOFkcRJoRIxGcCR-k",
+      "plus_code": {
+        "compound_code": "7289+33 Katowice, Poland",
+        "global_code": "9F2X7289+33"
+      },
+      "rating": 4,
+      "reference": "ChIJOSCZ7zvOFkcRJoRIxGcCR-k",
+      "scope": "GOOGLE",
+      "types": [
+        "bank",
+        "atm",
+        "finance",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 195,
+      "vicinity": "Sokolska 34, Katowice"
+    },
+    {
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "location": {
+          "lat": 50.26131549999999,
+          "lng": 19.0251225
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.26295843029149,
+            "lng": 19.0266610802915
+          },
+          "southwest": {
+            "lat": 50.2602604697085,
+            "lng": 19.0239631197085
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "icon_background_color": "#FF9E67",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/restaurant_pinlet",
+      "name": "Via Toscana Restaurant & Café",
+      "opening_hours": {
+        "open_now": true
+      },
+      "photos": [
+        {
+          "height": 3120,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/101660508919194272051\">M B</a>"
+          ],
+          "photo_reference": "Aap_uED_Pqf84ffsbaLHcZ_sQW8lGlr_hpbLq7Y1gHXyrIQXGglFoW1UfWehmAt2u8Q1ZoI5dMnO0HCkgfKj5BL_q90uXVAzdxFALIPa7LxT3dxoW0ATb2SS59P5xKI3iShN7djaNNvRUjE2aS0vtiFtG-CciK4wZByXdiIaloWif8oXwtiK",
+          "width": 4160
+        }
+      ],
+      "place_id": "ChIJQ8Y7FzfOFkcR4NSTtOcZgDo",
+      "plus_code": {
+        "compound_code": "726G+G2 Katowice, Poland",
+        "global_code": "9F2X726G+G2"
+      },
+      "price_level": 3,
+      "rating": 4.7,
+      "reference": "ChIJQ8Y7FzfOFkcR4NSTtOcZgDo",
+      "scope": "GOOGLE",
+      "types": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total": 1136,
+      "vicinity": "Uniwersytecka 13, Katowice"
+    },
+    {
+      "geometry": {
+        "location": {
+          "lat": 50.2688096,
+          "lng": 19.0390729
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 50.27900105771361,
+            "lng": 19.05188073163345
+          },
+          "southwest": {
+            "lat": 50.26207690523292,
+            "lng": 19.02342798980179
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "Bogucice",
+      "photos": [
+        {
+          "height": 3468,
+          "html_attributions": [
+            "<a href=\"https://maps.google.com/maps/contrib/103751541966797251134\">Mariusz Radecki</a>"
+          ],
+          "photo_reference": "Aap_uEDORUCFraA5m3Q1MeaZeU9OtHT5FlbWvkCN08L2UQbzAecLBiaQAP7WTxn9Uqpoy4qmICPlQyzdVN943i1n7NPGalZBtPLT58RHYIOoPif9m8hEG9AFHxnNtLC99c23ndBVhruIcHY-HN6K_ok2EF-EyCNLu4SJToEp-C7H8tmIJwE_",
+          "width": 4624
+        }
+      ],
+      "place_id": "ChIJKQjoLCrOFkcRFBD4Hn0Ljy4",
+      "reference": "ChIJKQjoLCrOFkcRFBD4Hn0Ljy4",
+      "scope": "GOOGLE",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "vicinity": "Bytków"
+    }
+  ],
+  "status": "OK"
+}

@@ -1,0 +1,192 @@
+﻿@using C_bool.WebApp.Config
+@using C_bool.WebApp.Helpers
+@using Microsoft.Extensions.Options
+@model C_bool.WebApp.Helpers.NearbySearchRequest
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+
+@{
+    ViewData["Title"] = "SearchNearby";
+}
+
+<h1>Szukaj nowych miejsc</h1>
+
+<h4>Wprowadź lokalizację wokół której chcesz szukać nowych miejsc</h4>
+<br/>
+<form asp-action="SearchNearby">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input id="latitudeForm" asp-for="Latitude" class="form-control" style="display: none;" onChange="initMap();" />
+    <input id="longitudeForm" asp-for="Longitude" class="form-control" style="display: none;" onchange="initMap();" />
+    <input id="radiusForm" asp-for="Radius" class="form-control" style="display: none;">
+    <div class="input-group input-group-lg mb-3 form-actions no-color border-0 shadow">
+        <span class="input-group-text" id="basic-addon1">Kategoria</span>
+        <select class="form-select" asp-items="Model.PlaceCategories" asp-for="SelectedType" id="inputGroupSelectType">
+            <option selected="selected" value="">Brak kategorii</option>
+        </select>
+        <span class="input-group-text">Słowa kluczowe</span>
+        <input type="text" class="form-control" placeholder="Wpisz słowa kluczowe, oddzielone przecinkiem..." asp-for="Keyword" aria-describedby="button-addon2">
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+    </div>
+</form>
+
+<div class="col">
+    <div id="map" style="background-color: gainsboro; width: 100%; height: calc(100vh - 270px);"></div>
+</div>
+
+@*<div class="row">
+    <div class="col-md-3">
+        <form asp-action="SearchNearby">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Latitude" class="control-label"></label>
+                <input id="latitudeForm" asp-for="Latitude" class="form-control" onChange="initMap();" />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Longitude" class="control-label"></label>
+                <input id="longitudeForm" asp-for="Longitude" class="form-control" onchange="initMap();" />
+                <span asp-validation-for="Longitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Radius" class="control-label"></label>
+                <input id="radiusForm" asp-for="Radius" class="form-control" />
+                <span asp-validation-for="Radius" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Keyword" class="control-label"></label>
+                <input asp-for="Keyword" class="form-control" />
+                <span asp-validation-for="Keyword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kategoria</label>
+                <select asp-for="SelectedType" asp-items="Model.PlaceCategories" class="form-control">
+                    <option selected="selected" value="">Brak kategorii</option>
+                </select>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Szukaj miejsc" class="btn btn-primary btn-lg" />
+            </div>
+        </form>
+    </div>
+    <div class="col">
+        <div id="map" style="background-color: gainsboro; width: 100%; height: 80vh"></div>
+    </div>
+</div>*@
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var latitude, longitude;
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation, showGeolocationError);
+            } else {
+                ShowErrorMessage("Błąd lokalizacji", "Ta przeglądarka nie wspiera geolokalizacji");
+            }
+        };
+
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+            document.getElementById('latitudeForm').value = latitude;
+            document.getElementById('longitudeForm').value = longitude;
+            initMap();
+        };
+
+        function showGeolocationError(error) {
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+                ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
+                break;
+            case error.TIMEOUT:
+                ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
+                break;
+            case error.UNKNOWN_ERROR:
+                ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
+                break;
+            }
+        }
+
+        var myLatlng;
+
+        function initMap() {
+            var latitude, longitude;
+            latitude = parseFloat(document.getElementById('latitudeForm').value);
+            longitude = parseFloat(document.getElementById('longitudeForm').value);
+
+
+            myLatlng = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 12,
+                    mapId: '@Html.Raw(_appSettings.Value.CustomMapId)',
+                    center: myLatlng,
+                });
+
+            let infoWindow = new google.maps.InfoWindow({
+                content: "Kliknij na mapę aby wybrać położenie",
+                position: myLatlng,
+            });
+
+            infoWindow.open(map);
+
+            map.addListener("click",
+                (mapsMouseEvent) => {
+                    infoWindow.close();
+                    radiusCircle.setMap(null);
+                    myLatlng = { lat: mapsMouseEvent.latLng.lat(), lng: mapsMouseEvent.latLng.lng() };
+
+                    radiusCircle.setOptions({
+                        map,
+                        center: myLatlng,
+                        radius: parseInt(document.getElementById('radiusForm').value),
+                    });
+
+                    document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                    document.getElementById('longitudeForm').value = radiusCircle.center.lng();
+                });
+
+            const radiusCircle = new google.maps.Circle();
+            radiusCircle.setOptions({
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35,
+                map,
+                center: myLatlng,
+                radius: parseInt(document.getElementById('radiusForm').value),
+                editable: true,
+                draggable: true
+            });
+
+            var maxRadius = 50000;
+
+            google.maps.event.addListener(radiusCircle,
+                'radius_changed',
+                function() {
+                    if (radiusCircle.getRadius() > maxRadius) {
+                        radiusCircle.setRadius(maxRadius);
+                    }
+
+                    document.getElementById('radiusForm').value = radiusCircle.getRadius();
+                });
+            google.maps.event.addListener(radiusCircle,
+                'center_changed',
+                function() {
+                    document.getElementById('latitudeForm').value = radiusCircle.center.lat();
+                    document.getElementById('longitudeForm').value = radiusCircle.center.lng();
+                });
+        }
+
+        window.onload = getLocation();
+        window.addEventListener("load", initMap);
+    </script>
+}
