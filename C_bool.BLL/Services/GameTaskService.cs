@@ -4,7 +4,7 @@ using C_bool.BLL.Repositories;
 
 namespace C_bool.BLL.Services
 {
-    public class GameTaskService
+    public class GameTaskService : IGameTaskService
     {
         private IRepository<GameTask> _gameTasksRepository;
 

@@ -43,10 +43,11 @@ namespace C_bool.WebApp
             services.AddRazorPages();
             
             // services
-            services.AddScoped<PlacesService>();
-            services.AddScoped<GameTaskService>();
-            services.AddTransient<IUserService, UsersService>();
-            services.AddScoped<UsersService>();
+            services.AddTransient<IPlaceService, PlaceService>();
+            services.AddTransient<IGooglePlaceService, GooglePlaceService>();
+            services.AddTransient<IGameTaskService, GameTaskService>();
+            services.AddTransient<IUserService, UserService>();
+            
 
 
             //Google API Http client

@@ -33,8 +33,8 @@ namespace C_bool.WebApp.Controllers
         private IRepository<User> _usersRepository;
         private IRepository<GameTask> _gameTasksRepository;
 
-        private readonly PlacesService _placesService;
-        private readonly UsersService _usersService;
+        private readonly IPlaceService _placesService;
+        private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
 
 
@@ -46,8 +46,8 @@ namespace C_bool.WebApp.Controllers
             IRepository<Place> placesRepository,
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
-            PlacesService placesService,
-            UsersService usersService,
+            IPlaceService placesService,
+            IUserService usersService,
             UserManager<User> userManager)
         {
             _logger = logger;
@@ -58,15 +58,14 @@ namespace C_bool.WebApp.Controllers
             _usersRepository = usersRepository;
             _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
-            _usersService = usersService;
+            _userService = usersService;
             _userManager = userManager;
         }
 
         [Authorize]
         public async Task<IActionResult> Index(string searchString, string searchType, double range)
         {
-            var userId = int.Parse(_userManager.GetUserId(User));
-            var user = _usersRepository.GetById(userId);
+            var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
@@ -80,7 +79,7 @@ namespace C_bool.WebApp.Controllers
 
             //list of UserViewModel with top 10 users (by points count)
             var usersCount = _usersRepository.GetAllQueryable().Count();
-            ViewBag.UserRank = _usersService.OrderByPoints(true).GetRange(0,usersCount < 10 ? usersCount : 10 ).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
+            ViewBag.UserRank = _userService.OrderByPoints(true).GetRange(0,usersCount < 10 ? usersCount : 10 ).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
 
             ViewBag.UserPoints = user.Points;
             ViewBag.UserRankPosition = _usersRepository.GetAllQueryable().Count(x => x.Points > user.Points) + 1;

@@ -5,25 +5,28 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using C_bool.BLL.Models.GooglePlaces;
+using C_bool.WebApp.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
 //TODO: przenieść do BLL, jak się da
-namespace C_bool.WebApp.Helpers
+namespace C_bool.BLL.Helpers
 {
     public class GoogleApiAsync
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly GoogleAPISettings _googleApiSettings;
         private string ApiKey { get; set; }
         public List<GooglePlace> Places { get; set; }
         public string Message { get; set; }
         public Status QueryStatus { get; set; }
 
-        public GoogleApiAsync(IHttpClientFactory httpClientFactory, string apiKey)
+        public GoogleApiAsync(IHttpClientFactory httpClientFactory, GoogleAPISettings googleApiSettings)
         {
             _httpClientFactory = httpClientFactory;
-            ApiKey = apiKey;
+            _googleApiSettings = googleApiSettings;
+            ApiKey = _googleApiSettings.GoogleAPIKey;
         }
 
         private string TrimJson(string convertedJson, string sectionToGet)
@@ -175,7 +178,6 @@ namespace C_bool.WebApp.Helpers
             }
             return listPlaces;
         }
-
 
         public async Task<string> DownloadImageAsync(GooglePlace place, string width)
         {

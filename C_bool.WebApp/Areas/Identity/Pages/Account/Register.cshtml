@@ -1,4 +1,5 @@
 ﻿@page
+@using C_bool.BLL.Enums
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -18,6 +19,16 @@
                     <form asp-route-returnUrl="@Model.ReturnUrl" class="mt-4" id="account" method="post">
                         <!-- Form -->
                         <div class="form-group mb-4">
+                            <label for="text">Twoja nazwa użytkownika</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                                </span>
+                                <input asp-for="Input.UserName" type="text" class="form-control" placeholder="BystryJanusz" id="username" autofocus required>
+                                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
                             <label for="email">Twój Email</label>
                             <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1">
@@ -25,6 +36,17 @@
                                 </span>
                                 <input asp-for="Input.Email" type="email" class="form-control" placeholder="programista15k@wykop.pl" id="email" autofocus required>
                                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="gender">Płeć</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                                </span>
+                                <select asp-for="Input.Gender" type="gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-control" id="gender" autofocus required>
+                                    <option selected="selected" value="">Wybierz płeć</option>
+                                </select>
                             </div>
                         </div>
                         <!-- End of Form -->

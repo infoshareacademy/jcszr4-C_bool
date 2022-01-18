@@ -234,9 +234,6 @@ namespace C_bool.BLL.Migrations
                     b.Property<DateTime>("DoneOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDone")
                         .HasColumnType("bit");
 
@@ -257,9 +254,6 @@ namespace C_bool.BLL.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.HasKey("UserId", "PlaceId");
 

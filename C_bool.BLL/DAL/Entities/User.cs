@@ -26,6 +26,14 @@ namespace C_bool.BLL.DAL.Entities
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+
+        public User()
+        {
+            IsActive = true;
+            CreatedOn = DateTime.UtcNow;
+            FavPlaces = new List<UserPlace>();
+            UserGameTasks = new List<UserGameTask>();
+        }
     }
 
     public enum Badges

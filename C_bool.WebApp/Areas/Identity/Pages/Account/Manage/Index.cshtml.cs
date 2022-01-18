@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,6 +25,12 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
         }
 
         public string Username { get; set; }
+        public string Email { get; set; }
+        public Gender Gender { get; set; }
+        public string Photo { get; set; }
+        public int Points { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedOn { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -33,6 +40,8 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            public string Username { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -41,9 +50,21 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
+            var email = user.Email;
+            var gender = user.Gender;
+            var photo = user.Photo;
+            var points = user.Points;
+            var isActive = user.IsActive;
+            var createdOn = user.CreatedOn;
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+            Email = email;
+            Gender = gender;
+            Photo = photo;
+            Points = points;
+            IsActive = isActive;
+            CreatedOn = createdOn;
 
             Input = new InputModel
             {
@@ -87,6 +108,19 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            var userName = await _userManager.GetUserNameAsync(user);
+            if (Input.Username != userName)
+            {
+                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                if (!setPhoneResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
