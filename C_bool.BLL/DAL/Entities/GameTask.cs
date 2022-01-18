@@ -21,6 +21,7 @@ namespace C_bool.BLL.DAL.Entities
         public string CreatedById { get; set; }
         public string CreatedByName { get; set; }
         public virtual List<UserGameTask> UserGameTasks { get; set; }
+        public string TextCriterion { get; set; }
     }
 
     //Metoda jeżeli kryterium jest spełnione {}
