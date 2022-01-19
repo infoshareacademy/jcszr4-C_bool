@@ -12,9 +12,6 @@ namespace C_bool.BLL.Services
         void AddFavPlace(Place place);
         void AddTaskToUser(GameTask gameTask);
         public List<Place> GetFavPlaces();
-        void SetTaskAsDone(int gameTaskId);
-        void SetTaskAsDone(int userId, int gameTaskId);
-        void SetUserPoints(User user);
         List<GameTask> GetToDoTasks();
         List<GameTask> GetToDoTasks(int userId);
         List<GameTask> GetInProgressTasks();

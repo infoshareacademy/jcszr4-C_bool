@@ -14,7 +14,7 @@ namespace C_bool.BLL.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<UserPlace> _userPlaceRepository;
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
-        private IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserService(IRepository<User> userRepository, IRepository<UserPlace> userPlaceRepository, IRepository<UserGameTask> userGameTaskRepository , IHttpContextAccessor httpContextAccessor, IPlaceService placesService)
         { 
@@ -57,44 +57,6 @@ namespace C_bool.BLL.Services
 
             currentUser.UserGameTasks.Add(new UserGameTask(currentUser, gameTask));
             _userRepository.Update(currentUser);
-        }
-
-        public void SetTaskAsDone(int gameTaskId)
-        {
-            var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-            var currentUserId = GetCurrentUserId();
-            var currentUser = _userRepository.GetById(currentUserId);
-
-            var gameTaskToBeDone =
-                usersGameTasks.Single(ugt => ugt.UserId == currentUserId && ugt.GameTaskId == gameTaskId);
-            
-            gameTaskToBeDone.IsDone = true;
-            SetUserPoints(currentUser);
-
-            _userRepository.Update(currentUser);
-        }
-
-        public void SetTaskAsDone(int userId, int gameTaskId)
-        {
-            var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-            var user = _userRepository.GetById(userId);
-
-            var gameTaskToBeDone =
-                usersGameTasks.Single(ugt => ugt.UserId == userId && ugt.GameTaskId == gameTaskId);
-
-            gameTaskToBeDone.IsDone = true;
-            SetUserPoints(user);
-
-            _userRepository.Update(user);
-        }
-
-        public void SetUserPoints(User user)
-        {
-            var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-            var points = usersGameTasks.Where(ugt => ugt.UserId == user.Id).Sum(ugt => ugt.GameTask.Points);
-
-            user.Points = points;
-            _userRepository.Update(user);
         }
 
         public List<GameTask> GetToDoTasks()
