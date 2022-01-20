@@ -90,7 +90,6 @@ namespace C_bool.WebApp.Controllers
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
             {
-                //TODO: tu leci wyjatek bo opis czesto jest nulem 
                 places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
 
@@ -116,12 +115,12 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
-        public ActionResult Favourities()
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddToFavs([FromBody] ReturnString request)
         {
-            var model = _placesRepository.GetAll();
-            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.ToList().Count}";
-            ViewBag.Status = true;
-            return View(model);
+            _userService.AddFavPlace(_placesService.GetPlaceById(request.Id));
+            return Ok();
         }
 
 

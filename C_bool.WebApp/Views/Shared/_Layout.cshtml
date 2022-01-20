@@ -106,7 +106,7 @@
 
 
     <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
-        <a class="navbar-brand me-lg-5" href="/index.html">
+        <a class="navbar-brand me-lg-5" href="/">
             <img class="navbar-brand-dark" src="/img/header-logo-name.png" alt="Cebool" /> <img class="navbar-brand-light" src="/img/header-logo-name.png" alt="Volt logo" />
         </a>
         <div class="d-flex align-items-center">
@@ -248,14 +248,14 @@
                                     <span class="sidebar-text">Moje zadania</span>
                                 </a>
                             </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "create" ? "active" : "")">
+                            @*<li class="nav-item @(controller == "gametasks" && action == "create" ? "active" : "")">
                                 <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Create">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
                                     </span>
                                     <span class="sidebar-text">Dodaj nowe</span>
                                 </a>
-                            </li>
+                            </li>*@
                         </ul>
                     </div>
                 </li>
@@ -457,6 +457,28 @@
 
                 error: function (xmlhttprequest, textstatus, errorthrown) {
                     //showNotif('red', errorthrown);
+                }
+            });
+    };
+
+    //post data to controller
+    function postToController(controller, view, input) {
+        var postData = {Id: input};
+
+        $.ajax(
+            {
+                type: "POST",
+                url: '/' + controller + '/' + view,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                success: function(data) {
+                    showNotif('green', 'OK');
+                },
+
+                error: function (xmlhttprequest, textstatus, errorthrown) {
+                    //alert(" conection to the server failed ");
+                    showNotif('red', errorthrown);
                 }
             });
     };

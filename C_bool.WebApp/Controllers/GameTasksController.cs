@@ -1,9 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.GameTask;
+using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,46 +20,27 @@ namespace C_bool.WebApp.Controllers
     public class GameTasksController : Controller
     {
         private readonly ILogger<GameTasksController> _logger;
-        private IPlaceService _placesService;
+        private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
 
         private readonly IMapper _mapper;
-        private IConfiguration _configuration;
 
-        private readonly ApplicationDbContext _context;
-        private IRepository<Place> _placesRepository;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
-
-
-        private readonly UserManager<User> _userManager;
 
 
         public GameTasksController(
             ILogger<GameTasksController> logger,
             IMapper mapper,
-            IConfiguration configuration,
-            ApplicationDbContext context,
-            IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
             IUserService usersService,
-            IGameTaskService gameTaskService,
-            UserManager<User> userManager)
+            IGameTaskService gameTaskService
+        )
         {
             _logger = logger;
             _mapper = mapper;
-            _configuration = configuration;
-            _context = context;
-            _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
-            _userManager = userManager;
         }
 
         [Authorize]
@@ -71,15 +56,45 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public ActionResult Create()
+        public ActionResult ChooseToCreate(int placeId)
         {
+            var model = _mapper.Map<PlaceViewModel>(_placesService.GetPlaceById(placeId));
+            ViewData["PlaceId"] = placeId;
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChooseToCreate(int placeId, string taskType)
+        {
+            Enum.TryParse(taskType, true, out TaskType typeEnum);
+            try
+            {
+                return RedirectToAction("Create", new { placeId, taskType});
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+
+        [Authorize]
+        public ActionResult Create(int placeId, string taskType)
+        {
+            Enum.TryParse(taskType, true, out TaskType typeEnum);
+
+            if (typeEnum == TaskType.CheckInToALocation) { }
+
+
             return View();
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(GameTaskViewModel model, IFormFile file)
         {
             try
             {

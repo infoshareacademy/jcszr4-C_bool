@@ -120,7 +120,7 @@
                             <form method="post" style="display: flex; justify-content: center;">
                                 <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
 
-                                    <button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>
+                                    <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@Model.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
                                     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
                                     <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('Model.Id')"><l class="bi-heart"> Ulubione</l></button>
                                 </div>

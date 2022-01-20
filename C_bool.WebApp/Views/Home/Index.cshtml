@@ -60,7 +60,7 @@
                 <div class="row d-block d-xl-flex align-items-center">
                     <div class="col-12 col-xl-3 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
                         <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
-                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>
                         </div>
                         <div class="d-sm-none">
                             <h2 class="fw-extrabold h5">Miejsca</h2>
@@ -87,7 +87,7 @@
                 <div class="row d-block d-xl-flex align-items-center">
                     <div class="col-12 col-xl-3 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
                         <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path></svg>
+                            <svg class="icon" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"></path></svg>
                         </div>
                         <div class="d-sm-none">
                             <h2 class="fw-extrabold h5">Zadania</h2>
@@ -128,7 +128,7 @@
                     <h2 class="fs-3 fw-extrabold">W odległości @ViewBag.Range km od ciebie jest @Html.DisplayFor(x => nearbyPlaces.Count) miejsc z aktywnymi zadaniami</h2>
                 </div>
                 <div class="d-flex ms-auto">
-                    <a href="#" class="btn btn-primary btn-lg me-2">Wszystkie miejsca</a>
+                    <a asp-controller="Places" asp-action="Index" class="btn btn-primary btn-lg me-2">Wszystkie miejsca</a>
                 </div>
             </div>
             <div class="card-body p-2">
@@ -140,201 +140,229 @@
         </div>
 
     </div>
-<div class="row">
-    <div class="col-12 col-xl-8">
-        <div class="row">
-            <!--Tasks nearby - list view-->
-            @await Component.InvokeAsync("HomeScreenNearbyPlacesList", new { placesList = nearbyPlaces })
-            <div class="col-12 col-xxl-6 mb-4"></div>
-        </div>
-    </div>
-    <div class="col-12 col-xl-4">
-        <!--Tasks progress-->
-        <div class="card border-0 shadow animation-scale">
-            <div class="card-header border-bottom d-flex align-items-center justify-content-between">
-                <h2 class="fs-5 fw-bold mb-0">Twoje aktywne zadania</h2>
-                <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkie</a>
-            </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-auto">
-                        <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <div class="col">
-                        <div class="progress-wrapper">
-                            <div class="progress-info">
-                                <div class="h6 mb-0">Placeholder zadania 1</div>
-                                <div class="small fw-bold text-gray-500"><span>75 %</span></div>
-                            </div>
-                            <div class="progress mb-0">
-                                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row align-items-center mb-4">
-                    <div class="col-auto">
-                        <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <div class="col">
-                        <div class="progress-wrapper">
-                            <div class="progress-info">
-                                <div class="h6 mb-0">Placeholder zadania 2</div>
-                                <div class="small fw-bold text-gray-500"><span>60 %</span></div>
-                            </div>
-                            <div class="progress mb-0">
-                                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row align-items-center mb-4">
-                    <div class="col-auto">
-                        <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <div class="col">
-                        <div class="progress-wrapper">
-                            <div class="progress-info">
-                                <div class="h6 mb-0">Placeholder zadania 3</div>
-                                <div class="small fw-bold text-gray-500"><span>45 %</span></div>
-                            </div>
-                            <div class="progress mb-0">
-                                <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row align-items-center mb-3">
-                    <div class="col-auto">
-                        <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <div class="col">
-                        <div class="progress-wrapper">
-                            <div class="progress-info">
-                                <div class="h6 mb-0">Placeholder zadania 4</div>
-                                <div class="small fw-bold text-gray-500"><span>34 %</span></div>
-                            </div>
-                            <div class="progress mb-0">
-                                <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" style="width: 34%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <div class="row">
+                <!--Tasks nearby - list view-->
+                @await Component.InvokeAsync("HomeScreenNearbyPlacesList", new { placesList = nearbyPlaces })
             </div>
         </div>
-        <div class="col-12 col-xxl-6 mb-4">
-
-        </div>
-        <div class="col-12 px-0 mb-4">
-            <!--User ranking panel-->
-            <div class="card border-0 shadow animation-scale">
-                <div class="card-header border-bottom d-flex align-items-center justify-content-between">
-                    <h2 class="fs-5 fw-bold mb-0">Ranking użytkowników</h2>
-                    <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkich</a>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush list my--3">
-                        @{
-                            var position = 1;
-                            var lastPoints = 0;
-                        }
-                        
-                        @foreach (var user in userRank)
-                        {
-                            <li class="list-group-item px-0">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <a href="#" class="avatar">
-                                            <img class="rounded" alt="Image placeholder" src="/img/image-placeholder.jpg">
-                                        </a>
+        <div class="col-12 col-xl-4">
+            <div class="col-12 px-0 mb-4">
+                <!--Tasks progress-->
+                <div class="card border-0 shadow animation-scale">
+                    <div class="card-header border-bottom d-flex align-items-center justify-content-between">
+                        <h2 class="fs-5 fw-bold mb-0">Twoje aktywne zadania</h2>
+                        <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkie</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-auto">
+                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="col">
+                                <div class="progress-wrapper">
+                                    <div class="progress-info">
+                                        <div class="h6 mb-0">Placeholder zadania 1</div>
+                                        <div class="small fw-bold text-gray-500"><span>75 %</span></div>
                                     </div>
-                                    <div class="col-auto ms--2">
-                                        <h4 class="h6 mb-0">
-                                            <a href="#">@Html.Raw(user.UserName)</a>
-                                        </h4>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-success dot rounded-circle me-1"></div>
-                                            <small>Punkty: <b>@Html.Raw(user.Points)</b></small>
-                                        </div>
-                                    </div>
-                                    <div class="col text-end">
-                                        <div>
-                                            <l class="align-items-center fw-bold font-medium">
-                                                #@Html.Raw(position)
-                                                @{
-                                                    if (user.Points < lastPoints) position++;
-                                                    lastPoints = user.Points;
-                                                }
-                                            </l>
-                                        </div>
+                                    <div class="progress mb-0">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>
                                     </div>
                                 </div>
-                            </li>
-                        }
-                    </ul>
+                            </div>
+                        </div>
+                        <div class="row align-items-center mb-4">
+                            <div class="col-auto">
+                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="col">
+                                <div class="progress-wrapper">
+                                    <div class="progress-info">
+                                        <div class="h6 mb-0">Placeholder zadania 2</div>
+                                        <div class="small fw-bold text-gray-500"><span>60 %</span></div>
+                                    </div>
+                                    <div class="progress mb-0">
+                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-items-center mb-4">
+                            <div class="col-auto">
+                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="col">
+                                <div class="progress-wrapper">
+                                    <div class="progress-info">
+                                        <div class="h6 mb-0">Placeholder zadania 3</div>
+                                        <div class="small fw-bold text-gray-500"><span>45 %</span></div>
+                                    </div>
+                                    <div class="progress mb-0">
+                                        <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-items-center mb-3">
+                            <div class="col-auto">
+                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="col">
+                                <div class="progress-wrapper">
+                                    <div class="progress-info">
+                                        <div class="h6 mb-0">Placeholder zadania 4</div>
+                                        <div class="small fw-bold text-gray-500"><span>34 %</span></div>
+                                    </div>
+                                    <div class="progress mb-0">
+                                        <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" style="width: 34%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="col-12 px-0 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header border-bottom">
+                        <h2 class="fs-5 fw-bold mb-1">Wydarzenia</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Event 1 -->
+                        <div class="row align-items-center d-block d-sm-flex border-bottom pb-4 mb-4">
+                            <div class="col-auto mb-3 mb-sm-0">
+                                <div class="calendar d-flex"><span class="calendar-month">Sty</span><span class="calendar-day py-2">25</span></div>
+                            </div>
+                            <div class="col">
+                                <a href="../calendar.html">
+                                    <h3 class="h5 mb-1">Upojny weekend w krzakach</h3>
+                                </a>
+                                <span>Organizowany przez <a href="#">Stanisław Menda</a></span>
+                                <div class="small fw-bold">Czas: 20:30 - 24:00</div>
+                                <span class="small fw-bold">Miejsce: Ławka za monopolowym, Szczekociny</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer border-top bg-gray-50">
+                        <a class="fw-bold d-flex align-items-center justify-content-center" href="../calendar.html">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
+                            Wyświetl wszystkie
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 px-0 mb-4">
+                <!--User ranking panel-->
+                <div class="card border-0 shadow animation-scale">
+                    <div class="card-header border-bottom d-flex align-items-center justify-content-between">
+                        <h2 class="fs-5 fw-bold mb-0">Ranking użytkowników</h2>
+                        <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkich</a>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush list my--3">
+                            @{
+                                var position = 1;
+                                var lastPoints = 0;
+                            }
+
+                            @foreach (var user in userRank)
+                            {
+                                <li class="list-group-item px-0">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <!-- Avatar -->
+                                            <a href="#" class="avatar">
+                                                <img class="rounded" alt="Image placeholder" src="/img/image-placeholder.jpg">
+                                            </a>
+                                        </div>
+                                        <div class="col-auto ms--2">
+                                            <h4 class="h6 mb-0">
+                                                <a href="#">@Html.Raw(user.UserName)</a>
+                                            </h4>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-success dot rounded-circle me-1"></div>
+                                                <small>Punkty: <b>@Html.Raw(user.Points)</b></small>
+                                            </div>
+                                        </div>
+                                        <div class="col text-end">
+                                            <div>
+                                                <l class="align-items-center fw-bold font-medium">
+                                                    #@Html.Raw(position)
+                                                    @{
+                                                        if (user.Points < lastPoints) position++;
+                                                        lastPoints = user.Points;
+                                                    }
+                                                </l>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        
     </div>
 </div>
 
 @section Scripts {
-        <script type="text/javascript">
+    <script type="text/javascript">
 
-            var latitude, longitude;
+        var latitude, longitude;
 
-            function initMap(latitude, longitude) {
-                const point = { lat: latitude, lng: longitude };
-                const map = new google.maps.Map(document.getElementById("map"),
-                    {
-                        zoom: 16,
-                        center: point,
+        function initMap(latitude, longitude) {
+            const point = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 16,
+                    center: point,
 
-                    });
-                const marker = new google.maps.Marker({
-                    position: point,
-                    map: map,
-                    icon: "/img/onion.png"
                 });
+            const marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                icon: "/img/onion.png"
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation);
             }
+        };
 
-            function getLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(useLocation);
-                }
-            };
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
 
-            function useLocation(position) {
-                latitude = position.coords.latitude;
-                longitude = position.coords.longitude;
+        };
 
-            };
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = { Id: input };
 
-            //post data to controller
-            function postToController(controller, view, input) {
-                var postData = { Id: input };
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function (data) {
+                        showNotif('green', 'OK');
+                    },
 
-                $.ajax(
-                    {
-                        type: "POST",
-                        url: '/' + controller + '/' + view,
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: JSON.stringify(postData),
-                        success: function (data) {
-                            showNotif('green', 'OK');
-                        },
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        showNotif('red', errorthrown);
+                    }
+                });
+        };
 
-                        error: function (xmlhttprequest, textstatus, errorthrown) {
-                            showNotif('red', errorthrown);
-                        }
-                    });
-            };
+        var path_to_delete;
 
-            var path_to_delete;
-
-            window.onload = getLocation();
-        </script>
-    }</div>
+        window.onload = getLocation();
+    </script>
+}

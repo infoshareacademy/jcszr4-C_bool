@@ -142,13 +142,13 @@ namespace C_bool.WebApp.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task AddToFavs([FromBody] ReturnString request)
+        public async Task<IActionResult> AddToFavs([FromBody] ReturnString request)
         {
             var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
             var place = _mapper.Map<GooglePlace, Place>(googlePlace);
             place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
             _usersService.AddFavPlace(place);
-
+            return Ok();
         }
 
         [Authorize]
