@@ -1,10 +1,10 @@
-﻿@model C_bool.WebApp.Models.GameTask.GameTaskViewModel
+﻿@model C_bool.WebApp.Models.GameTask.GameTaskEditModel
 
 @{
     ViewData["Title"] = "Utwórz nowe zadanie";
 }
 
-<form enctype="multipart/form-data" asp-action="Create">
+<form enctype="multipart/form-data" asp-action="Create" asp-route-placeId="@ViewData["PlaceId"]">
 
     <div class="row">
         <div class="col-12">
@@ -85,7 +85,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-md-6 mb-3">
                                                 <label asp-for="ValidFrom" class="control-label"></label>
-                                                @*<span asp-validation-for="ValidFrom" class="text-danger"></span>*@
+                                                <span asp-validation-for="ValidFrom" class="text-danger"></span>
                                                 <div class="input-group">
                                                     <span class="input-group-text">
                                                         <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -97,7 +97,7 @@
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label asp-for="ValidThru" class="control-label"></label>
-                                                @*<span asp-validation-for="ValidThru" class="text-danger"></span>*@
+                                                <span asp-validation-for="ValidThru" class="text-danger"></span>
                                                 <div class="input-group">
                                                     <span class="input-group-text">
                                                         <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -116,7 +116,7 @@
                                                 </label>
                                                 <div>
                                                     <div class="form-check form-switch">
-                                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" value="true" id="checkbox_isActive">
+                                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" id="checkbox_isActive">
                                                     </div>
                                                 </div>
                                             </li>
@@ -167,21 +167,10 @@
                                             <div class="card card-body border-0 shadow mb-4">
                                                 <h2 class="h5 mb-4">Inne</h2>
                                                 <ul class="list-group list-group-flush">
-                                                    @*<li class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                            <label class="form-check-label" for="checkbox_isLimited">
-                                                                <h3 class="h6 mb-1">Włącz limit użytkowników</h3>
-                                                                <p class="small pe-4">Tylko określona liczba graczy może wykonać to zadanie</p>
-                                                            </label>
-                                                            <div>
-                                                                <div class="form-check form-switch">
-                                                                    <input asp-for="IsDoneLimited" class="form-check-input" type="checkbox" value="false" id="checkbox_isLimited">
-                                                                </div>
-                                                            </div>
-                                                        </li>*@
                                                 </ul>
                                                 <p>Limituj liczbę uczestników</p>
                                                 <div class="form-group">
-                                                    @*<span asp-validation-for="LeftDoneAttempts" class="text-danger"></span>*@
+                                                    <span asp-validation-for="LeftDoneAttempts" class="text-danger"></span>
                                                     <input asp-for="LeftDoneAttempts" placeholder="Bez limitu" class="form-control" />
                                                 </div>
                                             </div>

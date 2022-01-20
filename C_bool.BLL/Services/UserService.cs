@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using C_bool.BLL.DAL.Entities;
@@ -36,11 +37,27 @@ namespace C_bool.BLL.Services
            
             return _userRepository.GetById(userId);
         }
-        public void AddFavPlace(Place place)
+        public bool AddFavPlace(Place place)
         {
+            var userFavPlaces = GetFavPlaces();
             var currentUser = GetCurrentUser();
+            if (userFavPlaces.Any(x => x.Id.Equals(place.Id))) return false;
             currentUser.FavPlaces.Add(new UserPlace(currentUser, place));
             _userRepository.Update(currentUser);
+            return true;
+        }
+
+        public bool RemoveFavPlace(Place place)
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser.FavPlaces.Any(x => x.PlaceId.Equals(place.Id)))
+            {
+               var userPlace = currentUser.FavPlaces.SingleOrDefault(x => x.PlaceId.Equals(place.Id));
+               currentUser.FavPlaces.Remove(userPlace);
+            }
+            
+            _userRepository.Update(currentUser);
+            return true;
         }
 
         public List<Place> GetFavPlaces()

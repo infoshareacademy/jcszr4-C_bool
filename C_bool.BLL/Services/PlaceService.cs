@@ -39,12 +39,13 @@ namespace C_bool.BLL.Services
 
         public Place GetPlaceById(string placeId)
         {
-            var places = _placeRepository.GetAllQueryable();
-            return places.SingleOrDefault(e => e.GoogleId == placeId);
+            var id = int.Parse(placeId);
+            return _placeRepository.GetAllQueryable().SingleOrDefault(x => id.Equals(x.Id));
         }
 
         public void AddPlace(Place place)
         {
+            if (_placeRepository.GetAllQueryable().Any(x => place.GoogleId.Equals(x.GoogleId))) return;
             place.CreatedOn = DateTime.UtcNow;
             _placeRepository.Add(place);
         }

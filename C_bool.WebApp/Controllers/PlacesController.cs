@@ -38,7 +38,6 @@ namespace C_bool.WebApp.Controllers
         private IRepository<GameTask> _gameTasksRepository;
 
         private readonly UserManager<User> _userManager;
-
         private IHttpClientFactory _clientFactory;
 
         public PlacesController(
@@ -109,9 +108,7 @@ namespace C_bool.WebApp.Controllers
             var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();
             ViewBag.PlacesCount = places.Count();
 
-            ViewBag.Message = $"Znaleziono {model.ToList().Count} pasujących miejsc";
-            ViewBag.Status = true;
-
+            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
             return View(model);
         }
 
@@ -119,8 +116,15 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public IActionResult AddToFavs([FromBody] ReturnString request)
         {
-            _userService.AddFavPlace(_placesService.GetPlaceById(request.Id));
-            return Ok();
+            var place = _placesService.GetPlaceById(request.Id);
+            if (_userService.AddFavPlace(place))
+            {
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
 

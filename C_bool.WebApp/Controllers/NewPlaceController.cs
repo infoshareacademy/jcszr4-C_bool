@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Net.Http;
@@ -75,8 +76,6 @@ namespace C_bool.WebApp.Controllers
             var user = _usersService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
-            ViewBag.Message = "Nie udało się utworzyć miejsca";
-            ViewBag.Status = true;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
             return View(model);
@@ -100,7 +99,6 @@ namespace C_bool.WebApp.Controllers
         public ActionResult SearchByName()
         {
             var model = new NameSearchRequest();
-
             return View(model);
         }
 
@@ -122,21 +120,20 @@ namespace C_bool.WebApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    ViewBag.Message = "Nie udało się utworzyć miejsca";
-                    ViewBag.Status = false;
+                    ViewBag.Message = new StatusMessage($"Nie udało się utworzyć nowego miejsca", StatusMessage.Status.FAIL);
                     return View(model);
                 }
 
                 placeModel.IsUserCreated = true;
                 placeModel.Photo = (ImageConverter.ConvertImage(file));
                 _placesRepository.Add(placeModel);
-                ViewBag.Message = $"Dodano nowe miejsce: {placeModel.Name}";
-                ViewBag.Status = true;
-                return RedirectToAction("Index", "Places");
+                ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
+                return RedirectToAction("Details","Places", new { placeId = placeModel.Id });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
+                return View(model);
             }
         }
 
@@ -174,8 +171,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            ViewBag.Message = _googleApiAsync.Message;
-            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
+            ViewBag.Message = new StatusMessage(_googleApiAsync.Message, StatusMessage.Status.INFO);
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
@@ -191,8 +187,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Longitude = user.Longitude;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
-            ViewBag.Message = _googleApiAsync.Message;
-            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
+            ViewBag.Message = new StatusMessage(_googleApiAsync.Message, StatusMessage.Status.INFO);
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 

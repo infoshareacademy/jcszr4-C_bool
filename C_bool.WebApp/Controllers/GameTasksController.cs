@@ -5,6 +5,7 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
+using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.GameTask;
 using C_bool.WebApp.Models.Place;
@@ -24,16 +25,17 @@ namespace C_bool.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
 
+        private IRepository<GameTask> _gameTasksRepository;
+
         private readonly IMapper _mapper;
-
-
 
         public GameTasksController(
             ILogger<GameTasksController> logger,
             IMapper mapper,
             IPlaceService placesService,
             IUserService usersService,
-            IGameTaskService gameTaskService
+            IGameTaskService gameTaskService,
+            IRepository<GameTask> gameTasksRepository
         )
         {
             _logger = logger;
@@ -41,6 +43,7 @@ namespace C_bool.WebApp.Controllers
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
+            _gameTasksRepository = gameTasksRepository;
         }
 
         [Authorize]
@@ -49,10 +52,11 @@ namespace C_bool.WebApp.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize] 
         public ActionResult Details(int id)
         {
-            return View();
+            var model = _gameTasksRepository.GetById(id);
+            return View(model);
         }
 
         [Authorize]
@@ -85,8 +89,9 @@ namespace C_bool.WebApp.Controllers
         {
             Enum.TryParse(taskType, true, out TaskType typeEnum);
 
-            if (typeEnum == TaskType.CheckInToALocation) { }
+            ViewData["PlaceId"] = placeId;
 
+            if (typeEnum == TaskType.CheckInToALocation) { }
 
             return View();
         }
@@ -94,15 +99,34 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(GameTaskViewModel model, IFormFile file)
+        public ActionResult Create(GameTaskEditModel model, int placeId, IFormFile file)
         {
+            var gameTaskModel = _mapper.Map<GameTaskEditModel, GameTask>(model);
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Message = new StatusMessage($"Nie udało się utworzyć nowego zadania", StatusMessage.Status.FAIL);
+                    return View(model);
+                }
+
+                if (gameTaskModel.LeftDoneAttempts > 0)
+                {
+                    gameTaskModel.IsDoneLimited = true;
+                }
+
+                gameTaskModel.Place = _placesService.GetPlaceById(placeId);
+                gameTaskModel.Photo = (ImageConverter.ConvertImage(file));
+                gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
+                gameTaskModel.CreatedById = _userService.GetCurrentUser().Id.ToString();
+                _gameTasksRepository.Add(gameTaskModel);
+                ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
+                return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
+                return View(model);
             }
         }
 

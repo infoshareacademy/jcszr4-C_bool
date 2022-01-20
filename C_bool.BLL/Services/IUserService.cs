@@ -9,7 +9,8 @@ namespace C_bool.BLL.Services
     {
         int GetCurrentUserId();
         User GetCurrentUser();
-        void AddFavPlace(Place place);
+        bool AddFavPlace(Place place);
+        bool RemoveFavPlace(Place place);
         void AddTaskToUser(GameTask gameTask);
         public List<Place> GetFavPlaces();
         List<GameTask> GetToDoTasks();

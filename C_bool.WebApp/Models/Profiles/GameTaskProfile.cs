@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using GameTaskViewModel = C_bool.WebApp.Models.GameTask.GameTaskViewModel;
+using C_bool.WebApp.Models.GameTask;
 
 namespace C_bool.WebApp.Models.Profiles
 {
@@ -11,7 +11,10 @@ namespace C_bool.WebApp.Models.Profiles
     {
         public GameTaskProfile()
         {
-            CreateMap<BLL.DAL.Entities.GameTask, GameTaskViewModel>()
+            CreateMap<BLL.DAL.Entities.GameTask, GameTaskViewModel>();
+            CreateMap<GameTaskEditModel, BLL.DAL.Entities.GameTask>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<BLL.DAL.Entities.GameTask, GameTaskEditModel>()
                 .ForMember(dest => dest.PlaceId, o => o.MapFrom(src => src.Place.Id))
                 .ForMember(dest => dest.ShortDescription, o => o.NullSubstitute("?"))
                 .ForMember(dest => dest.Description, o => o.NullSubstitute("?"))
