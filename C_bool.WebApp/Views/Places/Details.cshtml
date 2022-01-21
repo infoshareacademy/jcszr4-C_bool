@@ -8,6 +8,7 @@
 @{
     ViewData["Title"] = "Szczegóły miejsca";
     var hasAnyActiveTasks = (bool)ViewBag.HasAnyActiveTasks;
+    var isUserFavorite = (bool)ViewBag.IsUserFavorite;
 }
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -114,15 +115,20 @@
                         {
                             <img src="/img/image-placeholder.jpg" class="rounded mx-auto mb-4" alt="Place photo">
                         }
+                        
+                        @{
+                            var style = "";
+                            if (isUserFavorite) style = "background-color: #e16c82; color: white; border-color: #e16c82";
+                        }
+
                         <h4 class="h3">@Html.DisplayFor(model => model.Name)</h4>
                         <p class="text-gray mb-4">@Html.DisplayFor(model => model.Address)</p>
                         <ul class="list-group list-group-flush">
                             <form method="post" style="display: flex; justify-content: center;">
                                 <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-
                                     <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@Model.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
                                     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                                    <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('Model.Id')"><l class="bi-heart"> Ulubione</l></button>
+                                    <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary" style="@style" onclick="addToFavs('Places','AddToFavs','@Model.Id')"><l class="bi-heart"> Ulubione</l></button>
                                 </div>
                                 <div class="btn">
                                     <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -189,7 +195,8 @@
         const map = new google.maps.Map(document.getElementById("map"),
             {
                 zoom: 16,
-                center: point,
+                mapId: '@Html.Raw(_appSettings.Value.CustomMapId)',
+                center: point
 
             });
         const marker = new google.maps.Marker({

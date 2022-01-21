@@ -121,12 +121,14 @@ namespace C_bool.WebApp.Controllers
                 {
                     gameTaskModel.IsDoneLimited = true;
                 }
-
-                gameTaskModel.Place = _placesService.GetPlaceById(placeId);
+                var place = _placesService.GetPlaceById(placeId);
+                gameTaskModel.Place = place;
                 gameTaskModel.Photo = (ImageConverter.ConvertImage(file));
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
                 gameTaskModel.CreatedById = _userService.GetCurrentUser().Id.ToString();
                 _gameTasksRepository.Add(gameTaskModel);
+                place.Tasks.Add(gameTaskModel);
+                _placesRepository.Update(place);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
             }

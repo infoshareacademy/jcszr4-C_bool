@@ -16,6 +16,10 @@ namespace C_bool.WebApp.Models.Profiles
             CreateMap<BLL.DAL.Entities.Place, PlaceViewModel>()
                 .ForMember(dest => dest.ActiveTaskCount, o => o.MapFrom(src => src.Tasks.Count));
             CreateMap<BLL.DAL.Entities.Place, PlaceEditModel>();
+            CreateMap<PlaceViewModel, PlaceMapModel>()
+                .ForMember(dest => dest.Name, o => o.MapFrom(src => src.Name.Replace("\"", "")))
+                .ForMember(dest => dest.Address, o => o.MapFrom(src => src.Address.Replace("\"", "")))
+                .ForMember(dest => dest.ShortDescription, o => o.MapFrom(src => src.ShortDescription.Replace("\"", "")));
             CreateMap<PlaceEditModel, BLL.DAL.Entities.Place>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<GooglePlace, BLL.DAL.Entities.Place>()

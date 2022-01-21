@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using C_bool.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -113,9 +114,9 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            //places = places.OrderByDescending(x => x.Tasks.Count);
+            places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
 
-            var placesList = await places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToListAsync();
+            var placesList = _mapper.Map<List<PlaceViewModel>>(places);
             ViewBag.NearbyPlacesCount = places.Count();
             ViewBag.NearbyPlaces = placesList;
             ViewBag.Message = new StatusMessage($"Znaleziono {placesList.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);

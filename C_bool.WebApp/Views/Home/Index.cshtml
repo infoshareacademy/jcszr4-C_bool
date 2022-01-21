@@ -36,13 +36,13 @@
                         </div>
                         <div class="d-sm-none">
                             <h2 class="h5">Cześć @User.Identity?.Name</h2>
-                            <h3 class="fw-extrabold mb-1">Masz @Html.Raw(userPoints) punktów</h3>
+                            <h3 class="fw-extrabold mb-1">Masz @Html.Raw(userPoints) cebul!</h3>
                         </div>
                     </div>
                     <div class="col-12 col-xl-9 px-xl-0">
                         <div class="d-none d-sm-block">
                             <h2 class="h6 text-gray-400 mb-0">Cześć @User.Identity?.Name</h2>
-                            <h3 class="fw-extrabold mb-2">Masz @Html.Raw(userPoints) punktów</h3>
+                            <h3 class="fw-extrabold mb-2">Masz @Html.Raw(userPoints) cebul!</h3>
                         </div>
                         <small class="d-flex align-items-center text-gray-500">Zebranych z 123 wykonanych zadań</small>
                         <div class="small d-flex mt-1">
@@ -153,9 +153,9 @@
             </div>
         </div>
         <div class="col-12 col-xl-4">
-            <div class="col-12 px-0 mb-4">
+            <!--<div class="col-12 px-0 mb-4">-->
                 <!--Tasks progress-->
-                <div class="card border-0 shadow animation-scale">
+                <!--<div class="card border-0 shadow animation-scale">
                     <div class="card-header border-bottom d-flex align-items-center justify-content-between">
                         <h2 class="fs-5 fw-bold mb-0">Twoje aktywne zadania</h2>
                         <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkie</a>
@@ -227,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="col-12 px-0 mb-4">
                 <div class="card border-0 shadow">
                     <div class="card-header border-bottom">
@@ -287,7 +287,7 @@
                                             </h4>
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-success dot rounded-circle me-1"></div>
-                                                <small>Punkty: <b>@Html.Raw(user.Points)</b></small>
+                                                <small>Cebule: <b>@Html.Raw(user.Points)</b></small>
                                             </div>
                                         </div>
                                         <div class="col text-end">
@@ -317,21 +317,6 @@
     <script type="text/javascript">
 
         var latitude, longitude;
-
-        function initMap(latitude, longitude) {
-            const point = { lat: latitude, lng: longitude };
-            const map = new google.maps.Map(document.getElementById("map"),
-                {
-                    zoom: 16,
-                    center: point,
-
-                });
-            const marker = new google.maps.Marker({
-                position: point,
-                map: map,
-                icon: "/img/onion.png"
-            });
-        }
 
         function getLocation() {
             if (navigator.geolocation) {
