@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
@@ -26,6 +28,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IGameTaskService _gameTaskService;
 
         private IRepository<GameTask> _gameTasksRepository;
+        private IRepository<Place> _placesRepository;
 
         private readonly IMapper _mapper;
 
@@ -35,7 +38,8 @@ namespace C_bool.WebApp.Controllers
             IPlaceService placesService,
             IUserService usersService,
             IGameTaskService gameTaskService,
-            IRepository<GameTask> gameTasksRepository
+            IRepository<GameTask> gameTasksRepository,
+            IRepository<Place> placesRepository
         )
         {
             _logger = logger;
@@ -44,6 +48,7 @@ namespace C_bool.WebApp.Controllers
             _userService = usersService;
             _gameTaskService = gameTaskService;
             _gameTasksRepository = gameTasksRepository;
+            _placesRepository = placesRepository;
         }
 
         [Authorize]
@@ -53,9 +58,11 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize] 
-        public ActionResult Details(int id)
+        public ActionResult Details(int gameTaskId)
         {
-            var model = _gameTasksRepository.GetById(id);
+            //TODO: jakieś dziwne rzeczy, samo val model nie pobiera dodatkowo miejsca w propertisach, ale jak się wyżej wywoła niepowiązane placeGameTask, to już jest...
+            var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
+            var model = _gameTasksRepository.GetById(gameTaskId);
             return View(model);
         }
 

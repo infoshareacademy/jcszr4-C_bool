@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -105,7 +106,10 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();
+            //places = places.OrderByDescending(x => x.Tasks.Count);
+
+            //var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();
+            var model = _mapper.Map<List<PlaceViewModel>>(places);
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);

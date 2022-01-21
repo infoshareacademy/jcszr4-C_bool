@@ -167,7 +167,7 @@
                     <div class="multi-level collapse @(controller is "places" or "newplace" ? "show" : "") " role="list"
                          id="submenu-pages-places" aria-expanded="false">
                         <ul class="flex-column nav">
-                            <li class="nav-item @(controller == "places" && action == "index" ? "active" : "")">
+                            <li class="nav-item @(controller == "places" && action == "index" && ViewData["OnlyFavs"].Equals(false) ? "active" : "")">
 
                                 <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index">
                                     <span class="sidebar-icon">
@@ -177,8 +177,8 @@
                                     <span class="sidebar-text">Baza miejsc</span>
                                 </a>
                             </li>
-                            <li class="nav-item @(controller == "places" && action == "favourities" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index" asp-route-SearchOnlyFavs="true">
+                            <li class="nav-item @(controller == "places" && action == "index" && ViewData["OnlyFavs"].Equals(true) ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index" asp-route-SearchOnlyFavs="true" asp-route-range="40000000">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                                     </span>

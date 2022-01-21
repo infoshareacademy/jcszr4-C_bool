@@ -111,11 +111,16 @@
     <!--search & filter form-->
     <form asp-action="Index" method="get">
         <div class="input-group input-group-lg mb-3 form-actions no-color border-0 shadow">
+            <span class="input-group-text">
+                <input class="form-check-input" id="tasksCheckbox" name="SearchOnlyWithTasks" type="checkbox" asp-for="@ViewData["OnlyTask"]" aria-label="Checkbox for following text input">
+                <br />
+                <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="fas fa-trophy"></label>
+                <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px">aktywne zadania</label>
+            </span>
             <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
-            <select class="form-select" asp-items="SelectListItems.SearchForType" name="SearchType" asp-for="@ViewData["CurrentType"]" id="inputGroupSelectType"></select>
             <input type="text" class="form-control" name="SearchString" placeholder="Wyszukaj nazwę, adres lub opis..." value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
             <a asp-action="Index" class="btn btn-outline-secondary">Wyczyść</a>
-            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit"/>
         </div>
     </form>
     <!--Map-->
@@ -338,27 +343,6 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
 
-        };
-
-        //post data to controller
-        function postToController(controller, view, input) {
-            var postData = { Id: input };
-
-            $.ajax(
-                {
-                    type: "POST",
-                    url: '/' + controller + '/' + view,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function (data) {
-                        showNotif('green', 'OK');
-                    },
-
-                    error: function (xmlhttprequest, textstatus, errorthrown) {
-                        showNotif('red', errorthrown);
-                    }
-                });
         };
 
         var path_to_delete;
