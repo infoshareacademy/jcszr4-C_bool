@@ -97,6 +97,7 @@ namespace C_bool.WebApp.Controllers
             Enum.TryParse(taskType, true, out TaskType typeEnum);
 
             ViewData["PlaceId"] = placeId;
+            ViewData["TaskType"] = typeEnum;
 
             if (typeEnum == TaskType.CheckInToALocation) { }
 
