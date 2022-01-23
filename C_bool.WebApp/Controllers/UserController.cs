@@ -167,19 +167,25 @@ namespace C_bool.WebApp.Controllers
             }
         }*/
 
+        [Authorize]
         [HttpPost]
-        public void UpdateUserLocation([FromBody] GeoLocation postData)
+        public IActionResult UpdateUserLocation([FromBody] GeoLocation postData)
         {
             if (postData.Latitude != 0)
             {
                 _geoLocation = postData;
                 var userId = _userManager.GetUserId(User);
-                if (userId == null) return;
+                if (userId == null)
+                {
+                    return Json(new { success = false, responseText = "Błąd pobierania lokalizaji. Nie znaleziono takiego użytkownika." });
+                }
                 var user = _userRepository.GetById(int.Parse(userId));
                 user.Latitude = _geoLocation.Latitude;
                 user.Longitude = _geoLocation.Longitude;
                 _userRepository.Update(user);
+                return Json(new { success = true, responseText = "Odświeżono dane o lokalizacji" });
             }
+            return Json(new { success = false, responseText = "Błąd pobierania lokalizaji. Położenie wskazuje że mieszkasz dokładnie na równiku, co jest raczej mało prawdopodobną opcją. Odśwież okno przeglądarki." });
         }
     }
 }

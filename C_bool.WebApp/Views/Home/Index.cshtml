@@ -36,13 +36,13 @@
                         </div>
                         <div class="d-sm-none">
                             <h2 class="h5">Cześć @User.Identity?.Name</h2>
-                            <h3 class="fw-extrabold mb-1">Masz @Html.Raw(userPoints) punktów</h3>
+                            <h3 class="fw-extrabold mb-1">Masz @Html.Raw(userPoints) cebul!</h3>
                         </div>
                     </div>
                     <div class="col-12 col-xl-9 px-xl-0">
                         <div class="d-none d-sm-block">
                             <h2 class="h6 text-gray-400 mb-0">Cześć @User.Identity?.Name</h2>
-                            <h3 class="fw-extrabold mb-2">Masz @Html.Raw(userPoints) punktów</h3>
+                            <h3 class="fw-extrabold mb-2">Masz @Html.Raw(userPoints) cebul!</h3>
                         </div>
                         <small class="d-flex align-items-center text-gray-500">Zebranych z 123 wykonanych zadań</small>
                         <div class="small d-flex mt-1">
@@ -111,11 +111,16 @@
     <!--search & filter form-->
     <form asp-action="Index" method="get">
         <div class="input-group input-group-lg mb-3 form-actions no-color border-0 shadow">
+            <span class="input-group-text">
+                <input class="form-check-input" id="tasksCheckbox" name="SearchOnlyWithTasks" type="checkbox" asp-for="@ViewData["OnlyTask"]" aria-label="Checkbox for following text input">
+                <br />
+                <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="fas fa-trophy"></label>
+                <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px">aktywne zadania</label>
+            </span>
             <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
-            <select class="form-select" asp-items="SelectListItems.SearchForType" name="SearchType" asp-for="@ViewData["CurrentType"]" id="inputGroupSelectType"></select>
             <input type="text" class="form-control" name="SearchString" placeholder="Wyszukaj nazwę, adres lub opis..." value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
             <a asp-action="Index" class="btn btn-outline-secondary">Wyczyść</a>
-            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit"/>
         </div>
     </form>
     <!--Map-->
@@ -148,9 +153,9 @@
             </div>
         </div>
         <div class="col-12 col-xl-4">
-            <div class="col-12 px-0 mb-4">
+            <!--<div class="col-12 px-0 mb-4">-->
                 <!--Tasks progress-->
-                <div class="card border-0 shadow animation-scale">
+                <!--<div class="card border-0 shadow animation-scale">
                     <div class="card-header border-bottom d-flex align-items-center justify-content-between">
                         <h2 class="fs-5 fw-bold mb-0">Twoje aktywne zadania</h2>
                         <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkie</a>
@@ -222,14 +227,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="col-12 px-0 mb-4">
+                <!--Events panel-->
                 <div class="card border-0 shadow">
-                    <div class="card-header border-bottom">
-                        <h2 class="fs-5 fw-bold mb-1">Wydarzenia</h2>
+                    <div class="card-header bg-gray-200 border-bottom">
+                        <h3 class="mb-0">Wydarzenia</h3>
                     </div>
                     <div class="card-body">
-                        <!-- Event 1 -->
                         <div class="row align-items-center d-block d-sm-flex border-bottom pb-4 mb-4">
                             <div class="col-auto mb-3 mb-sm-0">
                                 <div class="calendar d-flex"><span class="calendar-month">Sty</span><span class="calendar-day py-2">25</span></div>
@@ -255,9 +260,8 @@
             <div class="col-12 px-0 mb-4">
                 <!--User ranking panel-->
                 <div class="card border-0 shadow animation-scale">
-                    <div class="card-header border-bottom d-flex align-items-center justify-content-between">
-                        <h2 class="fs-5 fw-bold mb-0">Ranking użytkowników</h2>
-                        <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkich</a>
+                    <div class="card-header bg-gray-200 border-bottom d-flex align-items-center justify-content-between">
+                        <h3 class="mb-0">Ranking użytkowników</h3>
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush list my--3">
@@ -282,7 +286,7 @@
                                             </h4>
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-success dot rounded-circle me-1"></div>
-                                                <small>Punkty: <b>@Html.Raw(user.Points)</b></small>
+                                                <small>Cebule: <b>@Html.Raw(user.Points)</b></small>
                                             </div>
                                         </div>
                                         <div class="col text-end">
@@ -313,21 +317,6 @@
 
         var latitude, longitude;
 
-        function initMap(latitude, longitude) {
-            const point = { lat: latitude, lng: longitude };
-            const map = new google.maps.Map(document.getElementById("map"),
-                {
-                    zoom: 16,
-                    center: point,
-
-                });
-            const marker = new google.maps.Marker({
-                position: point,
-                map: map,
-                icon: "/img/onion.png"
-            });
-        }
-
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(useLocation);
@@ -338,27 +327,6 @@
             latitude = position.coords.latitude;
             longitude = position.coords.longitude;
 
-        };
-
-        //post data to controller
-        function postToController(controller, view, input) {
-            var postData = { Id: input };
-
-            $.ajax(
-                {
-                    type: "POST",
-                    url: '/' + controller + '/' + view,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function (data) {
-                        showNotif('green', 'OK');
-                    },
-
-                    error: function (xmlhttprequest, textstatus, errorthrown) {
-                        showNotif('red', errorthrown);
-                    }
-                });
         };
 
         var path_to_delete;

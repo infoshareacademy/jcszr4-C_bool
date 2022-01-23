@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
@@ -87,15 +88,15 @@ namespace C_bool.BLL.Services
 
         public bool RemoveFavPlace(Place place)
         {
+            var userFavPlaces = GetFavPlaces();
             var currentUser = GetCurrentUser();
-            if (currentUser.FavPlaces.Any(x => x.PlaceId.Equals(place.Id)))
+            if (userFavPlaces.Any(x => x.Id.Equals(place.Id)))
             {
-               var userPlace = currentUser.FavPlaces.SingleOrDefault(x => x.PlaceId.Equals(place.Id));
-               currentUser.FavPlaces.Remove(userPlace);
+                var userplace = _userPlaceRepository.GetAllQueryable().SingleOrDefault(x => x.PlaceId.Equals(place.Id));
+                _userPlaceRepository.Delete(userplace);
+                return true;
             }
-            
-            _userRepository.Update(currentUser);
-            return true;
+            return false;
         }
         
         public List<Place> GetFavPlaces()

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -92,6 +93,8 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
 
+            var favPlacesId = places.Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToList();
+
             if (searchOnlyFavs)
             {
                 if (user.FavPlaces != null)
@@ -105,7 +108,13 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();
+            var model = _mapper.Map<List<PlaceViewModel>>(places);
+
+            //TODO: brzydka proteza, trzeba załatwić przez mapowanie może?
+            foreach (var item in model.Where(item => favPlacesId.Contains(item.Id)))
+            {
+                item.IsUserFavorite = true;
+            }
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
@@ -119,11 +128,12 @@ namespace C_bool.WebApp.Controllers
             var place = _placesService.GetPlaceById(request.Id);
             if (_userService.AddFavPlace(place))
             {
-                return Ok();
+                return Json(new { success = true, responseText = "Dodano do ulubionych!", isAdded = true });
             }
             else
             {
-                return NotFound();
+                _userService.RemoveFavPlace(place);
+                return Json(new { success = true, responseText = "Usunięto z ulubionych!", isAdded = false });
             }
         }
 
@@ -132,6 +142,7 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Details(int id)
         {
             var model = _placesRepository.GetById(id);
+            ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
             ViewBag.HasAnyActiveTasks = model.Tasks != null && model.Tasks.Any(x => x.IsActive);
             return View(model);
         }

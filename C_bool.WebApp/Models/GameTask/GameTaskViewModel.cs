@@ -8,6 +8,7 @@ namespace C_bool.WebApp.Models.GameTask
 {
     public class GameTaskViewModel
     {
+        public int Id { get; set; }
         public int PlaceId { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }

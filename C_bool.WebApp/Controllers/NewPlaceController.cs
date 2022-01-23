@@ -24,7 +24,7 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
+
 
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
@@ -39,7 +39,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IUserService _usersService;
 
         private readonly IHttpClientFactory _clientFactory;
-        
+
         private readonly GoogleAPISettings _googleApiSettings = new();
         private readonly GoogleApiAsync _googleApiAsync;
 
@@ -129,7 +129,7 @@ namespace C_bool.WebApp.Controllers
                 placeModel.Photo = (ImageConverter.ConvertImage(file));
                 _placesService.AddPlace(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
-                return RedirectToAction("Details","Places", new { placeId = placeModel.Id });
+                return RedirectToAction("Details", "Places", new { placeId = placeModel.Id });
             }
             catch (Exception ex)
             {
@@ -142,21 +142,36 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToFavs([FromBody] ReturnString request)
         {
-            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
-            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
-            _usersService.AddFavPlace(place);
-            return Ok();
+            try
+            {
+                var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+                _usersService.AddFavPlace(place);
+                return Json(new { success = true, responseText = "Dodano do bazy i do ulubionych!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}"});
+            }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task AddToRepository([FromBody] ReturnString request)
+        public async Task<IActionResult> AddToRepository([FromBody] ReturnString request)
         {
-            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
-            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
-            _placesService.AddPlace(place);
+            try
+            {
+                var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+                _placesService.AddPlace(place);
+                return Json(new { success = true, responseText = "Dodano do bazy!"});
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}" });
+            }
         }
 
         [Authorize]
@@ -164,7 +179,16 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
-            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages));
+            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetNearby(
+                request.Latitude, 
+                request.Longitude, 
+                request.Radius, 
+                type: request.SelectedType, 
+                keyword: request.Keyword, 
+                region: "PL", 
+                language: "pl", 
+                loadAllPages: _googleApiSettings.GetAllPages
+                ));
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
 

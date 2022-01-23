@@ -13,7 +13,7 @@ namespace C_bool.WebApp.Models
         public Status MessageStatus { get; set; }
         public string PositionX { get; set; } = "right";
         public string PositionY { get; set; } = "bottom";
-        public int Duration { get; set; } = 10000;
+        public int Duration { get; set; } = 3000;
         public bool Dismissable { get; set; } = true;
         public string MessageParsed { get; set; }
 
@@ -23,7 +23,7 @@ namespace C_bool.WebApp.Models
             MessageStatus = status;
             if (MessageStatus == Status.OK)
             {
-                Color = "green";
+                Color = "#499F68";
                 Type = "success";
 
             }
@@ -35,12 +35,12 @@ namespace C_bool.WebApp.Models
             if (MessageStatus is Status.WARNING)
             {
                 Color = "orange";
-                Type = "info";
+                Type = "success";
             }
             if (MessageStatus is Status.INFO)
             {
                 Color = "#61a5c2";
-                Type = "info";
+                Type = "success";
             }
 
             MessageParsed = ParseNotyf();
@@ -49,34 +49,15 @@ namespace C_bool.WebApp.Models
 
         public string ParseNotyf()
         {
-            return @$"function showNotyf2() {{
-            const notyf2 = new Notyf({{
-                position: {{
-                    x: '{PositionX}',
-                    y: '{PositionY}',
-                }},
-                types: [
-                    {{
-                        type: '{Type}',
-                        background: '{Color}',
-                        icon: {{
-                            className: 'fas fa-info-circle',
-                            tagName: 'span',
-                            color: '#fff'
-                        }},
-                        dismissible: true
-                    }}
-                ],
-                duration: {Duration},
-            }});
-            notyf2.open({{
-                type: '{Type}',
-                message: '{Message}'
-            }});
+            return @$"function showStatusMessage() {{
+            notyf.{Type}({{
+            message: '{Message}',
+            duration: {Duration},
+            color: '{Color}',
+            dismissable: {Dismissable.ToString().ToLower()}
+        }});
             }};
-            window.addEventListener(""load"", showNotyf2());";
-
-
+            window.addEventListener(""load"", showStatusMessage());";
         }
 
         public StatusMessage(string message, Status status, string color)

@@ -46,6 +46,7 @@ namespace C_bool.BLL.Services
         public void AddPlace(Place place)
         {
             if (place.GoogleId != null && _placeRepository.GetAllQueryable().Any(x => place.GoogleId.Equals(x.GoogleId))) return;
+            place.IsActive = true;
             place.CreatedOn = DateTime.UtcNow;
             _placeRepository.Add(place);
         }
