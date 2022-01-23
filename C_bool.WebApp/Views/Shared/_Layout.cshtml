@@ -320,7 +320,14 @@
                             <li class="nav-item dropdown ms-lg-3">
                                 <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <div class="media d-flex align-items-center">
-                                        <img class="avatar rounded-circle" alt="Image placeholder" src="/assets/img/team/profile-picture-3.jpg">
+                                        @if (UserManager.GetUserAsync(User).Result.Photo != null)
+                                        {
+                                            <img class="avatar rounded-circle" alt="Image placeholder" src="data:image;base64,@Html.Raw(UserManager.GetUserAsync(User).Result.Photo)">
+                                        }
+                                        else
+                                        {
+                                            <img class="avatar rounded-circle" alt="Image placeholder" src="/img/onion_man.jpg">
+                                        }
                                         <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                             <span class="mb-0 fw-bold text-gray-900">@User.Identity?.Name</span>
                                         </div>

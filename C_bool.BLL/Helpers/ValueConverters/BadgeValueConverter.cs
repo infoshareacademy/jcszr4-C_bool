@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using C_bool.BLL.DAL.Entities;
+﻿using System.Collections.Generic;
+using C_bool.BLL.Enums;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace C_bool.BLL.Helpers
+namespace C_bool.BLL.Helpers.ValueConverters
 {
     class BadgeValueConverter : ValueConverter<List<Badges>, string>
     {

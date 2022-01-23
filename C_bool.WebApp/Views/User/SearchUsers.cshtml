@@ -7,79 +7,104 @@
 }
 
 <h1>Lista użytkowników</h1>
-
-<p>
-    <a asp-action="Create">Dodaj nowego użytkownika</a>
-</p>
-
-<div class="container">
-    <form asp-action="SearchUsers">
-        <table class="table">
-            <tr>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Nazwa:</label>
-                        <input class="form-control small" type="text" name="name" value="" disabled placeholder="@ViewBag.Name" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Email:</label>
-                        <input class="form-control small" type="text" name="email" value="" disabled placeholder="@ViewBag.Email" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Płeć:</label>
-                        <input class="form-control small" name="gender" value="" disabled placeholder="@ViewBag.Gender"/>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Aktywny:</label>
-                        <input class="form-control small" name="isActive" value="" disabled placeholder="@ViewBag.IsActive" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Sortuj punkty</label>
-                        <input class="form-control small" name="isDescending" value="" disabled placeholder="@ViewBag.IsDescending" />
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="form-group">
-                        <input type="submit" value="Usuń filtry" class="btn btn-primary" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
-
-<table class="table">
-    <thead>
+<br />
+<form asp-action="SearchUsers">
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label class="control-label small">Nazwa:</label>
+                <input class="form-control small" type="text" name="name" value="" disabled placeholder="@ViewBag.Name" />
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label class="control-label small">Email:</label>
+                <input class="form-control small" type="text" name="email" value="" disabled placeholder="@ViewBag.Email" />
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Płeć:</label>
+                <input class="form-control small" name="gender" value="" disabled placeholder="@ViewBag.Gender" />
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Aktywny:</label>
+                @if (ViewBag.IsActive != null)
+                {
+                    @if (bool.Parse(ViewBag.IsActive))
+                    {
+                        <input class="form-control small" name="isActive" value="" disabled placeholder="Tylko aktywni" />
+                    }
+                    else
+                    {
+                        <input class="form-control small" name="isActive" value="" disabled placeholder="Tylko nieaktywni" />
+                    }
+                }
+                else
+                {
+                    <input class="form-control small" name="isActive" value="" disabled placeholder="" />
+                }
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Sortuj punkty</label>
+                @if (ViewBag.IsDescending != null)
+                {
+                    @if (bool.Parse(ViewBag.IsDescending))
+                    {
+                        <input class="form-control small" name="isDescending" value="" disabled placeholder="Malejąco" />
+                    }
+                    else
+                    {
+                        <input class="form-control small" name="isDescending" value="" disabled placeholder="Rosnąco" />
+                    }
+                }
+                else
+                {
+                    <input class="form-control small" name="isDescending" value="" disabled placeholder="" />
+                }
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <input type="submit" value="Usuń filtry" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+<br />
+<br />
+<div class="row">
+    <table class="table">
+        <thead>
         <tr>
             <th>
-                <label asp-for="First().UserName"></label>
+                <label asp-for="First().UserName">Nazwa użytkownika</label>
             </th>
             <th>
                 <label asp-for="First().Email"></label>
             </th>
             <th>
-                <label asp-for="First().Gender"></label>
+                <label asp-for="First().Gender">Płeć</label>
             </th>
             <th>
-                <label asp-for="First().IsActive"></label>
+                <label asp-for="First().IsActive">Status</label>
             </th>
             <th>
-                <label asp-for="First().Points"></label>
+                <label asp-for="First().Points">Cebule</label>
             </th>
             <th></th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         @foreach (var item in Model)
         {
             <tr>
@@ -92,18 +117,30 @@
                 <td>
                     @item.Gender
                 </td>
-                <td>
-                    @item.IsActive
-                </td>
+                @if (item.IsActive)
+                {
+                    <td>Aktywny</td>
+                }
+                else
+                {
+                    <td>Zablokowany</td>
+                }
                 <td>
                     @item.Points
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Pokaż szczegóły</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+                    @if (item.IsActive)
+                    {
+                        <a asp-action="ChangeStatus" asp-route-id="@item.Id">Zablokuj</a>
+                    }
+                    else
+                    {
+                        <a asp-action="ChangeStatus" asp-route-id="@item.Id">Aktwywuj</a>
+                    }
                 </td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>

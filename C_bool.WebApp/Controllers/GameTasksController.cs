@@ -118,7 +118,7 @@ namespace C_bool.WebApp.Controllers
                 gameTaskModel.Place = _placesService.GetPlaceById(placeId);
                 gameTaskModel.Photo = (ImageConverter.ConvertImage(file));
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
-                gameTaskModel.CreatedById = _userService.GetCurrentUser().Id.ToString();
+                gameTaskModel.CreatedById = _userService.GetCurrentUserId().ToString();
                 _gameTasksRepository.Add(gameTaskModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });

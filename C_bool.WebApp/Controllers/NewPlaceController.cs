@@ -125,8 +125,9 @@ namespace C_bool.WebApp.Controllers
                 }
 
                 placeModel.IsUserCreated = true;
+                placeModel.CreatedById = _usersService.GetCurrentUserId().ToString();
                 placeModel.Photo = (ImageConverter.ConvertImage(file));
-                _placesRepository.Add(placeModel);
+                _placesService.AddPlace(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details","Places", new { placeId = placeModel.Id });
             }

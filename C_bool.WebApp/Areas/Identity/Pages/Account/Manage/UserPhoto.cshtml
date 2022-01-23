@@ -1,0 +1,32 @@
+﻿@page
+@model UserPhotoModel
+@{
+    ViewData["Title"] = "Ustaw zdjęcie";
+    ViewData["ActivePage"] = ManageNavPages.UserPhoto;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form enctype="multipart/form-data" id="user-photo-form" method="post">
+            <div class="form-group">
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                        <use xlink:href="#info-fill" />
+                    </svg>
+                    <div>
+                        Dopuszczalalne formaty: <b>.jpg</b> lub <b>.png</b> o maksymalnej wielkości <b>2Mb</b>
+                    </div>
+                </div>
+                <input type="file" asp-for="Input.NewPhoto" class="form-control" />
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Zapisz</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -3,11 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using C_bool.BLL.Enums;
 
 namespace C_bool.WebApp.Helpers
 {
     public class SelectListItems
     {
+        public static List<SelectListItem> GenderList { get; } = new()
+        {
+            new SelectListItem { Value = Gender.Female.ToString(), Text = "Kobieta" },
+            new SelectListItem { Value = Gender.Male.ToString(), Text = "Mężczyzna" },
+            new SelectListItem { Value = Gender.Unknown.ToString(), Text = "Wiem, ale nie powiem" },
+        };
 
         //TODO: Natalka tutaj :-)
         public static List<SelectListItem> gameTaskTypes { get; } = new()

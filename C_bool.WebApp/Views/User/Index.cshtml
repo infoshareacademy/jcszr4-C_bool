@@ -1,5 +1,5 @@
 ﻿@using System.Linq
-@using C_bool.BLL.Enums
+@using C_bool.WebApp.Helpers
 @model IEnumerable<C_bool.BLL.DAL.Entities.User>
 
 @{
@@ -7,115 +7,144 @@
 }
 
 <h1>Lista użytkowników</h1>
-
-<p>
-    <a asp-action="Create">Dodaj nowego użytkownika</a>
-</p>
-
-<div class="container">
-    <form asp-action="SearchUsers">
-        <table class="table">
-            <tr>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Nazwa:</label>
-                        <input class="form-control small" type="text" name="name" placeholder="Wpisz" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Email:</label>
-                        <input class="form-control small" type="text" name="email" placeholder="Wpisz" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Płeć:</label>
-                        <select class="form-control small" name="gender">
-                            <option value="" selected>Wybierz</option>
-                            <option value="@Gender.Male">Mężczyźni</option>
-                            <option value="@Gender.Female">Kobiety</option>
-                        </select>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Aktywny:</label>
-                        <select class="form-control small" name="isActive">
-                            <option value="" selected>Wybierz</option>
-                            <option value="true">Tylko aktywni</option>
-                            <option value="false">Tylko nieaktywni</option>
-                        </select>
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <label class="control-label small">Sortuj punkty</label>
-                        <select class="form-control small" name="isDescending">
-                            <option value="" selected>Wybierz</option>
-                            <option value="true">Malejąco</option>
-                            <option value="false">Rosnąco</option>
-                        </select>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="form-group">
-                        <input type="submit" value="Szukaj" class="btn btn-primary" />
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </form>
-</div>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            <label asp-for="First().UserName"></label>
-        </th>
-        <th>
-            <label asp-for="First().Email"></label>
-        </th>
-        <th>
-            <label asp-for="First().Gender"></label>
-        </th>
-        <th>
-            <label asp-for="First().IsActive"></label>
-        </th>
-        <th>
-            <label asp-for="First().Points"></label>
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
+<br/>
+<form asp-action="SearchUsers">
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label class="control-label small">Nazwa:</label>
+                <input class="form-control small" type="text" name="name" placeholder="Wpisz"/>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label class="control-label small">Email:</label>
+                <input class="form-control small" type="text" name="email" placeholder="Wpisz"/>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Płeć:</label>
+                <select asp-items="SelectListItems.GenderList" class="form-control small" name="gender">
+                    <option selected value="">Wybierz</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Aktywny:</label>
+                <select class="form-control small" name="isActive">
+                    <option value="" selected>Wybierz</option>
+                    <option value="true">Tylko aktywni</option>
+                    <option value="false">Tylko nieaktywni</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label small">Sortuj punkty</label>
+                <select class="form-control small" name="isDescending">
+                    <option value="" selected>Wybierz</option>
+                    <option value="true">Malejąco</option>
+                    <option value="false">Rosnąco</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-1">
+            <div class="form-group ">
+                <input type="submit" value="Szukaj" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+<br/><br/>
+<div class="row">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                <label asp-for="First().UserName">Nazwa użytkownika</label>
+            </th>
+            <th>
+                <label asp-for="First().Email"></label>
+            </th>
+            <th>
+                <label asp-for="First().Gender">Płeć</label>
+            </th>
+            <th>
+                <label asp-for="First().IsActive">Status</label>
+            </th>
+            <th>
+                <label asp-for="First().Points">Cebule</label>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @item.UserName
-            </td>
-            <td>
-                @item.Email
-            </td>
-            <td>
-                @item.Gender
-            </td>
-            <td>
-                @item.IsActive
-            </td>
-            <td>
-                @item.Points
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Pokaż szczegóły</a> |
-                <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @item.UserName
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    @item.Gender
+                </td>
+                @if (item.IsActive)
+                {
+                    <td>Aktywny</td>
+                }
+                else
+                {
+                    <td>Zablokowany</td>
+                }
+                <td>
+                    @item.Points
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Pokaż szczegóły</a> |
+                    @if (item.IsActive)
+                    {
+                        <a asp-action="Index" onclick="changeUserStatus('User','ChangeStatus','@item.Id')">Zablokuj</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" onclick="changeUserStatus('User','ChangeStatus','@item.Id')">Aktwywuj</a>
+                    }
+                </td>
+            </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function changeUserStatus(controller, view, input) {
+        var postData = { id: input };
+
+        $.ajax(
+            {
+                type: "POST",
+                url: '/' + controller + '/' + view + '/' + input,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                success: function (data) {
+                    showNotif('green', 'OK');
+                },
+
+                error: function (xmlhttprequest, textstatus, errorthrown) {
+                    //alert(" conection to the server failed ");
+                    showNotif('red', errorthrown);
+                }
+            });
+    };
+</script>

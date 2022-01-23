@@ -1,10 +1,9 @@
 ﻿namespace C_bool.BLL.Enums
 {
-    public enum Gender
+    public enum Badges
     {
         Unknown,
-        Male,
-        Female,
-        
+        Explorer,
+        Creator
     }
 }
