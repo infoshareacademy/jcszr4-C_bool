@@ -60,6 +60,9 @@ namespace C_bool.WebApp.Controllers
         [Authorize] 
         public ActionResult Details(int gameTaskId)
         {
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
             //TODO: jakieś dziwne rzeczy, samo val model nie pobiera dodatkowo miejsca w propertisach, ale jak się wyżej wywoła niepowiązane placeGameTask, to już jest...
             var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
             var model = _gameTasksRepository.GetById(gameTaskId);
@@ -143,17 +146,28 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Edit(int id)
         {
-            return View();
+            var model = _mapper.Map<GameTask, GameTaskEditModel>(_gameTasksRepository.GetById(id));
+
+
+            return View("Edit", model);
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, GameTaskEditModel model, IFormFile file)
         {
+            var gameTask = _gameTasksRepository.GetById(id);
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                gameTask = _mapper.Map<GameTaskEditModel, GameTask>(model, gameTask);
+                if (file != null) { gameTask.Photo = ImageConverter.ConvertImage(file); }
+                _gameTasksRepository.Update(gameTask);
+                return RedirectToAction("Details", new { gameTaskId = gameTask.Id });
             }
             catch
             {

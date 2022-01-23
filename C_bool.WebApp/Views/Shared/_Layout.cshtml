@@ -60,6 +60,7 @@
     <link type="text/css" href="/css/volt.css" rel="stylesheet">
 
     <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/cebool.css" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
 
@@ -362,49 +363,49 @@
     <script src="/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
 
     <!-- Notyf -->
-<script src="/vendor/notyf/notyf.min.js"></script>
+    <script src="/vendor/notyf/notyf.min.js"></script>
 
-<!-- Notification popup. -->
-<script>
-    const notyf = new Notyf({
-        duration: 1000,
-        position: {
-            x: 'right',
-            y: 'bottom'
-        },
-        types: [
-            {
-                type: 'warning',
-                background: 'orange',
-                icon: {
-                    className: 'material-icons',
-                    tagName: 'i',
-                    text: 'warning'
+    <!-- Notification popup. -->
+    <script>
+        const notyf = new Notyf({
+            duration: 1000,
+            position: {
+                x: 'right',
+                y: 'bottom'
+            },
+            types: [
+                {
+                    type: 'warning',
+                    background: 'orange',
+                    icon: {
+                        className: 'material-icons',
+                        tagName: 'i',
+                        text: 'warning'
+                    }
+                },
+                {
+                    type: 'error',
+                    background: 'indianred',
+                    duration: 5000,
+                    dismissible: true
+                },
+                {
+                    type: 'info',
+                    background: '#61a5c2',
+                    duration: 3000,
+                    dismissible: true
+                },
+                {
+                    type: 'success',
+                    background: 'green',
+                    duration: 2000,
+                    dismissible: true
                 }
-            },
-            {
-                type: 'error',
-                background: 'indianred',
-                duration: 5000,
-                dismissible: true
-            },
-            {
-                type: 'info',
-                background: '#61a5c2',
-                duration: 3000,
-                dismissible: true
-            },
-            {
-                type: 'success',
-                background: 'green',
-                duration: 2000,
-                dismissible: true
-            }
-        ]
-    });
-</script>
+            ]
+        });
+    </script>
 
-<!-- Simplebar -->
+    <!-- Simplebar -->
     <script src="/vendor/simplebar/dist/simplebar.min.js"></script>
 
     <!-- Github buttons -->
@@ -414,38 +415,8 @@
     <script src="/assets/js/volt.js"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
 
-
-    <!-- Notification window. -->
-    <script>
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-gray'
-            },
-            buttonsStyling: false
-        });
-
-        function ShowErrorMessage(title, message) {
-            swalWithBootstrapButtons.fire({
-                icon: 'error',
-                title: title,
-                text: message,
-                footer: '<a href>Odśwież stronę</a>'
-            });
-        }
-
-        function ShowSuccessMessage(title, message) {
-            swalWithBootstrapButtons.fire({
-                icon: 'success',
-                title: title,
-                text: message,
-                showConfirmButton: true,
-                timer: 1500
-            });
-        }
-    </script>
+@RenderSection("Scripts", required: false)
 
     <script>
     // retrieve geolocation from HTML5 GeoLocation API
@@ -471,7 +442,7 @@
                 data: JSON.stringify(postData),
                 success: function (data) {
 
-                    
+
                     notyf.open({
                         type: 'info',
                         message: data.responseText

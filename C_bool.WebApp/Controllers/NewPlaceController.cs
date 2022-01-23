@@ -129,7 +129,7 @@ namespace C_bool.WebApp.Controllers
                 placeModel.Photo = (ImageConverter.ConvertImage(file));
                 _placesService.AddPlace(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
-                return RedirectToAction("Details", "Places", new { placeId = placeModel.Id });
+                return RedirectToAction("Details", "Places", new { id = placeModel.Id });
             }
             catch (Exception ex)
             {

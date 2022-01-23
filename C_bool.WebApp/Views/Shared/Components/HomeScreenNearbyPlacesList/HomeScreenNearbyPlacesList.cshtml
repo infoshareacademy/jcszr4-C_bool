@@ -29,8 +29,7 @@
             {
                 count += 1;
                 <li class="list-group-item cebool-list-main-screen px-0">
-                    <div class="cardrow  mb-0" style="">
-                        @*<a href="Places/Details/@item.Id" class="stretched-link"></a>*@
+                    <div class="cardrow mb-0" style="">
                         <div class="row g-0">
                             <div class="col-md-3" style="height: 100%;">
                                 <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" title="">
@@ -88,13 +87,13 @@
                                                                         {
                                                                             <a asp-controller="GameTasks" asp-action="Details" asp-route-gameTaskId="@task.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                                                                 <div class="flex-column">
-                                                                                    <h5 class="mb-0"><span class="badge bg-danger">@task.Points CBL</span><span class="badge bg-secondary">@task.Type</span> @task.Name</h5>
+                                                                                    <h5 class="mb-0"><span class="badge bg-c-green">@task.Points CBL</span><span class="badge bg-secondary">@task.Type</span> @task.Name</h5>
                                                                                     <p><small>od użytkownika @task.CreatedByName</small></p>
                                                                                     <p>@task.ShortDescription</p>
                                                                                 </div>
                                                                                 @if (task.Photo is not null)
                                                                                 {
-                                                                                    <div style="max-width: 130px;">
+                                                                                    <div class="col-2" style="max-width: 130px;">
                                                                                         <img height="130" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle; object-fit: cover; border-radius: 10px;"
                                                                                              src="data:image;base64,@Html.Raw(task.Photo)" alt="Card image cap">
                                                                                     </div>
@@ -134,16 +133,6 @@
                                             }
                                         </div>
                                     </div>
-
-                                    @*<br />
-                                        <span class="badge bg-primary">Primary</span>
-                                        <span class="badge bg-secondary">Secondary</span>
-                                        <span class="badge bg-success">Success</span>
-                                        <span class="badge bg-danger">Danger</span>
-                                        <span class="badge bg-warning text-dark">Warning</span>
-                                        <span class="badge bg-info text-dark">Info</span>
-                                        <span class="badge bg-light text-dark">Light</span>
-                                        <span class="badge bg-dark">Dark</span>*@
                                 </div>
                             </div>
                         </div>

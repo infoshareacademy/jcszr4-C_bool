@@ -243,7 +243,7 @@
                                 <a href="../calendar.html">
                                     <h3 class="h5 mb-1">Upojny weekend w krzakach</h3>
                                 </a>
-                                <span>Organizowany przez <a href="#">Stanisław Menda</a></span>
+                                <span>Organizowany przez <a href="#">TZEBULL</a></span>
                                 <div class="small fw-bold">Czas: 20:30 - 24:00</div>
                                 <span class="small fw-bold">Miejsce: Ławka za monopolowym, Szczekociny</span>
                             </div>
@@ -292,11 +292,11 @@
                                         <div class="col text-end">
                                             <div>
                                                 <l class="align-items-center fw-bold font-medium">
-                                                    #@Html.Raw(position)
                                                     @{
                                                         if (user.Points < lastPoints) position++;
                                                         lastPoints = user.Points;
                                                     }
+                                                    #@Html.Raw(position)
                                                 </l>
                                             </div>
                                         </div>

@@ -36,6 +36,6 @@ namespace C_bool.WebApp.Models.GameTask
         public string TextCriterion { get; set; }
         public bool IsDoneLimited { get; set; }
         [DisplayName("Ogranicz liczbę użytkowników")]
-        public int LeftDoneAttempts { get; set; }
+        public int? LeftDoneAttempts { get; set; }
     }
 }

@@ -9707,18 +9707,3 @@ textarea.form-control-lg {
         display: none !important
     }
 }
-
-/*cebulowe itemsy*/
-
-.cebool-list-main-screen:hover {
-    background-color: #f7f7f7;
-}
-
-.cebool-login-bg {
-    /* Full height */
-    height: 100%;
-    /* Center and scale the image nicely */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}

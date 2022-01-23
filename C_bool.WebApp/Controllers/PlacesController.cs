@@ -28,6 +28,7 @@ namespace C_bool.WebApp.Controllers
         private readonly ILogger<PlacesController> _logger;
         private IUserService _userService;
         private IPlaceService _placesService;
+        private IGameTaskService _gameTasksService;
         private IRepository<Place> _placesRepository;
 
 
@@ -50,6 +51,7 @@ namespace C_bool.WebApp.Controllers
             IRepository<User> usersRepository,
             IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
+            IGameTaskService gameTasksService,
             IUserService userService,
             UserManager<User> userManager,
             IHttpClientFactory clientFactory
@@ -63,6 +65,7 @@ namespace C_bool.WebApp.Controllers
             _usersRepository = usersRepository;
             _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
+            _gameTasksService = gameTasksService;
             _userService = userService;
             _userManager = userManager;
             _clientFactory = clientFactory;
@@ -108,7 +111,7 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = _mapper.Map<List<PlaceViewModel>>(places);
+            var model = _mapper.Map<List<PlaceViewModel>>(places.Include(x => x.Tasks));
 
             //TODO: brzydka proteza, trzeba załatwić przez mapowanie może?
             foreach (var item in model.Where(item => favPlacesId.Contains(item.Id)))
@@ -141,9 +144,9 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Details(int id)
         {
-            var model = _placesRepository.GetById(id);
+            var model = _placesRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
             ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
-            ViewBag.HasAnyActiveTasks = model.Tasks != null && model.Tasks.Any(x => x.IsActive);
+            ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
             return View(model);
         }
 

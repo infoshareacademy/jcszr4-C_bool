@@ -2,6 +2,7 @@
 @using C_bool.BLL.Logic
 @using System.Globalization
 @using C_bool.WebApp.Config
+@using Castle.Core.Internal
 @using Microsoft.Extensions.Options
 @model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
 
@@ -9,87 +10,92 @@
 }
 
 <div class="card-group">
-    @*<div class="card-deck" style="height: 80vh; align-content: center">*@
     @foreach (var item in Model)
     {
-    <div class="card mb-3 shadow animation-scale" style="min-width:400px; max-width: 600px; margin: 10px;">
-        <a href="Places/Details/@item.Id" class="card-title text-decoration-none">
-            <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-        </a>
-        <div class="card-body">
-            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
-
-            <h6 class="card-subtitle text-muted">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, item.Latitude, item.Longitude)) od Ciebie</h6>
-        </div>
-        @if (item.Photo is not null)
-        {
-            <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle; object-fit: cover"
-                 src="data:image;base64,@Html.Raw(item.Photo)" alt="Card image cap">
-        }
-        else
-        {
-            <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
-                 src="/img/image-placeholder.jpg" alt="Card image cap">
-        }
-        <div class="card-body">
-            <p class="card-text"></p>
-        </div>
-
-        <!--fav button style if place is in favorities-->
-        @{
-            var style = "";
-            if (item.IsUserFavorite) style = "background-color: #e16c82; color: white; border-color: #e16c82";
-        }
-        <ul class="list-group list-group-flush">
-            <form method="post" style="display: flex; justify-content: center;">
-                <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-                    @*<button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>*@
-                    <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@item.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Latitude.ToString(CultureInfo.InvariantCulture), @item.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                    <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-secondary" style="@style" onclick="addToFavs('Places','AddToFavs','@item.Id')"><l class="bi-heart"> Ulubione</l></button>
-                </div>
-                <div class="btn">
-                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <l class="bi-three-dots"></l>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
-                        <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
-
-                    </ul>
-                </div>
-            </form>
-        </ul>
-
-
-        <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-
-            @if (item.Types != null)
-            {
-                foreach (var type in item.Types)
+        <div class="card mb-3 shadow animation-scale" style="min-width:400px; max-width: 600px; margin: 10px;">
+            <a href="Places/Details/@item.Id" class="card-title text-decoration-none">
+                @if (item.ActiveTaskCount > 0)
                 {
-                    if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
-                    {
-                        foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
-                        {
-                            if (kvp.Key.Equals(type))
-                            {
-                                <label>@kvp.Value |</label>
-                            }
-                        }
-                    }
-                    else
-                    {
-                        <label style="color: silver"> @type |</label>
-                    }
+                    <h3 class="card-header" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background-color: #dbedd2">@Html.DisplayFor(modelItem => item.Name)</h3>
                 }
+                else
+                {
+                    <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+                }
+            </a>
+            <div class="card-body">
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
+
+                <h6 class="card-subtitle text-muted">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, item.Latitude, item.Longitude)) od Ciebie</h6>
+            </div>
+            @if (item.Photo is not null)
+            {
+                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle; object-fit: cover"
+                     src="data:image;base64,@Html.Raw(item.Photo)" alt="Card image cap">
             }
             else
             {
-                <label>Brak kategorii</label>
+                <img class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size: 1.125rem; text-anchor: middle"
+                     src="/img/image-placeholder.jpg" alt="Card image cap">
             }
+            <div class="card-body">
+                <p class="card-text"></p>
+            </div>
+
+            <!--fav button style if place is in favorities-->
+            @{
+                var style = "";
+                if (item.IsUserFavorite) style = "background-color: #e16c82; color: white; border-color: #e16c82";
+            }
+            <ul class="list-group list-group-flush">
+                <form method="post" style="display: flex; justify-content: center;">
+                    <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+                        <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@item.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Latitude.ToString(CultureInfo.InvariantCulture), @item.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                        <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-secondary" style="@style" onclick="addToFavs('Places','AddToFavs','@item.Id')"><l class="bi-heart"> Ulubione</l></button>
+                    </div>
+                    <div class="btn">
+                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <l class="bi-three-dots"></l>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                            <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
+
+                        </ul>
+                    </div>
+                </form>
+            </ul>
+
+
+            <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+
+                @if (!item.Types.IsNullOrEmpty())
+                {
+                    foreach (var type in item.Types)
+                    {
+                        if (SearchPlaceByCategory.PlaceCategoriesTranslated.ContainsKey(type))
+                        {
+                            foreach (KeyValuePair<string, string> kvp in SearchPlaceByCategory.PlaceCategoriesTranslated)
+                            {
+                                if (kvp.Key.Equals(type))
+                                {
+                                    <label>@kvp.Value |</label>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <label style="color: silver"> @type |</label>
+                        }
+                    }
+                }
+                else
+                {
+                    <label>Brak kategorii</label>
+                }
+            </div>
         </div>
-    </div>
     }
     @*</div>*@
 </div>
