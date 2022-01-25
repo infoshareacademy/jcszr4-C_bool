@@ -1,0 +1,48 @@
+﻿@model C_bool.WebApp.Models.GameTask.GameTaskEditModel
+
+<div class="card card-body border-0 shadow mb-4">
+    <h2 class="h5 mb-4">Data i czas</h2>
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <label asp-for="ValidFrom" class="control-label"></label>
+
+            <div class="input-group">
+                <span class="input-group-text">
+                    <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                </span>
+                <input asp-for="ValidFrom" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="ValidThru" class="control-label"></label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                </span>
+                <input asp-for="ValidThru" class="form-control" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <span asp-validation-for="ValidFrom" class="text-danger cb-alert"></span>
+            <span asp-validation-for="ValidThru" class="text-danger cb-alert"></span>
+        </div>
+
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex align-items-center justify-content-between px-0">
+            <label class="form-check-label" for="checkbox_isActive">
+                <h3 class="h6 mb-1">Oznacz jako aktywne</h3>
+                <p class="small pe-4">Zadanie będzie aktywne od razu po dodaniu</p>
+            </label>
+            <div>
+                <div class="form-check form-switch">
+                    <input asp-for="IsActive" checked="checked" class="form-check-input" type="checkbox" id="checkbox_isActive">
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

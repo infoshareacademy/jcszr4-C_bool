@@ -7,7 +7,7 @@
     ViewData["Title"] = "Utwórz nowe miejsce";
 }
 
-<form enctype="multipart/form-data" asp-action="Create">
+<form enctype="multipart/form-data" asp-action="Create" class="needs-validation" novalidate>
     <div class="row">
         <div class="col-12">
             <!-- Tab -->
@@ -15,7 +15,6 @@
                 <div class="col-sm">
                     <h1>Dodaj nowe miejsce</h1>
                     <h4>Wybierz lokalizację na mapie i ją opisz</h4>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
                 <div class="col-sm">
                     <div class="nav-wrapper position-relative float-end">
@@ -51,6 +50,9 @@
                 </div>
             </div>
             <!-- End of Tab Nav -->
+
+            <partial name="~/Views/Shared/ValidationAlert.cshtml" />
+
             <!-- Tab Content -->
             <div>
                 <div class="card-body p-0">
@@ -65,18 +67,18 @@
                                         <h2 class="h5 mb-4">Podstawowe informacje o miejscu</h2>
                                         <div class="form-group">
                                             <label asp-for="Name" class="control-label"></label>
-                                            <span asp-validation-for="Name" class="text-danger"></span>
                                             <input asp-for="Name" class="form-control" />
+                                            <span asp-validation-for="Name" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="Address" class="control-label"></label>
-                                            <span asp-validation-for="Address" class="text-danger"></span>
-                                            <input asp-for="Address" class="form-control" />
+                                            <input id="address" asp-for="Address" class="form-control" />
+                                            <span asp-validation-for="Address" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="ShortDescription" class="control-label"></label>
-                                            <span asp-validation-for="ShortDescription" class="text-danger"></span>
                                             <textarea asp-for="ShortDescription" class="form-control" style="height: 172px"></textarea>
+                                            <span asp-validation-for="ShortDescription" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
                                             <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
@@ -114,8 +116,8 @@
                                     <div class="card card-body border-0 shadow mb-4">
                                         <h2 class="h5 mb-4">Szczegółowy opis miejsca</h2>
                                         <div class="form-group">
-                                            <span asp-validation-for="Description" class="text-danger"></span>
                                             <textarea id="description" asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
+                                            <span asp-validation-for="Description" class="text-danger cb-alert"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -208,6 +210,7 @@
                 position: myLatlng,
             });
 
+
             infoWindow.open(map);
 
             map.addListener("click",
@@ -239,15 +242,9 @@
                 .geocode({ location: myLatlng })
                 .then((response) => {
                     if (response.results[0]) {
-                        map.setZoom(11);
-
-                        const marker = new google.maps.Marker({
-                            position: myLatlng,
-                            map: map,
-                        });
 
                         infowindow.setContent(response.results[0].formatted_address);
-                        infowindow.open(map, marker);
+                        infowindow.open(map);
                         document.getElementById('address').value = response.results[0].formatted_address;
                     } else {
                         window.alert("No results found");

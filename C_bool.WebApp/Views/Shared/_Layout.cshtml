@@ -472,7 +472,6 @@
                 },
 
                 error: function (xmlhttprequest, textstatus, errorthrown) {
-                    //alert(" conection to the server failed ");
                     notyf.error(errorthrown);
                 }
             });
@@ -493,18 +492,13 @@
                         var elementId = "favIndicatorId" + input;
                         var element = document.getElementById(elementId);
                         if (data.isAdded == true) {
-                            element.style.backgroundColor = "#e16c82";
-                            element.style.color = "white";
-                            element.style.borderColor = "#e16c82";
+                            element.classList.add("btn-fav");
                         } else {
-                            element.style.removeProperty("background-color");
-                            element.style.removeProperty("color");
-                            element.style.removeProperty("border-color");
+                            element.classList.remove("btn-fav");
                         }
                     },
 
                     error: function (xmlhttprequest, textstatus, errorthrown) {
-                        //alert(" conection to the server failed ");
                         notyf.error(errorthrown);
                     }
                 });

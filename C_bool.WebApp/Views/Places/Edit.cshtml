@@ -15,7 +15,6 @@
                 <div class="col-sm">
                     <h1>Edytuj miejsce</h1>
                     <h4>Zmień dane wybranego miejsca</h4>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
                 <div class="col-sm">
                     <div class="nav-wrapper position-relative float-end">
@@ -51,6 +50,9 @@
                 </div>
             </div>
             <!-- End of Tab Nav -->
+
+            <partial name="~/Views/Shared/ValidationAlert.cshtml" />
+
             <!-- Tab Content -->
             <div>
                 <div class="card-body p-0">
@@ -65,24 +67,24 @@
                                         <h2 class="h5 mb-4">Podstawowe informacje o miejscu</h2>
                                         <div class="form-group">
                                             <label asp-for="Name" class="control-label"></label>
-                                            <span asp-validation-for="Name" class="text-danger"></span>
                                             <input asp-for="Name" class="form-control" />
+                                            <span asp-validation-for="Name" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="Address" class="control-label"></label>
-                                            <span asp-validation-for="Address" class="text-danger"></span>
                                             <input asp-for="Address" class="form-control" />
+                                            <span asp-validation-for="Address" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="ShortDescription" class="control-label"></label>
-                                            <span asp-validation-for="ShortDescription" class="text-danger"></span>
                                             <textarea asp-for="ShortDescription" class="form-control" style="height: 172px"></textarea>
+                                            <span asp-validation-for="ShortDescription" class="text-danger cb-alert"></span>
                                         </div>
                                         <div class="form-group">
-                                            <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control"/>
+                                            <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
                                         </div>
                                         <div class="form-group">
-                                            <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control"/>
+                                            <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
                                         </div>
                                     </div>
                                 </div>

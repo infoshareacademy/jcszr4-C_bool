@@ -41,3 +41,24 @@
 .f-right {
     float: right;
 }
+
+/*handle validation errors input bootstrap alert class*/
+.validation-summary {
+    display: none;
+}
+
+.validation-summary.validation-summary-errors {
+    display: block;
+}
+
+.cb-alert {
+    font-size: small;
+    font-weight: bold
+}
+
+/*Fav button colors*/
+.btn-fav {
+    background-color: #e16c82;
+    color: white;
+    border-color: #e16c82
+}

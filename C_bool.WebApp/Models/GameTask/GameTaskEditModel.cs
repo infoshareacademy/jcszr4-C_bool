@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using C_bool.BLL.Enums;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace C_bool.WebApp.Models.GameTask
@@ -27,15 +29,22 @@ namespace C_bool.WebApp.Models.GameTask
         public TaskType Type { get; set; }
         public int Points { get; set; }
         [DisplayName("Data początkowa")]
-        public DateTime ValidFrom { get; set; }
+        [DataType(DataType.DateTime, ErrorMessage = "Niepoprawny format daty")]
+        [Remote("IsValid_ValidFromDate", "ValueValidator", HttpMethod = "POST", ErrorMessage = "Wprowadź prawidłową datę", AdditionalFields = nameof(ValidFrom) + "," + nameof(ValidThru))]
+        public DateTime? ValidFrom { get; set; }
         [DisplayName("Data końcowa")]
-        public DateTime ValidThru { get; set; }
-
-        public bool IsActive { get; set; } = true;
+        [DataType(DataType.DateTime, ErrorMessage = "Niepoprawny format daty")]
+        [Remote("IsValid_ValidThruDate", "ValueValidator", HttpMethod = "POST", ErrorMessage = "Wprowadź prawidłową datę", AdditionalFields = nameof(ValidFrom) + "," + nameof(ValidThru))]
+        public DateTime? ValidThru { get; set; }
+        public bool IsActive { get; set; }
         [DisplayName("Tajemne hasło")]
+        [Remote("IsValid_TextCriterion", "ValueValidator", HttpMethod = "POST", ErrorMessage = "Wprowadź prawidłową datę", AdditionalFields = nameof(Type))]
         public string TextCriterion { get; set; }
         public bool IsDoneLimited { get; set; }
         [DisplayName("Ogranicz liczbę użytkowników")]
+
+        [Range(1, 1000000)]
         public int? LeftDoneAttempts { get; set; }
     }
+
 }
