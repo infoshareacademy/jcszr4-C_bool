@@ -28,8 +28,8 @@ namespace C_bool.BLL.DAL.Context
                 table.GameTaskId
             });
 
-            modelBuilder.Entity<Place>().HasMany(g => g.Tasks);
-            modelBuilder.Entity<GameTask>().HasOne(g => g.Place);
+            //modelBuilder.Entity<Place>().HasMany(g => g.Tasks);
+            //modelBuilder.Entity<GameTask>().HasOne(g => g.Place);
 
         }
     }
