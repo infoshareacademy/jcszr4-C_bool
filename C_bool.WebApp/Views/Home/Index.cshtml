@@ -1,8 +1,10 @@
 ﻿@using System.Globalization
+@using System.Web.Mvc.Html
 @using C_bool.BLL.DAL.Entities
 @using C_bool.BLL.Logic
 @using C_bool.WebApp.Helpers
 @using C_bool.WebApp.Models.Place
+@using C_bool.WebApp.Models.User
 @using Microsoft.AspNetCore.Identity
 @model IEnumerable<PlaceViewModel>
 @inject UserManager<User> UserManager
@@ -153,159 +155,13 @@
             </div>
         </div>
         <div class="col-12 col-xl-4">
-            <!--<div class="col-12 px-0 mb-4">-->
-                <!--Tasks progress-->
-                <!--<div class="card border-0 shadow animation-scale">
-                    <div class="card-header border-bottom d-flex align-items-center justify-content-between">
-                        <h2 class="fs-5 fw-bold mb-0">Twoje aktywne zadania</h2>
-                        <a href="#" class="btn btn-sm btn-primary">Pokaż wszystkie</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-auto">
-                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                            </div>
-                            <div class="col">
-                                <div class="progress-wrapper">
-                                    <div class="progress-info">
-                                        <div class="h6 mb-0">Placeholder zadania 1</div>
-                                        <div class="small fw-bold text-gray-500"><span>75 %</span></div>
-                                    </div>
-                                    <div class="progress mb-0">
-                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row align-items-center mb-4">
-                            <div class="col-auto">
-                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                            </div>
-                            <div class="col">
-                                <div class="progress-wrapper">
-                                    <div class="progress-info">
-                                        <div class="h6 mb-0">Placeholder zadania 2</div>
-                                        <div class="small fw-bold text-gray-500"><span>60 %</span></div>
-                                    </div>
-                                    <div class="progress mb-0">
-                                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row align-items-center mb-4">
-                            <div class="col-auto">
-                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                            </div>
-                            <div class="col">
-                                <div class="progress-wrapper">
-                                    <div class="progress-info">
-                                        <div class="h6 mb-0">Placeholder zadania 3</div>
-                                        <div class="small fw-bold text-gray-500"><span>45 %</span></div>
-                                    </div>
-                                    <div class="progress mb-0">
-                                        <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row align-items-center mb-3">
-                            <div class="col-auto">
-                                <svg class="icon icon-sm text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg>
-                            </div>
-                            <div class="col">
-                                <div class="progress-wrapper">
-                                    <div class="progress-info">
-                                        <div class="h6 mb-0">Placeholder zadania 4</div>
-                                        <div class="small fw-bold text-gray-500"><span>34 %</span></div>
-                                    </div>
-                                    <div class="progress mb-0">
-                                        <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" style="width: 34%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
             <div class="col-12 px-0 mb-4">
                 <!--Events panel-->
-                <div class="card border-0 shadow">
-                    <div class="card-header bg-gray-200 border-bottom">
-                        <h3 class="mb-0">Wydarzenia</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center d-block d-sm-flex border-bottom pb-4 mb-4">
-                            <div class="col-auto mb-3 mb-sm-0">
-                                <div class="calendar d-flex"><span class="calendar-month">Sty</span><span class="calendar-day py-2">25</span></div>
-                            </div>
-                            <div class="col">
-                                <a href="../calendar.html">
-                                    <h3 class="h5 mb-1">Upojny weekend w krzakach</h3>
-                                </a>
-                                <span>Organizowany przez <a href="#">TZEBULL</a></span>
-                                <div class="small fw-bold">Czas: 20:30 - 24:00</div>
-                                <span class="small fw-bold">Miejsce: Ławka za monopolowym, Szczekociny</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer border-top bg-gray-50">
-                        <a class="fw-bold d-flex align-items-center justify-content-center" href="../calendar.html">
-                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
-                            Wyświetl wszystkie
-                        </a>
-                    </div>
-                </div>
+                @await Html.PartialAsync("Partials/_EventCalendar", nearbyPlaces)
             </div>
             <div class="col-12 px-0 mb-4">
                 <!--User ranking panel-->
-                <div class="card border-0 shadow animation-scale">
-                    <div class="card-header bg-gray-200 border-bottom d-flex align-items-center justify-content-between">
-                        <h3 class="mb-0">Ranking użytkowników</h3>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush list my--3">
-                            @{
-                                var position = 1;
-                                var lastPoints = 0;
-                            }
-
-                            @foreach (var user in userRank)
-                            {
-                                <li class="list-group-item px-0">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <!-- Avatar -->
-                                            <a href="#" class="avatar">
-                                                <img class="rounded" alt="Image placeholder" src="/img/image-placeholder.jpg">
-                                            </a>
-                                        </div>
-                                        <div class="col-auto ms--2">
-                                            <h4 class="h6 mb-0">
-                                                <a href="#">@Html.Raw(user.UserName)</a>
-                                            </h4>
-                                            <div class="d-flex align-items-center">
-                                                <div class="bg-success dot rounded-circle me-1"></div>
-                                                <small>Cebule: <b>@Html.Raw(user.Points)</b></small>
-                                            </div>
-                                        </div>
-                                        <div class="col text-end">
-                                            <div>
-                                                <l class="align-items-center fw-bold font-medium">
-                                                    @{
-                                                        if (user.Points < lastPoints) position++;
-                                                        lastPoints = user.Points;
-                                                    }
-                                                    #@Html.Raw(position)
-                                                </l>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
+                @await Html.PartialAsync("Partials/_UserRanking", userRank)
             </div>
 
         </div>

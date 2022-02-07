@@ -15,6 +15,7 @@ using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models.Place;
+using C_bool.WebApp.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

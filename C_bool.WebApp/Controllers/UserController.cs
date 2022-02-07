@@ -13,9 +13,6 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
-
-        
-
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
@@ -185,7 +182,7 @@ namespace C_bool.WebApp.Controllers
                 _userRepository.Update(user);
                 return Json(new { success = true, responseText = "Odświeżono dane o lokalizacji" });
             }
-            return Json(new { success = false, responseText = "Błąd pobierania lokalizaji. Położenie wskazuje że mieszkasz dokładnie na równiku, co jest raczej mało prawdopodobną opcją. Odśwież okno przeglądarki." });
+            return Json(new { success = false, responseText = "Błąd pobierania lokalizacji. Położenie wskazuje że mieszkasz dokładnie na równiku, co jest raczej mało prawdopodobną opcją. Odśwież okno przeglądarki." });
         }
     }
 }

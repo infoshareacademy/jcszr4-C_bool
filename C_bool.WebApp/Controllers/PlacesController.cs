@@ -28,47 +28,24 @@ namespace C_bool.WebApp.Controllers
         private readonly ILogger<PlacesController> _logger;
         private IUserService _userService;
         private IPlaceService _placesService;
-        private IGameTaskService _gameTasksService;
         private IRepository<Place> _placesRepository;
 
-
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        private readonly ApplicationDbContext _context;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
-
-        private readonly UserManager<User> _userManager;
-        private IHttpClientFactory _clientFactory;
 
         public PlacesController(
             ILogger<PlacesController> logger,
             IMapper mapper,
-            IConfiguration configuration,
-            ApplicationDbContext context,
             IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
-            IGameTaskService gameTasksService,
-            IUserService userService,
-            UserManager<User> userManager,
-            IHttpClientFactory clientFactory
-            )
+            IUserService userService
+        )
         {
             _logger = logger;
             _mapper = mapper;
-            _configuration = configuration;
-            _context = context;
             _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
-            _gameTasksService = gameTasksService;
             _userService = userService;
-            _userManager = userManager;
-            _clientFactory = clientFactory;
         }
 
         [Authorize]
@@ -133,11 +110,8 @@ namespace C_bool.WebApp.Controllers
             {
                 return Json(new { success = true, responseText = "Dodano do ulubionych!", isAdded = true });
             }
-            else
-            {
-                _userService.RemoveFavPlace(place);
-                return Json(new { success = true, responseText = "Usunięto z ulubionych!", isAdded = false });
-            }
+            _userService.RemoveFavPlace(place);
+            return Json(new { success = true, responseText = "Usunięto z ulubionych!", isAdded = false });
         }
 
 
@@ -172,14 +146,21 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> Edit(int id)
         {
-            //var model = _placesRepository.GetById(id);
-            var model = _mapper.Map<Place, PlaceEditModel>(_placesRepository.GetById(id));
+            var userId = _userService.GetCurrentUserId();
+            var place = _placesRepository.GetById(id);
+            if (place.CreatedById != userId.ToString())
+            {
+                return Json(new { success = false, responseText = "Tylko twórca może edytować miejsce"});
+            } 
+            var model = _mapper.Map<Place, PlaceEditModel>(place);
 
 
             return View("Edit", model);
         }
+
 
         [Authorize]
         [HttpPost]

@@ -1,0 +1,52 @@
+﻿@using C_bool.WebApp.Models.User
+@model IEnumerable<UserViewModel>
+
+@{
+    var position = 1;
+    var lastPoints = 0;
+}
+
+<div class="card border-0 shadow">
+    <div class="card-header bg-gray-200 border-bottom d-flex align-items-center justify-content-between">
+        <h3 class="mb-0">Ranking użytkowników</h3>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush list my--3">
+            
+
+            @foreach (var user in Model)
+            {
+                <li class="list-group-item px-0">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <!-- Avatar -->
+                            <a href="#" class="avatar">
+                                <img class="rounded" alt="Image placeholder" src="/img/image-placeholder.jpg">
+                            </a>
+                        </div>
+                        <div class="col-auto ms--2">
+                            <h4 class="h6 mb-0">
+                                <a href="#">@Html.Raw(user.UserName)</a>
+                            </h4>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success dot rounded-circle me-1"></div>
+                                <small>Cebule: <b>@Html.Raw(user.Points)</b></small>
+                            </div>
+                        </div>
+                        <div class="col text-end">
+                            <div>
+                                <l class="align-items-center fw-bold font-medium">
+                                    @{
+                                        if (user.Points < lastPoints) position++;
+                                        lastPoints = user.Points;
+                                    }
+                                    #@Html.Raw(position)
+                                </l>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

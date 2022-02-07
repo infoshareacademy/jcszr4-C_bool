@@ -11,6 +11,7 @@ using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.GameTask;
 using C_bool.WebApp.Models.Place;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -110,11 +111,21 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(GameTaskEditModel model, int placeId, IFormFile file)
+        public ActionResult Create(GameTaskEditModel model, int placeId, string taskType, IFormFile file)
         {
+            //for model invalid state or exception - properties used in view
+            Enum.TryParse(taskType, true, out TaskType typeEnum);
+            ViewData["PlaceId"] = placeId;
+            ViewData["TaskType"] = typeEnum;
+
             var gameTaskModel = _mapper.Map<GameTaskEditModel, GameTask>(model);
             try
             {
+                if (model.Type == TaskType.TextEntry && model.TextCriterion.IsNullOrEmpty())
+                {
+                    ModelState.AddModelError("TextCriterion", "Dla tego typu zadania musisz podać tajemne hasło");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     ViewBag.Message = new StatusMessage($"Nie udało się utworzyć nowego zadania", StatusMessage.Status.FAIL);

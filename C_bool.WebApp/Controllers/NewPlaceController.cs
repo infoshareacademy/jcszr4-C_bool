@@ -29,16 +29,9 @@ namespace C_bool.WebApp.Controllers
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-
-        private readonly IRepository<Place> _placesRepository;
-        private readonly IRepository<User> _usersRepository;
-        private readonly IRepository<GameTask> _gameTasksRepository;
-
         private readonly IPlaceService _placesService;
         private readonly IGooglePlaceService _googlePlaceService;
         private readonly IUserService _usersService;
-
-        private readonly IHttpClientFactory _clientFactory;
 
         private readonly GoogleAPISettings _googleApiSettings = new();
         private readonly GoogleApiAsync _googleApiAsync;
@@ -47,9 +40,6 @@ namespace C_bool.WebApp.Controllers
             ILogger<HomeController> logger,
             IMapper mapper,
             IConfiguration configuration,
-            IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
             IUserService userService,
             IGooglePlaceService googlePlaceService,
@@ -60,12 +50,8 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
             _configuration = configuration;
             _configuration.GetSection(GoogleAPISettings.Position).Bind(_googleApiSettings);
-            _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _usersService = userService;
-            _clientFactory = clientFactory;
             _googlePlaceService = googlePlaceService;
             _googleApiAsync = new GoogleApiAsync(clientFactory, _googleApiSettings);
         }
@@ -106,7 +92,6 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            //var model = _mapper.Map<Place, PlaceEditModel>(_placesRepository.GetById(id));
             return View();
         }
 
