@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -29,43 +30,22 @@ namespace C_bool.WebApp.Controllers
         private IPlaceService _placesService;
         private IRepository<Place> _placesRepository;
 
-
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        private readonly ApplicationDbContext _context;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
-
-        private readonly UserManager<User> _userManager;
-
-        private IHttpClientFactory _clientFactory;
 
         public PlacesController(
             ILogger<PlacesController> logger,
             IMapper mapper,
-            IConfiguration configuration,
-            ApplicationDbContext context,
             IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
-            IUserService userService,
-            UserManager<User> userManager,
-            IHttpClientFactory clientFactory
-            )
+            IUserService userService
+        )
         {
             _logger = logger;
             _mapper = mapper;
-            _configuration = configuration;
-            _context = context;
             _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _userService = userService;
-            _userManager = userManager;
-            _clientFactory = clientFactory;
         }
 
         [Authorize]
@@ -90,9 +70,10 @@ namespace C_bool.WebApp.Controllers
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
             {
-                //TODO: tu leci wyjatek bo opis czesto jest nulem 
                 places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
+
+            var favPlacesId = places.Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToList();
 
             if (searchOnlyFavs)
             {
@@ -107,29 +88,39 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToList();
+            var model = _mapper.Map<List<PlaceViewModel>>(places.Include(x => x.Tasks));
+
+            //TODO: brzydka proteza, trzeba załatwić przez mapowanie może?
+            foreach (var item in model.Where(item => favPlacesId.Contains(item.Id)))
+            {
+                item.IsUserFavorite = true;
+            }
             ViewBag.PlacesCount = places.Count();
 
-            ViewBag.Message = $"Znaleziono {model.ToList().Count} pasujących miejsc";
-            ViewBag.Status = true;
-
+            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
             return View(model);
         }
 
-        public ActionResult Favourities()
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddToFavs([FromBody] ReturnString request)
         {
-            var model = _placesRepository.GetAll();
-            ViewBag.Message = $"Ilość miejsc w ulubionych: {model.ToList().Count}";
-            ViewBag.Status = true;
-            return View(model);
+            var place = _placesService.GetPlaceById(request.Id);
+            if (_userService.AddFavPlace(place))
+            {
+                return Json(new { success = true, responseText = "Dodano do ulubionych!", isAdded = true });
+            }
+            _userService.RemoveFavPlace(place);
+            return Json(new { success = true, responseText = "Usunięto z ulubionych!", isAdded = false });
         }
 
 
         [Authorize]
         public ActionResult Details(int id)
         {
-            var model = _placesRepository.GetById(id);
-            ViewBag.HasAnyActiveTasks = model.Tasks != null && model.Tasks.Any(x => x.IsActive);
+            var model = _placesRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
+            ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
+            ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
             return View(model);
         }
 
@@ -155,14 +146,21 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> Edit(int id)
         {
-            //var model = _placesRepository.GetById(id);
-            var model = _mapper.Map<Place, PlaceEditModel>(_placesRepository.GetById(id));
+            var userId = _userService.GetCurrentUserId();
+            var place = _placesRepository.GetById(id);
+            if (place.CreatedById != userId.ToString())
+            {
+                return Json(new { success = false, responseText = "Tylko twórca może edytować miejsce"});
+            } 
+            var model = _mapper.Map<Place, PlaceEditModel>(place);
 
 
             return View("Edit", model);
         }
+
 
         [Authorize]
         [HttpPost]

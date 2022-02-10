@@ -10,7 +10,6 @@ namespace C_bool.BLL.DAL.Entities
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string Description { get; set; }
-        //TODO: MW: taki mój pomysł, moze po zakończeniu wyswietlać jakąś wiadomość, typu gratulacje lub rozwiązanie zadania, albo ciekawostka na temat zadania...
         public string AfterDoneMessage { get; set; }
         public string Photo { get; set; }
         public TaskType Type { get; set; }
@@ -22,8 +21,7 @@ namespace C_bool.BLL.DAL.Entities
         public string CreatedByName { get; set; }
         public virtual List<UserGameTask> UserGameTasks { get; set; }
         public string TextCriterion { get; set; }
+        public bool IsDoneLimited { get; set; } 
+        public int LeftDoneAttempts { get; set; }
     }
-
-    //Metoda jeżeli kryterium jest spełnione {}
-    //Metoda jeżeli kryterium nie jest spełnione {}
 }

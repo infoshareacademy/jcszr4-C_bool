@@ -19,5 +19,6 @@ namespace C_bool.BLL.DAL.Entities
         public string CreatedById { get; set; }
         public IList<GameTask> Tasks { get; set; }
         public virtual List<UserPlace> FavPlaces { get; set; }
+        public bool IsActive { get; set; }
     }
 }

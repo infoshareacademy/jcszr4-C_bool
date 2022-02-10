@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
+using C_bool.BLL.Repositories;
+using C_bool.WebApp.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,13 +18,16 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IRepository<User> _userRepository;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IRepository<User> userRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _userRepository = userRepository;
         }
 
         public string Username { get; set; }
@@ -42,9 +48,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
         {
             public string Username { get; set; }
 
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            public Gender Gender { get; set; }
         }
 
         private async Task LoadAsync(User user)
@@ -56,7 +60,6 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             var points = user.Points;
             var isActive = user.IsActive;
             var createdOn = user.CreatedOn;
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
             Email = email;
@@ -65,11 +68,6 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             Points = points;
             IsActive = isActive;
             CreatedOn = createdOn;
-
-            Input = new InputModel
-            {
-                PhoneNumber = phoneNumber
-            };
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -77,7 +75,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Nie znaleziono użytkownika o ID: '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -89,7 +87,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Nie znaleziono użytkownika o ID: '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -98,32 +96,26 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
-
-            var userName = await _userManager.GetUserNameAsync(user);
+            var userName = user.UserName;
             if (Input.Username != userName)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                if (!setUserNameResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Coś poszło nie tak, spróbuj podać inną nazwę.";
                     return RedirectToPage();
                 }
             }
 
-
+            var userGender = user.Gender;
+            if (Input.Gender != userGender)
+            {
+                user.Gender = Input.Gender;
+                _userRepository.Update(user);
+            }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Twój profil został uaktualniony pomyślnie.";
             return RedirectToPage();
         }
     }

@@ -44,6 +44,12 @@ namespace C_bool.BLL.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDoneLimited")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LeftDoneAttempts")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -99,6 +105,9 @@ namespace C_bool.BLL.Migrations
 
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUserCreated")
                         .HasColumnType("bit");
@@ -233,6 +242,9 @@ namespace C_bool.BLL.Migrations
 
                     b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("BonusPoints")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Net.Http;
@@ -23,22 +24,15 @@ namespace C_bool.WebApp.Controllers
     public class NewPlaceController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
+
 
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-
-
-        private readonly IRepository<Place> _placesRepository;
-        private readonly IRepository<User> _usersRepository;
-        private readonly IRepository<GameTask> _gameTasksRepository;
 
         private readonly IPlaceService _placesService;
         private readonly IGooglePlaceService _googlePlaceService;
         private readonly IUserService _usersService;
 
-        private readonly IHttpClientFactory _clientFactory;
-        
         private readonly GoogleAPISettings _googleApiSettings = new();
         private readonly GoogleApiAsync _googleApiAsync;
 
@@ -46,9 +40,6 @@ namespace C_bool.WebApp.Controllers
             ILogger<HomeController> logger,
             IMapper mapper,
             IConfiguration configuration,
-            IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
             IUserService userService,
             IGooglePlaceService googlePlaceService,
@@ -59,12 +50,8 @@ namespace C_bool.WebApp.Controllers
             _mapper = mapper;
             _configuration = configuration;
             _configuration.GetSection(GoogleAPISettings.Position).Bind(_googleApiSettings);
-            _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _usersService = userService;
-            _clientFactory = clientFactory;
             _googlePlaceService = googlePlaceService;
             _googleApiAsync = new GoogleApiAsync(clientFactory, _googleApiSettings);
         }
@@ -75,8 +62,6 @@ namespace C_bool.WebApp.Controllers
             var user = _usersService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
-            ViewBag.Message = "Nie udało się utworzyć miejsca";
-            ViewBag.Status = true;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
             return View(model);
@@ -100,7 +85,6 @@ namespace C_bool.WebApp.Controllers
         public ActionResult SearchByName()
         {
             var model = new NameSearchRequest();
-
             return View(model);
         }
 
@@ -108,7 +92,6 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            //var model = _mapper.Map<Place, PlaceEditModel>(_placesRepository.GetById(id));
             return View();
         }
 
@@ -122,43 +105,58 @@ namespace C_bool.WebApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    ViewBag.Message = "Nie udało się utworzyć miejsca";
-                    ViewBag.Status = false;
+                    ViewBag.Message = new StatusMessage($"Nie udało się utworzyć nowego miejsca", StatusMessage.Status.FAIL);
                     return View(model);
                 }
 
                 placeModel.IsUserCreated = true;
+                placeModel.CreatedById = _usersService.GetCurrentUserId().ToString();
                 placeModel.Photo = (ImageConverter.ConvertImage(file));
-                _placesRepository.Add(placeModel);
-                ViewBag.Message = $"Dodano nowe miejsce: {placeModel.Name}";
-                ViewBag.Status = true;
-                return RedirectToAction("Index", "Places");
+                _placesService.AddPlace(placeModel);
+                ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
+                return RedirectToAction("Details", "Places", new { id = placeModel.Id });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
+                return View(model);
             }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task AddToFavs([FromBody] ReturnString request)
+        public async Task<IActionResult> AddToFavs([FromBody] ReturnString request)
         {
-            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
-            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
-            _usersService.AddFavPlace(place);
-
+            try
+            {
+                var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+                _usersService.AddFavPlace(place);
+                return Json(new { success = true, responseText = "Dodano do bazy i do ulubionych!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}"});
+            }
         }
 
         [Authorize]
         [HttpPost]
-        public async Task AddToRepository([FromBody] ReturnString request)
+        public async Task<IActionResult> AddToRepository([FromBody] ReturnString request)
         {
-            var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
-            var place = _mapper.Map<GooglePlace, Place>(googlePlace);
-            place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
-            _placesService.AddPlace(place);
+            try
+            {
+                var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
+                var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
+                _placesService.AddPlace(place);
+                return Json(new { success = true, responseText = "Dodano do bazy!"});
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}" });
+            }
         }
 
         [Authorize]
@@ -166,7 +164,16 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SearchNearby(NearbySearchRequest request)
         {
-            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetNearby(request.Latitude, request.Longitude, request.Radius, type: request.SelectedType, keyword: request.Keyword, region: "PL", language: "pl", loadAllPages: _googleApiSettings.GetAllPages));
+            _googlePlaceService.CreateNewOrUpdateExisting(await _googleApiAsync.GetNearby(
+                request.Latitude, 
+                request.Longitude, 
+                request.Radius, 
+                type: request.SelectedType, 
+                keyword: request.Keyword, 
+                region: "PL", 
+                language: "pl", 
+                loadAllPages: _googleApiSettings.GetAllPages
+                ));
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
 
@@ -174,8 +181,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            ViewBag.Message = _googleApiAsync.Message;
-            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
+            ViewBag.Message = new StatusMessage(_googleApiAsync.Message, StatusMessage.Status.INFO);
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 
@@ -191,8 +197,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Longitude = user.Longitude;
 
             var model = _googlePlaceService.GetGooglePlacesForUser();
-            ViewBag.Message = _googleApiAsync.Message;
-            ViewBag.QueryStatus = _googleApiAsync.QueryStatus;
+            ViewBag.Message = new StatusMessage(_googleApiAsync.Message, StatusMessage.Status.INFO);
             return View("~/Views/NewPlace/Index.cshtml", model);
         }
 

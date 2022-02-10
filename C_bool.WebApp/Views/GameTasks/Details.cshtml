@@ -1,0 +1,239 @@
+﻿@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@using System.Globalization
+@using C_bool.BLL.DAL.Entities
+@using C_bool.BLL.Logic
+@using Castle.Core.Internal
+@using Microsoft.AspNetCore.Identity
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject UserManager<User> UserManager
+@model C_bool.BLL.DAL.Entities.GameTask
+
+@{
+    ViewData["Title"] = "Szczegóły zadania";
+}
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+</svg>
+
+
+<div class="row">
+
+    <div class="col-12 col-xl-8">
+        <!--Game Task details-->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h1>@Model.Name</h1>
+                <h4><small class="text-muted"><span class="badge bg-secondary">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, Model.Place.Latitude, Model.Place.Longitude)) od Ciebie</span> <a asp-action="Details" asp-controller="Places" asp-route-id="@Model.Place.Id" class="text-decoration-none">@Html.DisplayFor(modelItem => Model.Place.Name)</a></small></h4>
+            </div>
+            <div class="card-body">
+
+
+                <div class="card border-0" style="background-color: #ebfff6">
+                    <div class="card-body">
+                        <div class="row d-block d-xl-flex align-items-center">
+                            <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                                <div class="icon-shape icon-sm icon-shape-success rounded me-3">
+                                    <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </div>
+                                <div class="d-sm-none">
+                                    <h2 class="fw-extrabold h5"> Cebul do zdobycia</h2>
+                                    <h3 class="mb-1">@Model.Points cebul!</h3>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-7 px-xl-0">
+                                <div class="d-none d-sm-block">
+                                    <h2 class="h6 text-gray-400 mb-0"> Cebul do zdobycia</h2>
+                                    <h3 class="fw-extrabold mb-2">@Model.Points cebul!</h3>
+                                </div>
+                                <small class="text-gray-500">Dostępne od: @Model.ValidFrom</small>
+                                <small class="text-gray-500"> do: @Model.ValidThru</small>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @if (!Model.ShortDescription.IsNullOrEmpty())
+                {
+                    <div>
+                        <p class="card-text">@Model.ShortDescription</p>
+                    </div>
+                }
+                <br />
+                <!--buttons to gametask-->
+                <ul class="list-group list-group-flush">
+                    <form method="post" style="display: flex;">
+                        <div class="btn-group-lg" role="group" aria-label="Basic example" style="margin: 4px;">
+                            <a href="#" class="btn btn-danger">Biorę udział!</a>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Place.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Place.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                        </div>
+                        @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById)
+                        {
+                            <div class="btn">
+                                <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <l class="bi-three-dots"></l>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                                    <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "GameTasks", new { id = Model.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="btn">
+                                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="popover" title="Informacja" data-bs-content="Tylko twórca zadania lub administrator może je edytować.">
+                                    <l class="bi-three-dots"></l>
+                                </button>
+                            </div>
+                        }
+
+                    </form>
+                </ul>
+            </div>
+        </div>
+
+        <!--Task description - short and full, if exist-->
+        @if (!Model.ShortDescription.IsNullOrEmpty())
+        {
+            <div class="accordion accordion-flush border-0 shadow mb-4">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
+                            <h4 class="fw-normal">Szczegóły zadania</h4>
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            @if (!Model.Description.IsNullOrEmpty())
+                            {
+                                <div>
+                                    @Html.Raw(Model.Description)
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                                    <div>
+                                        To zadanie nie posiada rozszerzonego opisu
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+
+            <div class="alert alert-secondary d-flex align-items-center mb-4" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                <div>
+                    To zadanie nie posiada opisu
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <!--Task name, address and photo-->
+    <div class="col-12 col-xl-4">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow border-0 text-center p-0">
+                    <div class="card-body">
+                        @if (Model.Photo is not null)
+                        {
+                            <img src="data:image;base64,@Html.Raw(Model.Photo)" class="rounded mx-auto mb-4" alt="Place photo">
+                        }
+                        else
+                        {
+                            <img src="/img/image-placeholder.jpg" class="rounded mx-auto mb-4" alt="Place photo">
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć @Html.DisplayFor(model => model.Name)?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var latitude, longitude;
+
+    function initMap(latitude, longitude) {
+        const point = { lat: latitude, lng: longitude };
+        const map = new google.maps.Map(document.getElementById("map"),
+            {
+                zoom: 16,
+                center: point,
+
+            });
+        const marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            icon: "/img/onion.png"
+        });
+    }
+
+    var path_to_delete;
+
+    $(".deleteItem").click(function (e) {
+        path_to_delete = $(this).data('path');
+    });
+
+    $('#btnContinueDelete').click(function () {
+        window.location = path_to_delete;
+    });
+</script>

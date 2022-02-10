@@ -13,9 +13,6 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
-
-        
-
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
@@ -90,7 +87,7 @@ namespace C_bool.WebApp.Controllers
             return View(model);
         }
 
-        // GET: UserController/Create
+/*        // GET: UserController/Create
         public ActionResult Create()
         {
             return View();
@@ -116,45 +113,40 @@ namespace C_bool.WebApp.Controllers
             {
                 return View();
             }
-        }
+        }*/
 
         // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
+        /*public ActionResult ChangeStatus(int id)
         {
             var model = _userRepository.GetById(id);
             return View(model);
-        }
+        }*/
 
         // POST: UserController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(User model)
+        public ActionResult ChangeStatus(int id)
         {
-            if (!ModelState.IsValid)
+            var oldStatus =_userRepository.GetById(id).IsActive;
+            _userService.ChangeUserStatus(id);
+            var newStatus = _userRepository.GetById(id).IsActive;
+            if (oldStatus != newStatus)
             {
-                return View(model);
+                return Ok();
             }
-
-            _userRepository.Update(model);
-
-            try
+            else
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(model);
+                return NotFound();
             }
         }
 
-        // GET: UserController/Delete/5
+/*        // GET: UserController/Delete/5
         public ActionResult Delete(int id)
         {
             var model = _userRepository.GetById(id);
             return View(model);
-        }
+        }*/
 
-        // POST: UserController/Delete/5
+/*        // POST: UserController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(User model)
@@ -170,21 +162,27 @@ namespace C_bool.WebApp.Controllers
             {
                 return View(model);
             }
-        }
+        }*/
 
+        [Authorize]
         [HttpPost]
-        public void UpdateUserLocation([FromBody] GeoLocation postData)
+        public IActionResult UpdateUserLocation([FromBody] GeoLocation postData)
         {
             if (postData.Latitude != 0)
             {
                 _geoLocation = postData;
                 var userId = _userManager.GetUserId(User);
-                if (userId == null) return;
+                if (userId == null)
+                {
+                    return Json(new { success = false, responseText = "Błąd pobierania lokalizaji. Nie znaleziono takiego użytkownika." });
+                }
                 var user = _userRepository.GetById(int.Parse(userId));
                 user.Latitude = _geoLocation.Latitude;
                 user.Longitude = _geoLocation.Longitude;
                 _userRepository.Update(user);
+                return Json(new { success = true, responseText = "Odświeżono dane o lokalizacji" });
             }
+            return Json(new { success = false, responseText = "Błąd pobierania lokalizacji. Położenie wskazuje że mieszkasz dokładnie na równiku, co jest raczej mało prawdopodobną opcją. Odśwież okno przeglądarki." });
         }
     }
 }

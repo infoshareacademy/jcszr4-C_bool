@@ -1,21 +1,36 @@
-﻿@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
-@using C_bool.BLL.Logic
+﻿@using C_bool.BLL.Logic
 @using System.Globalization
+@using C_bool.BLL.DAL.Entities
 @using C_bool.WebApp.Config
+@using Castle.Core.Internal
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject UserManager<User> UserManager
 @model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
 
-@{
-}
-
 <div class="card-group">
-    @*<div class="card-deck" style="height: 80vh; align-content: center">*@
     @foreach (var item in Model)
     {
-        <div class="card mb-3 shadow animation-scale" style="min-width: 450px; max-width: 600px; margin: 10px;">
-            <a href="Places/Details/@item.Id" class="card-title text-decoration-none">
-                <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
-            </a>
+        <div class="card mb-3 shadow animation-scale" style="min-width:400px; max-width: 600px; margin: 10px;">
+
+            @if (item.ActiveTaskCount > 0)
+            {
+                <div class="card-header d-sm-flex flex-row align-items-center flex-0" style="background-color: #dbedd2">
+                    <div class="d-block" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none"><h3>@Html.DisplayFor(modelItem => item.Name)</h3></a>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <button class="btn btn-outline-primary">@item.ActiveTaskCount zadań</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none">
+                    <h3 class="card-header bg-gray-200" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</h3>
+                </a>
+            }
             <div class="card-body">
                 <h5 class="card-title">@Html.DisplayFor(modelItem => item.Address)</h5>
 
@@ -34,31 +49,46 @@
             <div class="card-body">
                 <p class="card-text"></p>
             </div>
+
+            <!--fav button style if place is in favorities-->
+            @{
+                var btnClass = "";
+                if (item.IsUserFavorite) btnClass = "btn-fav";
+            }
             <ul class="list-group list-group-flush">
                 <form method="post" style="display: flex; justify-content: center;">
                     <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-
-                        <button type="button" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></button>
+                        <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@item.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Latitude.ToString(CultureInfo.InvariantCulture), @item.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                        <button type="button" class="btn btn-secondary" style="background-color: #e16c82; color: white; border-color: #e16c82" onclick="post('@item.Id')"><l class="bi-heart"> Ulubione</l></button>
+                        <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-secondary @btnClass" onclick="addToFavs('Places','AddToFavs','@item.Id')"><l class="bi-heart"> Ulubione</l></button>
                     </div>
-                    <div class="btn">
-                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <l class="bi-three-dots"></l>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
-                            <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
-
-                        </ul>
-                    </div>
+                    @if (item.CreatedById != null && UserManager.GetUserId(User) == item.CreatedById)
+                    {
+                        <div class="btn">
+                            <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <l class="bi-three-dots"></l>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
+                                <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="btn">
+                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="popover" title="Informacja" data-bs-content="Tylko twórca miejsca lub administrator może je edytować.">
+                                <l class="bi-three-dots"></l>
+                            </button>
+                        </div>
+                    }
                 </form>
             </ul>
 
 
             <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 
-                @if (item.Types != null)
+                @if (!item.Types.IsNullOrEmpty())
                 {
                     foreach (var type in item.Types)
                     {

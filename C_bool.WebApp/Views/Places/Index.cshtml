@@ -81,7 +81,7 @@
                 {
                     zoom: 16,
                     mapId: '@Html.Raw(_appSettings.Value.CustomMapId)',
-                    center: point,
+                    center: point
 
                 });
             const marker = new google.maps.Marker({
@@ -137,7 +137,6 @@
         });
 
         //events listener and load actions
-        window.addEventListener("load", showNotif('green', '@ViewBag.Message'));
         window.onload = getLocation();
     </script>
 }

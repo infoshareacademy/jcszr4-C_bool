@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using C_bool.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models.Place;
+using C_bool.WebApp.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +65,7 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, string searchType, double range)
+        public async Task<IActionResult> Index(string searchString, bool searchOnlyWithTasks, double range)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
@@ -73,7 +75,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Range = range / 1000;
 
             ViewData["CurrentFilter"] = searchString;
-            ViewData["CurrentType"] = searchType;
+            ViewData["OnlyTask"] = searchOnlyWithTasks;
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
 
@@ -91,7 +93,8 @@ namespace C_bool.WebApp.Controllers
 
             //list of all gametasks in places - count
             var gameTasks = _gameTasksRepository.GetAllQueryable();
-            ViewBag.ActiveTasksCount = gameTasks.Count(x => x.IsActive);
+            //ViewBag.ActiveTasksCount = gameTasks.Count(x => x.IsActive);
+            ViewBag.ActiveTasksCount = gameTasks.Count();
             ViewBag.LastAddedGameTask = gameTasks.OrderBy(x => x.CreatedOn).LastOrDefault();
 
             //query only properties used to calculate range ang get place Id
@@ -102,31 +105,22 @@ namespace C_bool.WebApp.Controllers
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
             {
-                switch (searchType)
-                {
-                    case "place":
-                        places = places.Where(s => s.Name.Contains(searchString)
-                                                   || s.Address.Contains(searchString)
-                                                   || s.ShortDescription.Contains(searchString));
-                        break;
-                    case "task":
-                        places = places.Where(s => s.Tasks.Any(task => task.Name.Contains(searchString)) 
-                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
-                        break;
-                    default:
-                        places = places.Where(s => s.Name.Contains(searchString)
-                                                   || s.Address.Contains(searchString)
-                                                   || s.ShortDescription.Contains(searchString)
-                                                   || s.Tasks.Any(task => task.Name.Contains(searchString)) 
-                                                   || s.Tasks.Any(task => task.ShortDescription.Contains(searchString)));
-                        break;
-                }
+                places = places.Where(s => s.Name.Contains(searchString)
+                                           || s.Address.Contains(searchString)
+                                           || s.ShortDescription.Contains(searchString));
             }
 
+            if (searchOnlyWithTasks)
+            {
+                places = places.Where(p => p.Tasks.Any());
+            }
 
-            var placesList = await places.Select(x => _mapper.Map<PlaceViewModel>(x)).ToListAsync();
+            places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
+
+            var placesList = _mapper.Map<List<PlaceViewModel>>(places);
             ViewBag.NearbyPlacesCount = places.Count();
             ViewBag.NearbyPlaces = placesList;
+            ViewBag.Message = new StatusMessage($"Znaleziono {placesList.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
 
             return View();
         }

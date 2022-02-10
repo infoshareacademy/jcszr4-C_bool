@@ -1,0 +1,137 @@
+﻿@model C_bool.WebApp.Models.Place.PlaceViewModel
+
+@{
+    ViewData["Title"] = "Utwórz nowe zadanie";
+}
+
+
+<h1 class="px-4">Co działamy w <b>@Html.Raw(Model.Name)</b>?</h1>
+
+<div class="card-body">
+    <div class="row text-gray">
+        <!--Select task type - Event-->
+        <div class="col-12 col-lg-6 col-xl-3">
+            <div class="card mb-4 mb-xl-0 border-0 shadow animation-scale">
+                <a asp-action="Create" asp-route-placeId="@ViewData["PlaceId"]" asp-route-taskType="Event" class="stretched-link"></a>
+                <img src="/assets/img/illustrations/event.jpg" class="card-img-top" alt="...">
+                <div class="card-body py-4 px-4">
+                    <h2 class="card-title">Wydarzenie</h2>
+                    <p class="card-text">Robisz domówkę jakiej nie przeżył nikt? A może radosny happening pod sejmem? &#128521; Stwórz wydarzenie i pokaż je światu!</p><p></p>
+                </div>
+                <div class="card-footer border-gray-100 d-grid px-4 pb-4" style="background-color: #E1ECE9">
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Określ czas i miejsce</b> - wydarzenie pojawi się w kalendarzu na stronie głównej</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Tylko o określonym czasie</b> - uczestnik zbierze punkty tylko jeśli zjawi się w podanym terminie</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>... i miejscu</b> - uczestnik musi... uczestniczyć! Wymagane zameldowanie się w danej miejscówce</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Select task type - TakeAPhoto-->
+        <div class="col-12 col-lg-6 col-xl-3">
+            <div class="card mb-4 mb-xl-0 border-0 shadow animation-scale">
+                <a asp-action="Create" asp-route-placeId="@ViewData["PlaceId"]" asp-route-taskType="TakeAPhoto" class="stretched-link"></a>
+                <img style="background: url('data:image/jpeg;base64,@Html.Raw(Model.Photo)')" src="/assets/img/illustrations/handsome_overlay.png" alt="" />
+                <div class="card-body py-4 px-4">
+                    <h2 class="card-title">Ustrzel fotkę</h2>
+                    <p class="card-text">A może organizujesz konkurs na najlepsze selfie na tle <b>@Html.Raw(Model.Name)</b>? Oceniaj przesłane fotki i przydzielaj punkty!</p><p></p>
+                </div>
+                <div class="card-footer border-gray-100 d-grid px-4 pb-4" style="background-color: #EAF2E6">
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>To ty oceniasz!</b> - każdy z uczestników daje ci fotkę do oceny, to od Ciebie zależy, czy zaliczy zadanie</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Premiuj najlepszych</b> - możesz przyznać dodatkowe punkty, na przykład za kreatywność</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Zaliczaj kiedy chcesz</b> - nie sprawdzamy, czy byłeś na miejscu, zdjęcie musi być wystarczajacym dowodem &#128579;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Select task type - TextEntry-->
+        <div class="col-12 col-lg-6 col-xl-3">
+            <div class="card mb-4 mb-xl-0 border-0 shadow animation-scale">
+                <a asp-action="Create" asp-route-placeId="@ViewData["PlaceId"]" asp-route-taskType="TextEntry" class="stretched-link"></a>
+                <img src="/assets/img/illustrations/textentry.jpg" class="card-img-top" alt="...">
+                <div class="card-body py-4 px-4">
+                    <h2 class="card-title">Podaj hasło</h2>
+                    <p class="card-text">Co się kryje pod tajemniczymi ośmioma gwiazdkami? Co głosi hasło na murze? Co stoi blisko toi-toi? Jeśli można coś opisać słowami, to przygoda przed nami</p>
+                </div>
+                <div class="card-footer border-gray-100 d-grid px-4 pb-4" style="background-color: #F7FAED">
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Hasło?</b> - zadajesz pytanie a uczestnik na nie odpowiada, jeśli odpowie poprawnie - zdobywa punkty</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Automatyczne zaliczanie</b> - wystarczy, że odpowiedź jest poprawna. Uważaj, żeby pytanie nie było zbyt łatwe!</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Zaliczaj kiedy chcesz</b> - nie jest wymagane potwierdzenie, czy gracz był na miejscu.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Select task type - CheckInToALocation-->
+        <div class="col-12 col-lg-6 col-xl-3">
+            <div class="card mb-4 mb-xl-0 border-0 shadow animation-scale">
+                <a asp-action="Create" asp-route-placeId="@ViewData["PlaceId"]" asp-route-taskType="CheckInToALocation" class="stretched-link"></a>
+                <img src="/assets/img/illustrations/visitplace.jpg" class="card-img-top" alt="...">
+                <div class="card-body py-4 px-4">
+                    <h2 class="card-title">Odwiedź miejsce</h2>
+                    <p class="card-text">To trzeba zobaczyć! Może w <b>@Html.Raw(Model.Name)</b> jest jakieś zapierające dech w piersiach miejsce które chciałbyś pokazać?</p>
+                </div>
+                <div class="card-footer border-gray-100 d-grid px-4 pb-4" style="background-color: #FBF7EF">
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Zawsze dostępne</b> - nie musisz określać, kiedy gracz może wykonać zadanie</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="icon icon-sm me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span><b>Przybyłem i zdobyłem</b> - gracz zdobywa punkty po odwiedzaniu miejsca</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+
+}

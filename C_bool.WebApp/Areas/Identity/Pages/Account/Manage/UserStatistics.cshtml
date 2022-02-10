@@ -1,0 +1,72 @@
+﻿@page
+@model UserStatisticsModel
+@{
+    ViewData["Title"] = "Moje statystyki";
+    ViewData["ActivePage"] = ManageNavPages.UserStatistics;
+}
+
+<h4>@ViewData["Title"]</h4>
+<br/>
+<div>
+    <h5>Ranking</h5>
+    <dl class="row">
+        <dt class="col-sm-2">
+            <label asp-for="RankingPlace">Miejsce</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.RankingPlace.
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="Points">Liczba zdobytych cebul</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Points cebul
+        </dd>
+    </dl>
+    <h5>Statystyki eksploratora</h5>
+    <dl class="row">
+        <dt class="col-sm-2">
+            <label asp-for="FavPlacesCount">Liczba ulubionych miejsc</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.FavPlacesCount
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="PendingTasksCount">Liczba zadań oczekujących</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.PendingTasksCount
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="InProgressTasksCount">Liczba zadań w trakcie</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.InProgressTasksCount
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="DoneTasksCount">Liczba wykonanych zadań</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.DoneTasksCount
+        </dd>
+    </dl>
+    <h5>Statystyki kreatora</h5>
+    <dl class="row">
+        <dt class="col-sm-2">
+            <label asp-for="CreatedPlacesCount">Liczba utworzonych miejsc</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.CreatedPlacesCount
+        </dd>
+        <dt class="col-sm-2">
+            <label asp-for="CreatedGameTasksCount">Liczba utworzonych zadań</label>
+        </dt>
+        <dd class="col-sm-10">
+            @Model.CreatedGameTasksCount
+        </dd>
+    </dl>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

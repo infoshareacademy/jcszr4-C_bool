@@ -1,5 +1,6 @@
 ﻿using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Helpers;
+using C_bool.BLL.Helpers.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

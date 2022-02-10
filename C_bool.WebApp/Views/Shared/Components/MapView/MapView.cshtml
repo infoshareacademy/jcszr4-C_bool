@@ -2,7 +2,7 @@
 @using Microsoft.Extensions.Options
 @using System.Text.Json
 @using C_bool.WebApp.ViewComponents
-@model List<C_bool.WebApp.Models.Place.PlaceViewModel>
+@model List<C_bool.WebApp.Models.Place.PlaceMapModel>
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings
 
 @{
@@ -45,6 +45,14 @@
         for (i = 0; i < markers.length; i++) {
             var data = markers[i];
             var myLatlng = new google.maps.LatLng(data.Latitude, data.Longitude);
+            var iconImg = "/img/marker_red.png";
+            if (data.ActiveTaskCount > 0) {
+                iconImg = "/img/marker_green.png";
+            }
+
+            if (data.ShortDescription == null) {
+                data.ShortDescription = "&#128123; Miejsce nie posiada opisu";
+            }
 
             bounds.extend(myLatlng);
 
@@ -52,7 +60,7 @@
                 position: myLatlng,
                 map: map,
                 title: data.Name,
-                icon: "/img/onion.png"
+                icon: iconImg
             });
 
 
@@ -73,8 +81,7 @@
                                 "</div>" +
                             "</div>" +
                     "</div></br>" +
-                    "<a href=\"/Places/Details/" + data.Id + "\" class=\"btn btn-sm btn-primary\">Szczegóły miejsca</a><a> </a>" +
-                    "<a href=\"#\" class=\"btn btn-sm btn-primary\">Przejdź do zadań</a><a> </a>" +
+                    "<a href=\"/Places/Details/" + data.Id + "\" class=\"btn btn-sm btn-primary\">Szczegóły miejsca i zadania</a><a> </a>" +
                     "<a href=\"https://www.google.com/maps/dir/?api=1&origin=" + @Html.Raw(userLatitude) + "%2C" + @Html.Raw(userLongitude) + "&destination=" + data.Latitude + "%2C" + data.Longitude + "\" class=\"btn btn-sm btn-primary\" target=\"_blank\" rel=\"noopener\">Pokaż na Google Maps</a>" +
                     "</div>";
 

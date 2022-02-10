@@ -6,6 +6,7 @@
 
 @{
     ViewData["Title"] = "Szukaj nowych miejsc";
+    var message = (StatusMessage)ViewBag.Message;
 }
 
 
@@ -20,7 +21,7 @@ else
     <div class="alert alert-dismissible alert-warning">
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         <h4 class="alert-heading">Nie bangla!</h4>
-        <p class="mb-0">@ViewBag.Message<br>Spróbuj ponownie używając opcji <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b></p>
+        <p class="mb-0">@message.Message<br>Spróbuj ponownie używając opcji <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b></p>
     </div>
 }
 
@@ -45,28 +46,5 @@ else
             });
         }
 
-        //post data to controller
-        function postToController(controller, view, input) {
-            var postData = {Id: input};
-
-            $.ajax(
-                {
-                    type: "POST",
-                    url: '/' + controller + '/' + view,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function(data) {
-                        showNotif('green', 'OK');
-                    },
-
-                    error: function (xmlhttprequest, textstatus, errorthrown) {
-                        //alert(" conection to the server failed ");
-                        showNotif('red', errorthrown);
-                    }
-                });
-        };
-
-        window.addEventListener("load", showNotif('@if (ViewBag.QueryStatus.Equals(Status.OK)){@Html.Raw("green")} else {@Html.Raw("red")}', '@ViewBag.Message'));
     </script>
 }

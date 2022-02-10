@@ -9,18 +9,25 @@ namespace C_bool.BLL.Services
     {
         int GetCurrentUserId();
         User GetCurrentUser();
-        void AddFavPlace(Place place);
+        int GetRankingPlace();
+        void ChangeUserStatus(int userId);
+
+        bool AddFavPlace(Place place);
+        bool RemoveFavPlace(Place place);
+        List<Place> GetFavPlaces();
+        public List<Place> GetPlacesCreatedByUser();
+
         void AddTaskToUser(GameTask gameTask);
-        public List<Place> GetFavPlaces();
-        void SetTaskAsDone(int gameTaskId);
-        void SetTaskAsDone(int userId, int gameTaskId);
-        void SetUserPoints(User user);
         List<GameTask> GetToDoTasks();
         List<GameTask> GetToDoTasks(int userId);
         List<GameTask> GetInProgressTasks();
         List<GameTask> GetInProgressTasks(int userId);
         List<GameTask> GetDoneTasks();
         List<GameTask> GetDoneTasks(int userId);
+        List<GameTask> GetTasksToAccept();
+        List<GameTask> GetTasksToAccept(int userId);
+        public List<GameTask> GetGameTasksCreatedByUser();
+        
         List<User> SearchByName(string name);
         List<User> SearchByEmail(string email);
         List<User> SearchByGender(Gender gender);

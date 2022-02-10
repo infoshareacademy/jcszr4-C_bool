@@ -7,14 +7,14 @@
     ViewData["Title"] = "Utwórz nowe miejsce";
 }
 
-<form enctype="multipart/form-data" asp-action="Create">
+<form enctype="multipart/form-data" asp-action="Create" class="needs-validation" novalidate>
     <div class="row">
         <div class="col-12">
             <!-- Tab -->
             <div class="row">
                 <div class="col-sm">
                     <h1>Dodaj nowe miejsce</h1>
-                    <h4>Wybierz lokalizację na mapie i krótko ją opisz</h4>
+                    <h4>Wybierz lokalizację na mapie i ją opisz</h4>
                 </div>
                 <div class="col-sm">
                     <div class="nav-wrapper position-relative float-end">
@@ -23,7 +23,7 @@
                                 <a class="nav-link text-sm-center active" aria-label="first navigation tab" id="tab-create-map" data-bs-toggle="tab" href="#create-map" role="tab" aria-controls="create-map" aria-selected="true">
                                     <span class="nav-link-icon d-block">
                                         <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clipRule="evenodd" /></svg>
-                                        </span>
+                                    </span>
                                 </a>
                             </li>
                             <li class="nav-item me-3 me-md-0">
@@ -50,6 +50,9 @@
                 </div>
             </div>
             <!-- End of Tab Nav -->
+
+            <partial name="~/Views/Shared/ValidationAlert.cshtml" />
+
             <!-- Tab Content -->
             <div>
                 <div class="card-body p-0">
@@ -58,49 +61,74 @@
                             <div id="map" style="background-color: gainsboro; width: 100%; height: calc(100vh - 210px);"></div>
                         </div>
                         <div class="tab-pane fade" id="create-data" role="tabpanel" aria-labelledby="tab-link-example-14">
-
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="form-group">
-                                <label asp-for="Name" class="control-label"></label>
-                                <input asp-for="Name" class="form-control" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Address" class="control-label"></label>
-                                <input id="address" asp-for="Address" value="Brak adresu" class="form-control" />
-                                <span asp-validation-for="Address" class="text-danger"></span>
-                            </div>
-                            <br />
-                            <!--Upload zdjęcia -->
-                            <div class="form-group">
-                                <label for="photo" class="control-label">Wybierz zdjęcie miejsca</label>
-                                    <div class="alert alert-info d-flex align-items-center" role="alert">
-                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
-                                        <div>
-                                            Dopuszczalalne formaty: <b>.jpg</b> lub <b>.png</b> o maksymalnej wielkości <b>2Mb</b>
+                            <div class="row">
+                                <div class="col-12 col-xl-8">
+                                    <div class="card card-body border-0 shadow mb-4">
+                                        <h2 class="h5 mb-4">Podstawowe informacje o miejscu</h2>
+                                        <div class="form-group">
+                                            <label asp-for="Name" class="control-label"></label>
+                                            <input asp-for="Name" class="form-control" />
+                                            <span asp-validation-for="Name" class="text-danger cb-alert"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="Address" class="control-label"></label>
+                                            <input id="address" asp-for="Address" class="form-control" />
+                                            <span asp-validation-for="Address" class="text-danger cb-alert"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="ShortDescription" class="control-label"></label>
+                                            <textarea asp-for="ShortDescription" class="form-control" style="height: 172px"></textarea>
+                                            <span asp-validation-for="ShortDescription" class="text-danger cb-alert"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
                                         </div>
                                     </div>
-                                    <input id="photo" class="form-control" name="file" type="file" accept="image/png, image/jpeg" />
+                                </div>
+                                <div class="col-12 col-xl-4">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card card-body border-0 shadow mb-4">
+                                                <h2 class="h5 mb-4">Wybierz zdjęcie miejsca</h2>
+                                                <div class="form-group">
+                                                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                                                            <use xlink:href="#info-fill" />
+                                                        </svg>
+                                                        <div>
+                                                            Dopuszczalalne formaty: <b>.jpg</b> lub <b>.png</b> o maksymalnej wielkości <b>2Mb</b>
+                                                        </div>
+                                                    </div>
+                                                    <input id="photo" class="form-control" name="file" type="file" accept="image/png, image/jpeg" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="ShortDescription" class="control-label"></label>
-                                <textarea asp-for="ShortDescription" class="form-control" style="height: 300px"></textarea>
-                                <span asp-validation-for="ShortDescription" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <input id="latitudeForm" style="display: none;" asp-for="Latitude" class="form-control" />
-                            </div>
-                            <div class="form-group">
-                                <input id="longitudeForm" style="display: none;" asp-for="Longitude" class="form-control" />
-                            </div>
-
                         </div>
                         <div class="tab-pane fade" id="create-description" role="tabpanel" aria-labelledby="tab-link-example-15">
-                            <div class="form-group">
-                                <label asp-for="Description" class="control-label"></label>
-                                <textarea id="description" asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="row">
+                                <div class="col-12 col-xl-8">
+                                    <div class="card card-body border-0 shadow mb-4">
+                                        <h2 class="h5 mb-4">Szczegółowy opis miejsca</h2>
+                                        <div class="form-group">
+                                            <textarea id="description" asp-for="Description" class="form-control">Welcome to TinyMCE!</textarea>
+                                            <span asp-validation-for="Description" class="text-danger cb-alert"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4">
+                                    <div class="alert alert-success" role="alert">
+                                        <h4 class="alert-heading">Opis miejsca</h4>
+                                        <p>Dodaj informacje o miejscu</p>
+                                        <hr>
+                                        <p class="mb-0">Możesz załączać grafiki, filmy (np. YouTube) i inne treści</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -182,6 +210,7 @@
                 position: myLatlng,
             });
 
+
             infoWindow.open(map);
 
             map.addListener("click",
@@ -213,15 +242,9 @@
                 .geocode({ location: myLatlng })
                 .then((response) => {
                     if (response.results[0]) {
-                        map.setZoom(11);
-
-                        const marker = new google.maps.Marker({
-                            position: myLatlng,
-                            map: map,
-                        });
 
                         infowindow.setContent(response.results[0].formatted_address);
-                        infowindow.open(map, marker);
+                        infowindow.open(map);
                         document.getElementById('address').value = response.results[0].formatted_address;
                     } else {
                         window.alert("No results found");

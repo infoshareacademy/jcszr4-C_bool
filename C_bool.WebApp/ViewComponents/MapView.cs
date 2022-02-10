@@ -1,23 +1,21 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using C_bool.BLL.DAL.Entities;
-using C_bool.WebApp.Models;
+using AutoMapper;
 using C_bool.WebApp.Models.Place;
+using C_bool.WebApp.Models.Profiles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.ViewComponents
 {
     public class MapView : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range, bool noBounds = false)
+        public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList, double range,
+            bool noBounds = false)
         {
-            foreach (var item in placesList)
-            {
-                item.Name = item.Name?.Replace("\"","");
-                item.Address = item.Address?.Replace("\"", "");
-                item.ShortDescription = item.ShortDescription?.Replace("\"", "");
-            }
+            var config = new MapperConfiguration(cfg => { cfg.AddProfile(new PlaceProfile()); });
+            var mapper = new Mapper(config);
+
+            var model = mapper.Map<List<PlaceMapModel>>(placesList);
 
             var zoom = range switch
             {
@@ -38,7 +36,8 @@ namespace C_bool.WebApp.ViewComponents
             ViewBag.MapZoom = zoom;
             ViewBag.NoBounds = noBounds;
 
-            return View("MapView", placesList);
+            return View("MapView", model);
         }
     }
 }
+

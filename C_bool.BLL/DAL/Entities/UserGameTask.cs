@@ -22,6 +22,7 @@ namespace C_bool.BLL.DAL.Entities
         public string Photo { get; set; }
         public string TextCriterion { get; set; }
         public DateTime ArrivalTime { get; set; }
+        public int BonusPoints { get; set; }
 
         public UserGameTask()
         {

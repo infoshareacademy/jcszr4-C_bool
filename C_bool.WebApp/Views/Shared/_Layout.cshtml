@@ -60,6 +60,7 @@
     <link type="text/css" href="/css/volt.css" rel="stylesheet">
 
     <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/cebool.css" />
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
 
@@ -71,42 +72,13 @@
     <!-- GoogleMaps API -->
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=@_appSettings.Value.GoogleAPIKey"></script>
 
-    <!-- Notification popup. -->
-    <script>
-        function showNotif(background, message) {
-            const notyf = new Notyf({
-                position: {
-                    x: 'right',
-                    y: 'bottom',
-                },
-                types: [
-                    {
-                        type: 'info',
-                        background: background,
-                        icon: {
-                            className: 'fas fa-info-circle',
-                            tagName: 'span',
-                            color: '#fff'
-                        },
-                        dismissible: true
-                    }
-                ],
-                duration: 10000,
-            });
-            notyf.open({
-                type: 'info',
-                message: message
-            });
-        };
-    </script>
-
 </head>
 
 <body>
 
 
     <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
-        <a class="navbar-brand me-lg-5" href="/index.html">
+        <a class="navbar-brand me-lg-5" href="/">
             <img class="navbar-brand-dark" src="/img/header-logo-name.png" alt="Cebool" /> <img class="navbar-brand-light" src="/img/header-logo-name.png" alt="Volt logo" />
         </a>
         <div class="d-flex align-items-center">
@@ -167,7 +139,7 @@
                     <div class="multi-level collapse @(controller is "places" or "newplace" ? "show" : "") " role="list"
                          id="submenu-pages-places" aria-expanded="false">
                         <ul class="flex-column nav">
-                            <li class="nav-item @(controller == "places" && action == "index" ? "active" : "")">
+                            <li class="nav-item @(controller == "places" && action == "index" && ViewData["OnlyFavs"].Equals(false) ? "active" : "")">
 
                                 <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index">
                                     <span class="sidebar-icon">
@@ -177,8 +149,8 @@
                                     <span class="sidebar-text">Baza miejsc</span>
                                 </a>
                             </li>
-                            <li class="nav-item @(controller == "places" && action == "favourities" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index" asp-route-SearchOnlyFavs="true">
+                            <li class="nav-item @(controller == "places" && action == "index" && ViewData["OnlyFavs"].Equals(true) ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="Places" asp-action="Index" asp-route-SearchOnlyFavs="true" asp-route-range="40000000">
                                     <span class="sidebar-icon">
                                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                                     </span>
@@ -248,14 +220,6 @@
                                     <span class="sidebar-text">Moje zadania</span>
                                 </a>
                             </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "create" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Create">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Dodaj nowe</span>
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </li>
@@ -267,7 +231,7 @@
                             <span class="sidebar-icon">
                                 <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
                             </span>
-                            <span class="sidebar-text"><b>AdminPanel</b></span>
+                            <span class="sidebar-text">Administracja</span>
                         </span>
                         <span class="link-arrow">
                             <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
@@ -320,7 +284,14 @@
                             <li class="nav-item dropdown ms-lg-3">
                                 <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <div class="media d-flex align-items-center">
-                                        <img class="avatar rounded-circle" alt="Image placeholder" src="/assets/img/team/profile-picture-3.jpg">
+                                        @if (UserManager.GetUserAsync(User).Result.Photo != null)
+                                        {
+                                            <img class="avatar rounded-circle" alt="Image placeholder" src="data:image;base64,@Html.Raw(UserManager.GetUserAsync(User).Result.Photo)">
+                                        }
+                                        else
+                                        {
+                                            <img class="avatar rounded-circle" alt="Image placeholder" src="/img/onion_man.jpg">
+                                        }
                                         <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                             <span class="mb-0 fw-bold text-gray-900">@User.Identity?.Name</span>
                                         </div>
@@ -386,6 +357,46 @@
     <!-- Notyf -->
     <script src="/vendor/notyf/notyf.min.js"></script>
 
+    <!-- Notification popup. -->
+    <script>
+        const notyf = new Notyf({
+            duration: 1000,
+            position: {
+                x: 'right',
+                y: 'bottom'
+            },
+            types: [
+                {
+                    type: 'warning',
+                    background: 'orange',
+                    icon: {
+                        className: 'material-icons',
+                        tagName: 'i',
+                        text: 'warning'
+                    }
+                },
+                {
+                    type: 'error',
+                    background: 'indianred',
+                    duration: 5000,
+                    dismissible: true
+                },
+                {
+                    type: 'info',
+                    background: '#61a5c2',
+                    duration: 3000,
+                    dismissible: true
+                },
+                {
+                    type: 'success',
+                    background: 'green',
+                    duration: 2000,
+                    dismissible: true
+                }
+            ]
+        });
+    </script>
+
     <!-- Simplebar -->
     <script src="/vendor/simplebar/dist/simplebar.min.js"></script>
 
@@ -396,38 +407,8 @@
     <script src="/assets/js/volt.js"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
 
-
-    <!-- Notification window. -->
-    <script>
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-gray'
-            },
-            buttonsStyling: false
-        });
-
-        function ShowErrorMessage(title, message) {
-            swalWithBootstrapButtons.fire({
-                icon: 'error',
-                title: title,
-                text: message,
-                footer: '<a href>Odśwież stronę</a>'
-            });
-        }
-
-        function ShowSuccessMessage(title, message) {
-            swalWithBootstrapButtons.fire({
-                icon: 'success',
-                title: title,
-                text: message,
-                showConfirmButton: true,
-                timer: 1500
-            });
-        }
-    </script>
+@RenderSection("Scripts", required: false)
 
     <script>
     // retrieve geolocation from HTML5 GeoLocation API
@@ -452,14 +433,68 @@
                 dataType: "json",
                 data: JSON.stringify(postData),
                 success: function (data) {
-                    showNotif('green', 'OK');
+
+
+                    notyf.open({
+                        type: 'info',
+                        message: data.responseText
+                    });
+
                 },
 
                 error: function (xmlhttprequest, textstatus, errorthrown) {
-                    //showNotif('red', errorthrown);
+                    notyf.error(errorthrown);
                 }
             });
     };
+
+    //post data to controller
+    function postToController(controller, view, input) {
+        var postData = {Id: input};
+
+        $.ajax(
+            {
+                type: "POST",
+                url: '/' + controller + '/' + view,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                success: function(data) {
+                    notyf.success(data.responseText);
+                },
+
+                error: function (xmlhttprequest, textstatus, errorthrown) {
+                    notyf.error(errorthrown);
+                }
+            });
+        };
+
+        function addToFavs(controller, view, input) {
+            var postData = { Id: input };
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function (data) {
+                        notyf.success(data.responseText);
+                        var elementId = "favIndicatorId" + input;
+                        var element = document.getElementById(elementId);
+                        if (data.isAdded == true) {
+                            element.classList.add("btn-fav");
+                        } else {
+                            element.classList.remove("btn-fav");
+                        }
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        notyf.error(errorthrown);
+                    }
+                });
+        };
 
     function showGeolocationError(error) {
         switch (error.code) {
@@ -478,7 +513,14 @@
         }
     }
 
-    window.onload = getLocation();
+        window.onload = getLocation();
+    @if (ViewBag.Message != null)
+    {
+        var message = (StatusMessage)ViewBag.Message;
+        @Html.Raw(message.MessageParsed);
+
+    }
+
     </script>
 
 </body>
