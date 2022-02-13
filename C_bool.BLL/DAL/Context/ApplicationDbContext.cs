@@ -33,19 +33,19 @@ namespace C_bool.BLL.DAL.Context
             {
                 Id = 1, 
                 Name = "Admin", 
-                NormalizedName = "Admin".ToUpper()
+                NormalizedName = "ADMIN"
             });
             modelBuilder.Entity<UserRole>().HasData(new UserRole
             {
                 Id = 2,
                 Name = "Moderator",
-                NormalizedName = "Moderator".ToUpper()
+                NormalizedName = "MODERATOR"
             });
             modelBuilder.Entity<UserRole>().HasData(new UserRole
             {
                 Id = 3,
                 Name = "User",
-                NormalizedName = "User".ToUpper()
+                NormalizedName = "USER"
             });
 
             //a hasher to hash the password before seeding the user to the db
@@ -57,9 +57,9 @@ namespace C_bool.BLL.DAL.Context
                 {
                     Id = 1,
                     UserName = "SuperAdmin",
-                    NormalizedUserName = "SuperAdmin".ToUpper(),
+                    NormalizedUserName = "SUPERADMIN",
                     Email = "super@admin.com",
-                    NormalizedEmail = "super@admin.com".ToUpper(),
+                    NormalizedEmail = "SUPER@ADMIN.COM",
                     EmailConfirmed = true,
                     PasswordHash = hasher.HashPassword(null, "Pa$$w0rd"),
                     SecurityStamp = Guid.NewGuid().ToString("D")

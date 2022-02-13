@@ -140,30 +140,31 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-/*        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            var model = _userRepository.GetById(id);
-            return View(model);
-        }*/
+        /*        // GET: UserController/Delete/5
+                public ActionResult Delete(int id)
+                {
+                    var model = _userRepository.GetById(id);
+                    return View(model);
+                }*/
 
-/*        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(User model)
-        {
-            
-            try
-            {
-                model = _userRepository.GetById(model.Id);
-                _userRepository.Delete(model);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(model);
-            }
-        }*/
+        /*        // POST: UserController/Delete/5
+                [HttpPost]
+                [ValidateAntiForgeryToken]
+                public ActionResult Delete(User model)
+                {
+
+                    try
+                    {
+                        model = _userRepository.GetById(model.Id);
+                        _userRepository.Delete(model);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch
+                    {
+                        return View(model);
+                    }
+                }*/
+        [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPost]
         public IActionResult UpdateUserLocation([FromBody] GeoLocation postData)
         {
