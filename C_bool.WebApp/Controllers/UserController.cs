@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace C_bool.WebApp.Controllers
 {
+    [Authorize(Roles = "Admin, Moderator")]
     public class UserController : Controller
     {
         private readonly IRepository<User> _userRepository;
@@ -163,8 +164,6 @@ namespace C_bool.WebApp.Controllers
                 return View(model);
             }
         }*/
-
-        [Authorize]
         [HttpPost]
         public IActionResult UpdateUserLocation([FromBody] GeoLocation postData)
         {

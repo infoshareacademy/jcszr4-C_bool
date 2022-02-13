@@ -1,15 +1,15 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 
 namespace C_bool.WebApp
 {
@@ -34,70 +34,100 @@ namespace C_bool.WebApp
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             // identity
-            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+/*services.AddIdentity<User, UserRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedEmail = true;
+    })
+    .AddRoles<UserRole>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            // razor pages
-            services.AddRazorPages();
-            
-            // services
-            services.AddTransient<IPlaceService, PlaceService>();
-            services.AddTransient<IGooglePlaceService, GooglePlaceService>();
-            services.AddTransient<IGameTaskService, GameTaskService>();
-            services.AddTransient<IUserService, UserService>();
-            
+services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.LoginPath = "/Identity/Account/Login";
+});*/
 
 
-            //Google API Http client
-            services.AddHttpClient("GoogleMapsClient", client =>
-            {
-                client.BaseAddress = new Uri("https://maps.googleapis.com/");
-                client.Timeout = new TimeSpan(0, 0, 30);
-                client.DefaultRequestHeaders.Clear();
-            });
+services.AddDefaultIdentity<User>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedEmail = true;
+    })
+    .AddRoles<UserRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //automapper
-            var profileAssembly = typeof(Startup).Assembly;
-            services.AddAutoMapper(profileAssembly);
 
-        }
+// razor pages
+services.AddRazorPages();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext)
-        {
-            if (env.IsDevelopment()  || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+// services
+services.AddTransient<IPlaceService, PlaceService>();
+services.AddTransient<IGooglePlaceService, GooglePlaceService>();
+services.AddTransient<IGameTaskService, GameTaskService>();
+services.AddTransient<IUserService, UserService>();
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
-            app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-            
-            dataContext.Database.Migrate();
+//Google API Http client
+services.AddHttpClient("GoogleMapsClient", client =>
+{
+    client.BaseAddress = new Uri("https://maps.googleapis.com/");
+    client.Timeout = new TimeSpan(0, 0, 30);
+    client.DefaultRequestHeaders.Clear();
+});
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
+//automapper
+var profileAssembly = typeof(Startup).Assembly;
+services.AddAutoMapper(profileAssembly);
 
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+}
 
-        }
-    }
+// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext)
+{
+if (env.IsDevelopment() || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+dataContext.Database.Migrate();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+});
+
+}
+}
 }
