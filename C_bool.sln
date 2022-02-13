@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.BLL", "C_bool.BLL\C_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.WebApp", "C_bool.WebApp\C_bool.WebApp.csproj", "{351D875C-1538-4DE1-8731-7A68CE43D51D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_bool.ASP.NET_API", "C_bool.ASP.NET_API\C_bool.ASP.NET_API.csproj", "{A0E935C8-46E3-4272-9E78-549CA6ABA1DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C_bool.ASP.NET_API", "C_bool.ASP.NET_API\C_bool.ASP.NET_API.csproj", "{A0E935C8-46E3-4272-9E78-549CA6ABA1DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_bool.ASP.NET.API_Mailing", "C_bool.ASP.NET.API_Mailing\C_bool.ASP.NET.API_Mailing.csproj", "{9CC0FBC8-ACDB-4EC7-B5F3-4F692A65B21E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A0E935C8-46E3-4272-9E78-549CA6ABA1DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0E935C8-46E3-4272-9E78-549CA6ABA1DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0E935C8-46E3-4272-9E78-549CA6ABA1DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC0FBC8-ACDB-4EC7-B5F3-4F692A65B21E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC0FBC8-ACDB-4EC7-B5F3-4F692A65B21E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC0FBC8-ACDB-4EC7-B5F3-4F692A65B21E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC0FBC8-ACDB-4EC7-B5F3-4F692A65B21E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
