@@ -18,9 +18,9 @@
     </None>
     <None Include="Views\User\Create.cshtml" />
     <None Include="Views\User\Delete.cshtml" />
-    <None Include="Views\User\Details.cshtml" />
+    <None Include="Views\AdminPanel\UserDetails.cshtml" />
     <None Include="Views\User\Edit.cshtml" />
-    <None Include="Views\User\Index.cshtml" />
+    <None Include="Views\AdminPanel\UsersList.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

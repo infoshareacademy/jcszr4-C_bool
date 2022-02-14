@@ -1,15 +1,16 @@
+using C_bool.BLL.DAL.Context;
+using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Helpers;
+using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
+using C_bool.WebApp.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using C_bool.BLL.DAL.Context;
-using C_bool.BLL.DAL.Entities;
-using C_bool.BLL.Repositories;
-using C_bool.BLL.Services;
-using C_bool.WebApp.Config;
-using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.WebApp
 {
@@ -34,20 +35,30 @@ namespace C_bool.WebApp
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
-            // identity
-            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+
+
+            services.AddDefaultIdentity<User>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.Lockout.MaxFailedAccessAttempts = 3;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
+                    options.User.RequireUniqueEmail = true;
+                    options.SignIn.RequireConfirmedEmail = true;
+                })
+                .AddRoles<UserRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
 
             // razor pages
             services.AddRazorPages();
-            
+
             // services
             services.AddTransient<IPlaceService, PlaceService>();
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
-            
+            services.AddTransient<DatabaseSeeder>();
+
 
 
             //Google API Http client
@@ -65,9 +76,9 @@ namespace C_bool.WebApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext, DatabaseSeeder seeder)
         {
-            if (env.IsDevelopment()  || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
+            if (env.IsDevelopment() || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
@@ -86,8 +97,10 @@ namespace C_bool.WebApp
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             dataContext.Database.Migrate();
+
+            seeder.Seed().Wait();
 
             app.UseEndpoints(endpoints =>
             {

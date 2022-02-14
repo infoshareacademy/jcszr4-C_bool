@@ -27,6 +27,7 @@ namespace C_bool.BLL.DAL.Entities
 
         public User()
         {
+            Points = 1000;
             IsActive = true;
             CreatedOn = DateTime.UtcNow;
             FavPlaces = new List<UserPlace>();

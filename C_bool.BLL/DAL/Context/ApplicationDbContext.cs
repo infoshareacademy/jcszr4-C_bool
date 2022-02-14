@@ -1,4 +1,6 @@
-﻿using C_bool.BLL.DAL.Entities;
+﻿using System;
+using C_bool.BLL.DAL.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +19,6 @@ namespace C_bool.BLL.DAL.Context
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
-            
             modelBuilder.Entity<UserPlace>().HasKey(table => new {
                 table.UserId,
                 table.PlaceId
