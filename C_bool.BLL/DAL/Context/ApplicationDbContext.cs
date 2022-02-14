@@ -28,52 +28,6 @@ namespace C_bool.BLL.DAL.Context
                 table.UserId,
                 table.GameTaskId
             });
-            //Seeding roles to AspNetRoles table
-            //    modelBuilder.Entity<UserRole>().HasData(new UserRole
-            //{
-            //    Id = 1, 
-            //    Name = "Admin", 
-            //    NormalizedName = "ADMIN"
-            //});
-            //modelBuilder.Entity<UserRole>().HasData(new UserRole
-            //{
-            //    Id = 2,
-            //    Name = "Moderator",
-            //    NormalizedName = "MODERATOR"
-            //});
-            //modelBuilder.Entity<UserRole>().HasData(new UserRole
-            //{
-            //    Id = 3,
-            //    Name = "User",
-            //    NormalizedName = "USER"
-            //});
-
-            //a hasher to hash the password before seeding the user to the db
-            //var hasher = new PasswordHasher<User>();
-
-            ////Seeding the User to AspNetUsers table
-            //modelBuilder.Entity<User>().HasData(
-            //    new User
-            //    {
-            //        Id = 1,
-            //        UserName = "SuperAdmin",
-            //        NormalizedUserName = "SUPERADMIN",
-            //        Email = "super@admin.com",
-            //        NormalizedEmail = "SUPER@ADMIN.COM",
-            //        EmailConfirmed = true,
-            //        PasswordHash = hasher.HashPassword(null, "Pa$$w0rd"),
-            //        SecurityStamp = Guid.NewGuid().ToString("D")
-            //    }
-            //);
-
-            ////Seeding the relation between our user and role to AspNetUserRoles table
-            //modelBuilder.Entity<IdentityUserRole<int>>().HasData(
-            //    new IdentityUserRole<int>
-            //    {
-            //        RoleId = 1,
-            //        UserId = 1
-            //    }
-            //);
 
             //modelBuilder.Entity<Place>().HasMany(g => g.Tasks);
             //modelBuilder.Entity<GameTask>().HasOne(g => g.Place);
