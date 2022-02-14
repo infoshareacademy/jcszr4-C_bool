@@ -66,13 +66,13 @@
         <div>
             @if (Model.IsActive)
             {
-                <a asp-action="Details" asp-route-id="@Model.Id" onclick="changeUserStatus('User','ChangeStatus','@Model.Id')">Zablokuj</a>
+                <a asp-action="UserDetails" asp-route-id="@Model.Id" onclick="changeUserStatus('User','ChangeStatus','@Model.Id')">Zablokuj</a>
             }
             else
             {
-                <a asp-action="Details" asp-route-id="@Model.Id" onclick="changeUserStatus('User','ChangeStatus','@Model.Id')">Aktwywuj</a>
+                <a asp-action="UserDetails" asp-route-id="@Model.Id" onclick="changeUserStatus('User','ChangeStatus','@Model.Id')">Aktwywuj</a>
             } |
-            <a asp-action="Index">Wróć do listy użytkowników</a>
+            <a asp-action="UsersList">Wróć do listy użytkowników</a>
         </div>
     </div>
     <div class="col-12 col-md-2">

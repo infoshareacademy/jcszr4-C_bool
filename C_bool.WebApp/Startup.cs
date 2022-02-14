@@ -1,5 +1,6 @@
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
+using C_bool.BLL.Helpers;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
@@ -35,99 +36,81 @@ namespace C_bool.WebApp
             services.AddDbContext<ApplicationDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            // identity
-/*services.AddIdentity<User, UserRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Lockout.MaxFailedAccessAttempts = 3;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
-        options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedEmail = true;
-    })
-    .AddRoles<UserRole>()
-    .AddDefaultTokenProviders()
-    .AddDefaultUI()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-services.ConfigureApplicationCookie(options =>
-{
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-    options.LoginPath = "/Identity/Account/Login";
-});*/
+            services.AddDefaultIdentity<User>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.Lockout.MaxFailedAccessAttempts = 3;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
+                    options.User.RequireUniqueEmail = true;
+                    options.SignIn.RequireConfirmedEmail = true;
+                })
+                .AddRoles<UserRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-services.AddDefaultIdentity<User>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Lockout.MaxFailedAccessAttempts = 3;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
-        options.User.RequireUniqueEmail = true;
-        options.SignIn.RequireConfirmedEmail = true;
-    })
-    .AddRoles<UserRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+            // razor pages
+            services.AddRazorPages();
 
-
-// razor pages
-services.AddRazorPages();
-
-// services
-services.AddTransient<IPlaceService, PlaceService>();
-services.AddTransient<IGooglePlaceService, GooglePlaceService>();
-services.AddTransient<IGameTaskService, GameTaskService>();
-services.AddTransient<IUserService, UserService>();
+            // services
+            services.AddTransient<IPlaceService, PlaceService>();
+            services.AddTransient<IGooglePlaceService, GooglePlaceService>();
+            services.AddTransient<IGameTaskService, GameTaskService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<DatabaseSeeder>();
 
 
 
-//Google API Http client
-services.AddHttpClient("GoogleMapsClient", client =>
-{
-    client.BaseAddress = new Uri("https://maps.googleapis.com/");
-    client.Timeout = new TimeSpan(0, 0, 30);
-    client.DefaultRequestHeaders.Clear();
-});
+            //Google API Http client
+            services.AddHttpClient("GoogleMapsClient", client =>
+            {
+                client.BaseAddress = new Uri("https://maps.googleapis.com/");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            });
 
-//automapper
-var profileAssembly = typeof(Startup).Assembly;
-services.AddAutoMapper(profileAssembly);
+            //automapper
+            var profileAssembly = typeof(Startup).Assembly;
+            services.AddAutoMapper(profileAssembly);
 
-}
+        }
 
-// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext)
-{
-if (env.IsDevelopment() || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
-{
-    app.UseDeveloperExceptionPage();
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dataContext, DatabaseSeeder seeder)
+        {
+            if (env.IsDevelopment() || env.IsEnvironment("Maciej") || env.IsEnvironment("Andrzej") || env.IsEnvironment("Natalia"))
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
-app.UseRouting();
+            app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-dataContext.Database.Migrate();
+            dataContext.Database.Migrate();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapRazorPages();
+            seeder.Seed().Wait();
 
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
 
-}
-}
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+        }
+    }
 }

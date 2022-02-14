@@ -88,7 +88,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError("Input.Email", "Invalid login attempt.");
                     return Page();
                 }
 

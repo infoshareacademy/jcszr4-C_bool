@@ -230,30 +230,6 @@ namespace C_bool.BLL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "4203212b-99fc-4da0-9dcd-db25941acebb",
-                            CreatedOn = new DateTime(2022, 2, 13, 1, 53, 58, 122, DateTimeKind.Utc).AddTicks(9947),
-                            Email = "super@admin.com",
-                            EmailConfirmed = true,
-                            Gender = 0,
-                            IsActive = true,
-                            Latitude = 0.0,
-                            LockoutEnabled = false,
-                            Longitude = 0.0,
-                            NormalizedEmail = "SUPER@ADMIN.COM",
-                            NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHL1M4LqdpudxQtaf4Fd0lAmd0QpbHosvOPlAGmUzv+KRa5YQKVsA9iVpeQGiVADmQ==",
-                            PhoneNumberConfirmed = false,
-                            Points = 0,
-                            SecurityStamp = "abd1e4cc-f25d-47f1-a5f0-c8e7ee263db8",
-                            TwoFactorEnabled = false,
-                            UserName = "SuperAdmin"
-                        });
                 });
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>
@@ -337,29 +313,6 @@ namespace C_bool.BLL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ConcurrencyStamp = "b767c764-d9b6-4128-9f38-70e65aee8554",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConcurrencyStamp = "33d02d09-c152-42c2-bbb3-2496f30d9778",
-                            Name = "Moderator",
-                            NormalizedName = "MODERATOR"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ConcurrencyStamp = "341050d8-4c22-4632-aebc-0b1e8b315767",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -444,13 +397,6 @@ namespace C_bool.BLL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
