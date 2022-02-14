@@ -2,7 +2,7 @@
 {
     public enum TaskType
     {
-        FirstComeFirstServed,
+        //FirstComeFirstServed,
         TakeAPhoto,
         CheckInToALocation,
         Event,

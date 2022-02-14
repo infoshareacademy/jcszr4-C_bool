@@ -72,12 +72,6 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Longitude = user.Longitude;
 
             if (range == 0) range = 5000;
-            ViewBag.Range = range / 1000;
-
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyTask"] = searchOnlyWithTasks;
-            ViewData["CurrentRange"] = range;
-            ViewData["MapZoom"] = range;
 
             //list of UserViewModel with top 10 users (by points count)
             var usersCount = _usersRepository.GetAllQueryable().Count();
@@ -100,6 +94,13 @@ namespace C_bool.WebApp.Controllers
             //query only properties used to calculate range ang get place Id
             var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
             var nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            if (nearbyPlacesIds.Count == 0)
+            {
+                range = 100000;
+                nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            }
+
+            //get places by range
             places = places.Where(s => nearbyPlacesIds.Contains(s.Id));
 
             //search queries, based on user input
@@ -118,6 +119,14 @@ namespace C_bool.WebApp.Controllers
             places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
 
             var placesList = _mapper.Map<List<PlaceViewModel>>(places);
+
+            ViewBag.Range = range / 1000;
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["OnlyTask"] = searchOnlyWithTasks;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
+
             ViewBag.NearbyPlacesCount = places.Count();
             ViewBag.NearbyPlaces = placesList;
             ViewBag.Message = new StatusMessage($"Znaleziono {placesList.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);

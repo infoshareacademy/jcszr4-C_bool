@@ -16,6 +16,12 @@ namespace C_bool.BLL.Services
             _userGameTaskRepository = userGameTaskRepository;
         }
 
+        public UserGameTask GetById(int taskId)
+        {
+            var userGameTask = _userGameTaskRepository.GetAllQueryable();
+            return userGameTask.SingleOrDefault(e => e.GameTaskId == taskId);
+        }
+
         public void ManuallyCompleteTask(int taskId, int userId)
         {
             //jak text entry - tylko manualnie
@@ -107,8 +113,7 @@ namespace C_bool.BLL.Services
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId)
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-
-            return usersGameTasks.Single(e => e.UserId == userId && e.GameTaskId == gameTaskId);
+            return usersGameTasks.SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
         }
 
         //[AP] dodalem jeszcze metode do ewentualnego dodawania punktow bonusowych uzytkownikowi do konkretnego zadania 

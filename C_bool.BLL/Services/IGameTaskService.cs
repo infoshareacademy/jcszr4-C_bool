@@ -5,6 +5,7 @@ namespace C_bool.BLL.Services
 {
     public interface IGameTaskService
     {
+        public UserGameTask GetById(int taskId);
         public void ManuallyCompleteTask(int taskId, int userId);
         public void CompleteTask(int taskId, int userId);
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId);

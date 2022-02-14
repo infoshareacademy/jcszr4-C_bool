@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -64,6 +65,7 @@ namespace C_bool.WebApp.Controllers
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
+            ViewData["IsInUserGameTasks"] = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId) != null;
             //TODO: jakieś dziwne rzeczy, samo val model nie pobiera dodatkowo miejsca w propertisach, ale jak się wyżej wywoła niepowiązane placeGameTask, to już jest...
             var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
             var model = _gameTasksRepository.GetById(gameTaskId);
@@ -138,7 +140,7 @@ namespace C_bool.WebApp.Controllers
                 }
                 var place = _placesService.GetPlaceById(placeId);
                 gameTaskModel.Place = place;
-                gameTaskModel.Photo = (ImageConverter.ConvertImage(file));
+                gameTaskModel.Photo = ImageConverter.ConvertImage(file);
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId().ToString();
                 _gameTasksRepository.Add(gameTaskModel);
@@ -184,6 +186,51 @@ namespace C_bool.WebApp.Controllers
             {
                 return View();
             }
+        }
+
+        [Authorize]
+        public ActionResult Participate(int id)
+        {
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+            var gameTask = _gameTasksRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
+            var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
+            if (gameTask != null)
+                switch (gameTask.Type)
+                {
+                    case TaskType.CheckInToALocation:
+                        return View(model);
+                    case TaskType.Event:
+                        return View(model);
+                    case TaskType.TextEntry:
+                        return View(model);
+                    case TaskType.TakeAPhoto:
+                        return View(model);
+                }
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Participate(GameTaskEditModel model)
+        {
+            return Json(new { success = true, responseText = "Zadanie zaliczone!", isAdded = true });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddToFavs([FromBody] ReturnString request)
+        {
+            var gameTask = _gameTasksRepository.GetById(int.Parse(request.Id));
+            if (_userService.AddTaskToUser(gameTask))
+            {
+                return Json(new { success = true, responseText = "Dodano do twoich zadań!", isAdded = true });
+            }
+            return Json(new { success = true, responseText = "Te zadanie jest już w Twojej kolejce!", isAdded = true });
         }
 
         [Authorize]

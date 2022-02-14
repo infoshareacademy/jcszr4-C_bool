@@ -38,7 +38,7 @@ namespace C_bool.WebApp.Models.GameTask
         public DateTime? ValidThru { get; set; }
         public bool IsActive { get; set; }
         [DisplayName("Tajemne hasło")]
-        [Remote("IsValid_TextCriterion", "ValueValidator", HttpMethod = "POST", ErrorMessage = "Wprowadź prawidłową datę", AdditionalFields = nameof(Type))]
+        [Remote("IsValid_TextCriterion", "ValueValidator", HttpMethod = "POST", ErrorMessage = "Wprowadź rozwiązanie zadania", AdditionalFields = nameof(Type))]
         public string TextCriterion { get; set; }
         public bool IsDoneLimited { get; set; }
         [DisplayName("Ogranicz liczbę użytkowników")]

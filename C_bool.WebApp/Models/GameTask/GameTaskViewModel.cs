@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.Enums;
+using C_bool.WebApp.Models.Place;
 
 namespace C_bool.WebApp.Models.GameTask
 {
@@ -10,6 +11,7 @@ namespace C_bool.WebApp.Models.GameTask
     {
         public int Id { get; set; }
         public int PlaceId { get; set; }
+        public PlaceViewModel Place { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string Description { get; set; }

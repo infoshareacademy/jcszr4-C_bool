@@ -26,8 +26,7 @@ namespace C_bool.BLL.Services
             IRepository<UserGameTask> userGameTaskRepository ,
             IRepository<Place> placeRepository,
             IRepository<GameTask> gameTaskRepository,
-            IHttpContextAccessor httpContextAccessor, 
-            IPlaceService placesService)
+            IHttpContextAccessor httpContextAccessor)
         { 
             _userRepository = userRepository;
             _userGameTaskRepository = userGameTaskRepository;
@@ -115,12 +114,23 @@ namespace C_bool.BLL.Services
             return userPlaces.Where(e => e.CreatedById == currentUserId.ToString()).ToList();
         }
 
-        public void AddTaskToUser(GameTask gameTask)
+        public bool AddTaskToUser(GameTask gameTask)
         {
             var currentUser = GetCurrentUser();
-
+            var userGameTasks = GetAllTasks();
+            if (userGameTasks.Any(x => x.Id.Equals(gameTask.Id))) return false;
             currentUser.UserGameTasks.Add(new UserGameTask(currentUser, gameTask));
             _userRepository.Update(currentUser);
+            return true;
+        }
+
+        public List<GameTask> GetAllTasks()
+        {
+            var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
+            var currentUserId = GetCurrentUserId();
+
+            return usersGameTasks.Where(ugt => ugt.UserId == currentUserId && !ugt.IsDone)
+                .Select(ugt => ugt.GameTask).ToList();
         }
 
         public List<GameTask> GetToDoTasks()
@@ -162,7 +172,6 @@ namespace C_bool.BLL.Services
                 .Where(gt => gt.ValidThru >= DateTime.UtcNow || gt.ValidFrom == null)
                 .Where(gt => gt.IsActive)
                 .ToList();
-
         }
 
         public List<GameTask> GetDoneTasks()

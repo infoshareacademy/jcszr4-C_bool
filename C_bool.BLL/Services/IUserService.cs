@@ -17,7 +17,8 @@ namespace C_bool.BLL.Services
         List<Place> GetFavPlaces();
         public List<Place> GetPlacesCreatedByUser();
 
-        void AddTaskToUser(GameTask gameTask);
+        bool AddTaskToUser(GameTask gameTask);
+        List<GameTask> GetAllTasks();
         List<GameTask> GetToDoTasks();
         List<GameTask> GetToDoTasks(int userId);
         List<GameTask> GetInProgressTasks();
