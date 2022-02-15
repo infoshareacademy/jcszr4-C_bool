@@ -120,7 +120,7 @@ namespace C_bool.BLL.Services
         public void AddBonusPoints(int userId, int taskId, int bonusPoints)
         {
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            userGameTask.BonusPoints = bonusPoints;
+            //userGameTask.BonusPoints = bonusPoints;
             userGameTask.User.Points += bonusPoints;
 
             _userGameTaskRepository.Update(userGameTask);

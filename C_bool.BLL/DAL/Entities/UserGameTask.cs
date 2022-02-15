@@ -17,12 +17,9 @@ namespace C_bool.BLL.DAL.Entities
         [NotMapped]
         public int Id { get; set; }
         public DateTime CreatedOn { get; set; }
-
-        //user set photo - for approval
         public string Photo { get; set; }
         public string TextCriterion { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public int BonusPoints { get; set; }
 
         public UserGameTask()
         {
