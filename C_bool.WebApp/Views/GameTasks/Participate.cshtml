@@ -33,108 +33,103 @@
 </div>
 
 <!-- three steps to get task done - accordion buttons with kind-a-like progress bar-->
-    <div class="accordion accordion-flush mb-4 px-4" id="accordionExample">
-        <div class="steps">
-            <progress id="progress" value=0 max=100></progress>
-            <div class="step-item">
-                <button class="step-button text-center" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    1
-                </button>
-                <div class="step-title">
-                    Zapoznaj się
-                </div>
-            </div>
-            <div class="step-item">
-                <button class="step-button text-center collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                    2
-                </button>
-                <div class="step-title">
-                    Wykonaj
-                </div>
-            </div>
-            <div class="step-item">
-                <button class="step-button text-center collapsed" disabled type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                    3
-                </button>
-                <div class="step-title">
-                    Zgarnij punkty!
-                </div>
+<div class="accordion accordion-flush mb-4 px-4" id="accordionExample">
+    <div class="steps">
+        <progress id="progress" value=0 max=100></progress>
+        <div class="step-item">
+            <button class="step-button text-center" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                1
+            </button>
+            <div class="step-title">
+                Zapoznaj się
             </div>
         </div>
-        
-        <!-- step contents-->
-        <div>
-            <!-- step 1 - task details-->
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                 data-bs-parent="#accordionExample">
-                <partial name="Participate/_Step1Details"/>
+        <div class="step-item">
+            <button class="step-button text-center collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                2
+            </button>
+            <div class="step-title">
+                Wykonaj zadanie
             </div>
-            <div>
-                <!-- step 2 - task criteria validation (based on task type) -->
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-
-                </div>
-            </div>
-            <div>
-                <!--step 3 - task done - get points and final message-->
-                <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
-                     data-bs-parent="#accordionExample">
-                    
-                </div>
+        </div>
+        <div class="step-item">
+            <button class="step-button text-center collapsed" disabled type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                3
+            </button>
+            <div class="step-title">
+                Zgarnij cebule!
             </div>
         </div>
     </div>
 
+    <!-- step contents-->
+    <div>
+        <!-- step 1 - task details-->
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <partial name="Partials/Participate/_Step1Details" />
+        </div>
+        <!-- step 2 - task criteria validation (based on task type) -->
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <partial name="Partials/Participate/_Step2DoTask" />
+        </div>
+        <!--step 3 - task done - get points and final message-->
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
+             data-bs-parent="#accordionExample">
 
-    <!-- Game task modal -->
-    <div class="modal fade" id="modal-gametask" tabindex="-1" aria-labelledby="modal-gametask" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-info modal-dialog-centered" role="document">
-            <div class="modal-content bg-gradient-secondary">
-                <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload()"></button>
-                <div class="modal-header">
-                    <p class="modal-title text-gray-200" id="modal-title-notification">Tutaj zaczyna się zabawa!</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- Game task modal -->
+<div class="modal fade" id="modal-gametask" tabindex="-1" aria-labelledby="modal-gametask" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-info modal-dialog-centered" role="document">
+        <div class="modal-content bg-gradient-secondary">
+            <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload()"></button>
+            <div class="modal-header">
+                <p class="modal-title text-gray-200" id="modal-title-notification">Tutaj zaczyna się zabawa!</p>
+            </div>
+            <div class="modal-body text-white">
+                <div class="py-3 text-center">
+                    <span class="modal-icon">
+                        <svg class="icon icon-xl text-gray-200" data-darkreader-inline-fill="" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    <h2 class="h4 modal-title my-3">Bierzesz udział w grze!</h2>
+                    <p>Zadanie zostało dodane do Twojej listy, możesz je wykonać teraz (o ile spełniasz kryteria) lub później, przechodząc do listy zadań</p>
                 </div>
-                <div class="modal-body text-white">
-                    <div class="py-3 text-center">
-                        <span class="modal-icon">
-                            <svg class="icon icon-xl text-gray-200" data-darkreader-inline-fill="" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path>
-                            </svg>
-                        </span>
-                        <h2 class="h4 modal-title my-3">Bierzesz udział w grze!</h2>
-                        <p>Zadanie zostało dodane do Twojej listy, możesz je wykonać teraz (o ile spełniasz kryteria) lub później, przechodząc do listy zadań</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a class="btn btn-primary btn-lg" asp-action="Participate" asp-route-id="@Model.Id">
-                        <l class="bi-star"> Wykonuję zadanie!</l>
-                    </a>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary btn-lg" asp-action="Participate" asp-route-id="@Model.Id">
+                    <l class="bi-star"> Wykonuję zadanie!</l>
+                </a>
             </div>
         </div>
     </div>
+</div>
 
 
-    <script type="text/javascript">
-        const stepButtons = document.querySelectorAll('.step-button');
-        const progress = document.querySelector('#progress');
+<script type="text/javascript">
+    const stepButtons = document.querySelectorAll('.step-button');
+    const progress = document.querySelector('#progress');
 
-        Array.from(stepButtons).forEach((button, index) => {
-            button.addEventListener('click', () => {
-                progress.setAttribute('value', index * 100 / (stepButtons.length - 1));//there are 3 buttons. 2 spaces.
+    Array.from(stepButtons).forEach((button, index) => {
+        button.addEventListener('click', () => {
+            progress.setAttribute('value', index * 100 / (stepButtons.length - 1));//there are 3 buttons. 2 spaces.
 
-                stepButtons.forEach((item, secindex) => {
-                    if (index > secindex) {
-                        item.classList.add('done');
-                    }
-                    if (index < secindex) {
-                        item.classList.remove('done');
-                    }
-                });
+            stepButtons.forEach((item, secindex) => {
+                if (index > secindex) {
+                    item.classList.add('done');
+                }
+                if (index < secindex) {
+                    item.classList.remove('done');
+                }
             });
         });
+    });
 
-    </script>
+</script>

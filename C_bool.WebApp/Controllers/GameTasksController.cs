@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using AutoMapper;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -30,6 +32,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IGameTaskService _gameTaskService;
 
         private IRepository<GameTask> _gameTasksRepository;
+        private IRepository<UserGameTask> _userGameTasksRepository;
         private IRepository<Place> _placesRepository;
 
         private readonly IMapper _mapper;
@@ -41,8 +44,8 @@ namespace C_bool.WebApp.Controllers
             IUserService usersService,
             IGameTaskService gameTaskService,
             IRepository<GameTask> gameTasksRepository,
-            IRepository<Place> placesRepository
-        )
+            IRepository<Place> placesRepository, 
+            IRepository<UserGameTask> userGameTasksRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -51,6 +54,7 @@ namespace C_bool.WebApp.Controllers
             _gameTaskService = gameTaskService;
             _gameTasksRepository = gameTasksRepository;
             _placesRepository = placesRepository;
+            _userGameTasksRepository = userGameTasksRepository;
         }
 
         [Authorize]
@@ -67,8 +71,14 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Longitude = user.Longitude;
             ViewData["IsInUserGameTasks"] = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId) != null;
             //TODO: jakieś dziwne rzeczy, samo val model nie pobiera dodatkowo miejsca w propertisach, ale jak się wyżej wywoła niepowiązane placeGameTask, to już jest...
-            var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
-            var model = _gameTasksRepository.GetById(gameTaskId);
+            //var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
+            //var model = _gameTasksRepository.GetById(gameTaskId);
+            var model = _gameTasksRepository
+                .GetAllQueryable()
+                .Where(x => x.Id == gameTaskId)
+                .Include(x => x.Place)
+                .FirstOrDefault();
+
             return View(model);
         }
 
@@ -138,14 +148,16 @@ namespace C_bool.WebApp.Controllers
                 {
                     gameTaskModel.IsDoneLimited = true;
                 }
+
                 var place = _placesService.GetPlaceById(placeId);
                 gameTaskModel.Place = place;
-                gameTaskModel.Photo = ImageConverter.ConvertImage(file);
+                gameTaskModel.Photo = ImageConverter.ConvertImage(file, out string message);
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId().ToString();
                 _gameTasksRepository.Add(gameTaskModel);
                 place.Tasks.Add(gameTaskModel);
                 _placesRepository.Update(place);
+
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
             }
@@ -170,20 +182,39 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, GameTaskEditModel model, IFormFile file)
         {
-            var gameTask = _gameTasksRepository.GetById(id);
+            var gameTask = _gameTasksRepository
+                .GetAllQueryable()
+                .Where(x => x.Id == id)
+                .Include(x => x.Place)
+                .Include(x => x.UserGameTasks)
+                .FirstOrDefault();
+
+            model.Type = gameTask.Type;
             try
             {
+                if (model.Type == TaskType.TextEntry && model.TextCriterion.IsNullOrEmpty())
+                {
+                    ModelState.AddModelError("TextCriterion", "Dla tego typu zadania musisz podać tajemne hasło");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
+
+                if (model.LeftDoneAttempts > 0)
+                {
+                    model.IsDoneLimited = true;
+                }
+
                 gameTask = _mapper.Map<GameTaskEditModel, GameTask>(model, gameTask);
-                if (file != null) { gameTask.Photo = ImageConverter.ConvertImage(file); }
+                if (file != null) gameTask.Photo = ImageConverter.ConvertImage(file, out string message);
                 _gameTasksRepository.Update(gameTask);
                 return RedirectToAction("Details", new { gameTaskId = gameTask.Id });
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
                 return View();
             }
         }
@@ -197,33 +228,54 @@ namespace C_bool.WebApp.Controllers
 
             var gameTask = _gameTasksRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
             var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
-            if (gameTask != null)
-                switch (gameTask.Type)
-                {
-                    case TaskType.CheckInToALocation:
-                        return View(model);
-                    case TaskType.Event:
-                        return View(model);
-                    case TaskType.TextEntry:
-                        return View(model);
-                    case TaskType.TakeAPhoto:
-                        return View(model);
-                }
-
             return View(model);
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Participate(GameTaskEditModel model)
+        public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
         {
-            return Json(new { success = true, responseText = "Zadanie zaliczone!", isAdded = true });
+            bool status = false;
+            string message = string.Empty;
+            string photoMessage = string.Empty;
+            var user = _userService.GetCurrentUser();
+            var userGameTask = _userGameTasksRepository
+                .GetAllQueryable()
+                .Where(x => x.GameTaskId == gameTaskId && x.UserId == user.Id)
+                .Include(x => x.User)
+                .Include(x => x.GameTask)
+                .FirstOrDefault();
+
+            userGameTask.ArrivalTime = DateTime.Now;
+
+            if (userGameTask.GameTask.Type == TaskType.TextEntry)
+            {
+                userGameTask.TextCriterion = model.UserTextCriterion;
+            }
+            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto)
+            {
+                if (file == null) ModelState.AddModelError("Photo", "Nie wybrałeś zdjęcia");
+                else userGameTask.Photo = ImageConverter.ConvertImage(file, out photoMessage);
+                if (userGameTask.Photo == null) ModelState.AddModelError("Photo", "Zdjęcie jest nieprawidłowego formatu");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Message = new StatusMessage($"Błąd: {photoMessage}", StatusMessage.Status.FAIL);
+                return RedirectToAction("Participate", new { id = gameTaskId });
+            }
+
+            _userGameTasksRepository.Update(userGameTask);
+            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto) _gameTaskService.ManuallyCompleteTask(gameTaskId, user.Id);
+            else _gameTaskService.CompleteTask(gameTaskId, user.Id, out message);
+
+            return Json(new { success = status, responseText = message });
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult AddToFavs([FromBody] ReturnString request)
+        public ActionResult AddToFavs([FromBody] ReturnString request)
         {
             var gameTask = _gameTasksRepository.GetById(int.Parse(request.Id));
             if (_userService.AddTaskToUser(gameTask))

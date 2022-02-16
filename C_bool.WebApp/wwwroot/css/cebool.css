@@ -66,10 +66,9 @@
 /*Participate view step-by-step layout*/
 :root {
     --prm-color: #0381ff;
-    --prm-gray: #b1b1b1;
+    --prm-gray: #e7e7e7;
 }
 
-/* CSS */
 .steps {
     display: flex;
     justify-content: space-between;
@@ -79,17 +78,19 @@
 }
 
 .step-button {
-    width: 60px;
-    height: 60px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     border: none;
     background-color: var(--prm-gray);
     transition: .4s;
+    font-size: xx-large;
+    font-weight: bolder;
 }
 
 .step-button[aria-expanded="true"] {
-    width: 60px;
-    height: 60px;
+    width: 90px;
+    height: 90px;
     background-color: var(--prm-color);
     color: #fff;
 }
@@ -102,6 +103,7 @@
 .step-item {
     z-index: 10;
     text-align: center;
+    font-size: large;
 }
 
 #progress {
@@ -109,7 +111,7 @@
     position: absolute;
     width: 95%;
     z-index: 5;
-    height: 10px;
+    height: 15px;
     margin-left: 18px;
     margin-bottom: 18px;
 }

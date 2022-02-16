@@ -1,0 +1,19 @@
+﻿@model C_bool.WebApp.Models.GameTask.GameTaskParticipateModel
+
+
+<div class="card card-body border-0 shadow mb-4">
+    <h2 class="h5 mb-4">Twoje rozwiązanie</h2>
+    <p>Tutaj wpisz rozwiązanie zadania, a następnie kliknij <b>Wykonaj zadanie!</b> aby zgarnąć cebulki!</p>
+    <div class="row align-items-center">
+        <div class="form-group">
+            <label asp-for="UserTextCriterion" class="control-label"></label>
+            <div class="input-group input-group-lg mb-3">
+                <input asp-for="UserTextCriterion" class="form-control" />
+                <button type="button" class="btn btn-outline-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="Tutaj wpisz rozwiązanie swojego zadania, może to być np. hasło, bądź napis jaki napotka uczestnik we wskazanym miejscu. Pamiętaj, aby w opisie zadania jasno określić wskazówki, tak aby użytkownik miał szansę zaliczyć zadanie">
+                    Pomocy?
+                </button>
+            </div>
+            <span asp-validation-for="UserTextCriterion" class="text-danger cb-alert"></span>
+        </div>
+    </div>
+</div>

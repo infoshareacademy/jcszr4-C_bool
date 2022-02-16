@@ -73,7 +73,7 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
 
-            var favPlacesId = places.Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToList();
+            var favPlacesId = await places.Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToListAsync();
 
             if (searchOnlyFavs)
             {
@@ -88,7 +88,7 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = _mapper.Map<List<PlaceViewModel>>(places.Include(x => x.Tasks));
+            var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
 
             //TODO: brzydka proteza, trzeba załatwić przez mapowanie może?
             foreach (var item in model.Where(item => favPlacesId.Contains(item.Id)))
@@ -175,7 +175,7 @@ namespace C_bool.WebApp.Controllers
                     return View(model);
                 }
                 place = _mapper.Map<PlaceEditModel, Place>(model, place);
-                if (file != null) { place.Photo = ImageConverter.ConvertImage(file); }
+                if (file != null) { place.Photo = ImageConverter.ConvertImage(file, out string message); }
                 _placesRepository.Update(place);
                 return RedirectToAction(nameof(Index));
             }

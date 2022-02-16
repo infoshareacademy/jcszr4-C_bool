@@ -4,6 +4,7 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.BLL.Services
 {
@@ -30,7 +31,7 @@ namespace C_bool.BLL.Services
 
             //[AP] ponizej pobieramy full outer joina 3 tabel User i GameTask i UserGameTask takze mamy dostep do wszystkich pol i mozemy je dowolnie updatowac  
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            
+
             //[AP] tutaj dodalem 2 nowe propercje - jedna to flaga czy liczba wykonan ma byc okreslona, a druga to liczba wykonan, ktora zostala
             if (!userGameTask.GameTask.IsDoneLimited || userGameTask.GameTask.LeftDoneAttempts > 0)
             {
@@ -49,63 +50,75 @@ namespace C_bool.BLL.Services
                 }
             }
         }
-        public void CompleteTask(int taskId, int userId)
+
+        public bool CompleteTask(int taskId, int userId, out string message)
         {
-            // nie ma ram czasowych i nie wymaga lokalizacji - tylko okazania dowodu w postaci tekstu
-            // zaliczenie automatyczne - taki sam (tylko z malych liter albo duzych albo bez polskich znakow)
-            
-            //[AP] tu w zasadzie ta sama sytuacja co powyzej czyli robimy joina 3 tabel i wszystko leci tak samo jak w metodzie wyzej
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            
-            if (!userGameTask.GameTask.IsDoneLimited || userGameTask.GameTask.LeftDoneAttempts > 0)
+            message = string.Empty;
+
+            if (!userGameTask.GameTask.IsActive)
             {
-                if (userGameTask.GameTask.Type == TaskType.TextEntry)
-                {
-                    //[AP] tu na razie ustawilem ze musi byc equal - do ewentualnego rozkminienia
-                    if (userGameTask.GameTask.IsActive && userGameTask.TextCriterion.ToLower()
-                        .Equals(userGameTask.GameTask.TextCriterion.ToLower()))
-                    {
-                        SetUserTaskAsDone(userGameTask);
-                    }
-                }
-
-                //TODO:
-                //zadanie tego typu ma ustawione ramy czasowe ValidFrom i ValidThru, czyli można to traktować jako wydarzenie
-                //np osoba tworzaca zadanie ustawia ze dnia 1 lutego o godzinie 20 -22 jest koncert Zenka, na któym możesz się pojawić
-                //tego typu zadania miałyby "kalendarz" na stronie głównej
-                if (userGameTask.GameTask.Type == TaskType.Event)
-                {
-                    if (userGameTask.GameTask.IsActive &&
-                        userGameTask.ArrivalTime <= userGameTask.GameTask.ValidFrom.Date &&
-                        userGameTask.ArrivalTime >= userGameTask.GameTask.ValidThru.Date)
-                    {
-                        SetUserTaskAsDone(userGameTask);
-                    }
-                }
-
-                //to zadanie zakłąda że użytkownik odwiedzi lokalizację i może je zaliczyć tylko jak w niej jest, podobne jak event tylko bez ram czasowych
-                if (userGameTask.GameTask.Type == TaskType.CheckInToALocation)
-                {
-                    //tu wyciagnalem sprawdzanie czy place jest null wyzej bo przy wyznaczaniu range juz potrzebujemy tej informacji
-                    // z drugiej strony w przyszlosci moze jakos ogarniemy informacje dla uzytkownika dlatego nie wyciagam tego to glownego ifa
-                    if (userGameTask.GameTask.Place != null)
-                    {
-                        //[AP] tu wiadomo wyciagamy odleglosc miedy miejscem a userem
-                        var range = SearchNearbyPlaces.DistanceBetweenPlaces(userGameTask.User.Latitude,
-                            userGameTask.User.Longitude,
-                            userGameTask.GameTask.Place.Latitude, userGameTask.GameTask.Place.Longitude);
-
-                        //[AP] dodalem nowa property MaxRange do GameTaska zeby dalo sie okreslic jak maksymalnie daleko moze byc user od danego miejsca z zadania
-                        // w zaleznosci od zadania moze byc mniej albo wiecej
-                        if (userGameTask.GameTask.IsActive && range <= 100) 
-                        {
-                            SetUserTaskAsDone(userGameTask);
-                        }
-                    }
-                }
-                //[AP] no i na koniec update calego userGameTaska w bazie przez dbContext z repo
-                _userGameTaskRepository.Update(userGameTask);
+                message = "Task is already inactive, cannot continue";
+                return false;
             }
+
+            if (userGameTask.GameTask.IsDoneLimited && userGameTask.GameTask.LeftDoneAttempts == 0)
+            {
+                message = "Task is already inactive, cannot continue";
+                return false;
+            }
+
+            if (userGameTask.GameTask.ValidFrom != DateTime.MinValue &&
+                userGameTask.GameTask.ValidThru != DateTime.MinValue)
+            {
+                if (userGameTask.ArrivalTime >= userGameTask.GameTask.ValidFrom.Date && userGameTask.ArrivalTime <= userGameTask.GameTask.ValidThru.Date)
+                {
+                    message = "You showed up at good time.";
+                }
+                else
+                {
+                    message = "You showed up at wrong time.";
+                    return false;
+                }
+            }
+
+            if (userGameTask.GameTask.Type == TaskType.TextEntry)
+            {
+                if (userGameTask.GameTask.IsActive && userGameTask.TextCriterion.ToLower()
+                    .Equals(userGameTask.GameTask.TextCriterion.ToLower()))
+                {
+                    message = "Task completed, text matched.";
+                }
+                else
+                {
+                    message = "You have entered an incorrect solution for the task";
+                    return false;
+                }
+            }
+
+            if (userGameTask.GameTask.Type is TaskType.CheckInToALocation or TaskType.Event)
+            {
+                if (userGameTask.GameTask.Place == null)
+                {
+                    message = "You are outside the location of the selected task";
+                    return false;
+                }
+                var range = SearchNearbyPlaces.DistanceBetweenPlaces(userGameTask.User.Latitude,
+                    userGameTask.User.Longitude,
+                    userGameTask.GameTask.Place.Latitude, userGameTask.GameTask.Place.Longitude);
+
+                if (range >= 100)
+                {
+                    message = "You are outside the location of the selected task";
+                    return false;
+                }
+
+            }
+
+            SetUserTaskAsDone(userGameTask);
+            _userGameTaskRepository.Update(userGameTask);
+            message += "The task has been completed successfully and the points have been added. Congratulations!";
+            return true;
         }
 
         //[AP] tu zrobilem taka metode do wyciagania konktretnego UserGameTaska z bazy - potem wystarczy kliknac .User albo .Task i mamy caly obiekt danego typu
@@ -113,7 +126,7 @@ namespace C_bool.BLL.Services
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId)
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-            return usersGameTasks.SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
+            return usersGameTasks.Include(x => x.GameTask.Place).SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
         }
 
         //[AP] dodalem jeszcze metode do ewentualnego dodawania punktow bonusowych uzytkownikowi do konkretnego zadania 
@@ -125,19 +138,24 @@ namespace C_bool.BLL.Services
 
             _userGameTaskRepository.Update(userGameTask);
         }
-        
+
         //[AP] ta metode zabralem z UserService, troche przerobilem i wrzucam ja jednak tutaj bo jest bardziej pozyteczna tutaj - nie powinna byc uzywana nigdzie indziej w aplikacji
         private void SetUserTaskAsDone(UserGameTask userGameTask)
         {
             userGameTask.User.Points += userGameTask.GameTask.Points;
             userGameTask.IsDone = true;
             userGameTask.DoneOn = DateTime.Now;
-            
+
             //[AP] jesli flaga isDoneLimited to odejmujemy 1 bo ktos wlasnie zrobil to zadanie
             if (userGameTask.GameTask.IsDoneLimited)
             {
                 userGameTask.GameTask.LeftDoneAttempts--;
+                if (userGameTask.GameTask.LeftDoneAttempts == 0)
+                {
+                    userGameTask.GameTask.IsActive = false;
+                }
             }
+            _userGameTaskRepository.Update(userGameTask);
         }
     }
 }

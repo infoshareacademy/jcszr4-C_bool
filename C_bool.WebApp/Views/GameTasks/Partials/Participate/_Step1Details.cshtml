@@ -37,7 +37,7 @@
                 <!--Task valid thru information if any-->
                 @if (@Model.ValidFrom != DateTime.MinValue || @Model.ValidThru != DateTime.MinValue)
                 {
-                    <div class="card border-0" style="background-color: #ebfff6">
+                    <div class="card border-0 mb-2" style="background-color: #ebfff6">
                         <div class="card-body">
                             <div class="row d-block d-xl-flex align-items-center">
                                 <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
@@ -62,7 +62,7 @@
                 <!-- Task is done limited information -->
                 @if (@Model.IsDoneLimited)
                 {
-                    <div class="card border-0" style="background-color: #ebfff6">
+                    <div class="card border-0 mb-2" style="background-color: #ebfff6">
                         <div class="card-body">
                             <div class="row d-block d-xl-flex align-items-center">
                                 <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
@@ -154,6 +154,9 @@
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         document.getElementById("countdownTimer").innerHTML = days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ";
+
+        document.getElementById("countdownTimer2").innerHTML = days + "d " + hours + "h "
             + minutes + "m " + seconds + "s ";
 
         if (distance < 0) {
