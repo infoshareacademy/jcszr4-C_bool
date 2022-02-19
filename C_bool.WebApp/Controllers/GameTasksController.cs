@@ -370,7 +370,6 @@ namespace C_bool.WebApp.Controllers
             string message;
             var user = _userService.GetCurrentUser();
 
-            //BUG: zapytanie nie zwraca wynikow, do poprawy
             var taskToApprove = _userGameTasksRepository.GetAllQueryable()
                 .Where(x => x.GameTask.CreatedById == user.Id)
                 .Where(x => !x.IsDone)

@@ -12,11 +12,11 @@
                 <div>
                     @if (Model.Type == CustomErrorModel.MessageType.Error)
                     {
-                        <img class="img-fluid w-75" src="/img/onion-error.png" alt="Error">
+                        <img src="/img/onion-error.png" alt="Error">
                     }
                     @if (Model.Type == CustomErrorModel.MessageType.Success)
                     {
-                        <img class="img-fluid w-75" src="/img/onion-happy.png" alt="Success">
+                        <img src="/img/onion-happy.png" alt="Success">
                     }
                     <h1 class="mt-5">@Model.Title</h1>
                     <p class="lead my-4">@Model.Message</p>

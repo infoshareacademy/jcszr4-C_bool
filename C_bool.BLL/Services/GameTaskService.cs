@@ -123,7 +123,10 @@ namespace C_bool.BLL.Services
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId)
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-            return usersGameTasks.Include(x => x.GameTask.Place).SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
+            return usersGameTasks
+                .Include(x => x.GameTask.Place)
+                .Include(x => x.User)
+                .SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
         }
 
         public void AddBonusPoints(int userId, int taskId, int bonusPoints)

@@ -16,7 +16,7 @@ namespace C_bool.WebApp.Helpers
 <p><span style=""color: #17224f;""><span style=""font-size: 32px;""><img src=""data:image;base64,{gameTask.Photo}"" /></span></span></p>
 <p><span style=""color: #17224f;""><span style=""font-size: 32px;"">Everything seems good? </span></span><span style=""color: #17224f;""><span style=""font-size: 32px;"">Click the link below to award him some points!</span></span></p>
 <p style=""line-height: 1.5; font-size: 18px;""> 
-<a href=""https://localhost:5001/GameTasks/ApproveUserSubmission?userToApproveId={gameTask.UserId}?gameTaskId={gameTask.GameTaskId}"" class=""btn btn-info"" role=""button"">Approve submission!</a>";
+<a href=""https://localhost:5001/GameTasks/ApproveUserSubmission?userToApproveId={gameTask.UserId}&gameTaskId={gameTask.GameTaskId}"" class=""btn btn-info"" role=""button"">Approve submission!</a>";
         }
     }
 }
