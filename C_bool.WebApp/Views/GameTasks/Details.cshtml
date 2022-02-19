@@ -116,7 +116,7 @@
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Place.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Place.Longitude.ToString(CultureInfo.InvariantCulture))">
                                 <l class="bi-map"> Mapa</l>
                             </button>
-                            @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById)
+                            @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById.ToString())
                             {
                                 <div class="btn">
                                     <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

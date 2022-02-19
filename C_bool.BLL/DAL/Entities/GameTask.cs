@@ -17,11 +17,18 @@ namespace C_bool.BLL.DAL.Entities
         public DateTime ValidFrom { get; set; }
         public DateTime ValidThru { get; set; }
         public bool IsActive { get; set; }
-        public string CreatedById { get; set; }
+        public int CreatedById { get; set; }
         public string CreatedByName { get; set; }
         public virtual List<UserGameTask> UserGameTasks { get; set; }
         public string TextCriterion { get; set; }
         public bool IsDoneLimited { get; set; } 
         public int LeftDoneAttempts { get; set; }
+
+        public IList<Message> Messages { get; set; }
+
+        public GameTask()
+        {
+            Messages = new List<Message>();
+        }
     }
 }

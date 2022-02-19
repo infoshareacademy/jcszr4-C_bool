@@ -33,6 +33,10 @@
     background-color: #10b981;
 }
 
+.bg-taskcompleted {
+    background: #b2c772;
+}
+
 
 .f-left {
     float: left;
@@ -125,3 +129,6 @@
 #progress::-webkit-progress-bar {
     background-color: var(--prm-gray);
 }
+
+/*tick*/
+

@@ -13,6 +13,7 @@ namespace C_bool.BLL.DAL.Context
         public DbSet<GameTask> GameTasks { get; set; }
         public DbSet<UserPlace> UsersPlaces { get; set; }
         public DbSet<UserGameTask> UsersGameTasks { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

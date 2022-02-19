@@ -168,7 +168,7 @@
                                     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
                                     <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary" style="@style" onclick="addToFavs('Places','AddToFavs','@Model.Id')"><l class="bi-heart"> Ulubione</l></button>
                                 </div>
-                                @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById)
+                                @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById.ToString())
                                 {
                                     <div class="btn">
                                         <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

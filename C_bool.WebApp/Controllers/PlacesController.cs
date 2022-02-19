@@ -32,7 +32,6 @@ namespace C_bool.WebApp.Controllers
 
         private readonly IMapper _mapper;
 
-
         public PlacesController(
             ILogger<PlacesController> logger,
             IMapper mapper,
@@ -151,7 +150,7 @@ namespace C_bool.WebApp.Controllers
         {
             var userId = _userService.GetCurrentUserId();
             var place = _placesRepository.GetById(id);
-            if (place.CreatedById != userId.ToString())
+            if (place.CreatedById != userId)
             {
                 return Json(new { success = false, responseText = "Tylko twórca może edytować miejsce"});
             } 

@@ -111,7 +111,7 @@ namespace C_bool.BLL.Services
             var userPlaces = _placeRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return userPlaces.Where(e => e.CreatedById == currentUserId.ToString()).ToList();
+            return userPlaces.Where(e => e.CreatedById == currentUserId).ToList();
         }
 
         public bool AddTaskToUser(GameTask gameTask)
@@ -194,7 +194,7 @@ namespace C_bool.BLL.Services
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == currentUserId.ToString())
+            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == currentUserId)
                 .Select(ugt => ugt.GameTask).ToList();
         }
 
@@ -202,7 +202,7 @@ namespace C_bool.BLL.Services
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
 
-            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == userId.ToString())
+            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == userId)
                 .Select(ugt => ugt.GameTask).ToList();
         }
 
@@ -211,7 +211,7 @@ namespace C_bool.BLL.Services
             var userGameTasks = _gameTaskRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return userGameTasks.Where(e => e.CreatedById == currentUserId.ToString()).ToList();
+            return userGameTasks.Where(e => e.CreatedById == currentUserId).ToList();
         }
 
         public List<User> SearchByName(string name)
@@ -275,6 +275,15 @@ namespace C_bool.BLL.Services
             }
 
             return users.ToList();
+        }
+
+        public bool PostMessage(int userId, Message message)
+        {
+            var user = _userRepository.GetAllQueryable().SingleOrDefault(x => x.Id == userId);
+
+            user.Messages.Add(message);
+            _userRepository.Update(user);
+            return true;
         }
     }
 }

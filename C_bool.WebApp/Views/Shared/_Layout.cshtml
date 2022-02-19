@@ -66,6 +66,8 @@
 
     <link rel="stylesheet" href="/css/carousel.css">
 
+    <link type="text/css" href="/vendor/flip/flip.min.css" rel="stylesheet">
+
     <!-- TinyMCE - rich text editor used in new place / gametask description etc. -->
     <script src="https://cdn.tiny.cloud/1/fffnsvsbas06icv5rsxh3a7ihaa7mkqb6gf3rmofnn2h0jjk/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 
@@ -123,6 +125,18 @@
                 </li>
                 <li role="separator" class="dropdown-divider mt-2 mb-3 border-gray-700"></li>
                 <!-- Sidebar - places -->
+                <li class="nav-item @(controller == "messaging" && action == "index" ? "active" : "")">
+                    <a asp-area="" asp-controller="Messaging" asp-action="Index" class="nav-link d-flex align-items-center justify-content-between">
+                        <span>
+                            <span class="sidebar-icon">
+                                <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
+                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
+                                </svg>
+                            </span><span class="sidebar-text">Wiadomości</span>
+                        </span><span class="badge badge-sm bg-danger badge-pill notification-count">4</span>
+                    </a>
+                </li>
                 <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
                           data-bs-toggle="collapse" data-bs-target="#submenu-pages-places">
@@ -408,7 +422,7 @@
 
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-@RenderSection("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 
     <script>
     // retrieve geolocation from HTML5 GeoLocation API
@@ -467,34 +481,34 @@
                     notyf.error(errorthrown);
                 }
             });
-        };
+    };
 
-        function addToFavs(controller, view, input) {
-            var postData = { Id: input };
+    function addToFavs(controller, view, input) {
+        var postData = { Id: input };
 
-            $.ajax(
-                {
-                    type: "POST",
-                    url: '/' + controller + '/' + view,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(postData),
-                    success: function (data) {
-                        notyf.success(data.responseText);
-                        var elementId = "favIndicatorId" + input;
-                        var element = document.getElementById(elementId);
-                        if (data.isAdded == true) {
-                            element.classList.add("btn-fav");
-                        } else {
-                            element.classList.remove("btn-fav");
-                        }
-                    },
-
-                    error: function (xmlhttprequest, textstatus, errorthrown) {
-                        notyf.error(errorthrown);
+        $.ajax(
+            {
+                type: "POST",
+                url: '/' + controller + '/' + view,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+                success: function (data) {
+                    notyf.success(data.responseText);
+                    var elementId = "favIndicatorId" + input;
+                    var element = document.getElementById(elementId);
+                    if (data.isAdded == true) {
+                        element.classList.add("btn-fav");
+                    } else {
+                        element.classList.remove("btn-fav");
                     }
-                });
-        };
+                },
+
+                error: function (xmlhttprequest, textstatus, errorthrown) {
+                    notyf.error(errorthrown);
+                }
+            });
+    };
 
     function showGeolocationError(error) {
         switch (error.code) {
@@ -513,7 +527,7 @@
         }
     }
 
-        window.onload = getLocation();
+    window.onload = getLocation();
     @if (ViewBag.Message != null)
     {
         var message = (StatusMessage)ViewBag.Message;

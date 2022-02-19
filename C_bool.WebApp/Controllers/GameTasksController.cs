@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace C_bool.WebApp.Controllers
@@ -44,7 +43,7 @@ namespace C_bool.WebApp.Controllers
             IUserService usersService,
             IGameTaskService gameTaskService,
             IRepository<GameTask> gameTasksRepository,
-            IRepository<Place> placesRepository, 
+            IRepository<Place> placesRepository,
             IRepository<UserGameTask> userGameTasksRepository)
         {
             _logger = logger;
@@ -63,16 +62,30 @@ namespace C_bool.WebApp.Controllers
             return View();
         }
 
-        [Authorize] 
+        [Authorize]
         public ActionResult Details(int gameTaskId)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
+
+            // if user already completed task - get different view
+            if (_userService.GetDoneTasks(user.Id).Any(x => x.Id == gameTaskId))
+            {
+                var userGameTask = _userGameTasksRepository
+                    .GetAllQueryable()
+                    .Where(x => x.GameTaskId == gameTaskId && x.UserId == user.Id)
+                    .Include(x => x.User)
+                    .Include(x => x.GameTask)
+                    .ThenInclude(x => x.Place)
+                    .FirstOrDefault();
+
+                return View("AfterDone/TaskDone", userGameTask);
+            }
+
+            // check if task is in user list - different buttons on view
             ViewData["IsInUserGameTasks"] = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId) != null;
-            //TODO: jakieś dziwne rzeczy, samo val model nie pobiera dodatkowo miejsca w propertisach, ale jak się wyżej wywoła niepowiązane placeGameTask, to już jest...
-            //var placeGameTask = _placesRepository.GetAllQueryable().FirstOrDefault(x => x.Tasks.Any<GameTask>(y => gameTaskId.Equals(y.Id)));
-            //var model = _gameTasksRepository.GetById(gameTaskId);
+
             var model = _gameTasksRepository
                 .GetAllQueryable()
                 .Where(x => x.Id == gameTaskId)
@@ -98,7 +111,7 @@ namespace C_bool.WebApp.Controllers
             Enum.TryParse(taskType, true, out TaskType typeEnum);
             try
             {
-                return RedirectToAction("Create", new { placeId, taskType});
+                return RedirectToAction("Create", new { placeId, taskType });
             }
             catch
             {
@@ -149,11 +162,12 @@ namespace C_bool.WebApp.Controllers
                     gameTaskModel.IsDoneLimited = true;
                 }
 
+                //assign necessary properties to newly created GameTask object & update repository
                 var place = _placesService.GetPlaceById(placeId);
                 gameTaskModel.Place = place;
                 gameTaskModel.Photo = ImageConverter.ConvertImage(file, out string message);
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
-                gameTaskModel.CreatedById = _userService.GetCurrentUserId().ToString();
+                gameTaskModel.CreatedById = _userService.GetCurrentUserId();
                 _gameTasksRepository.Add(gameTaskModel);
                 place.Tasks.Add(gameTaskModel);
                 _placesRepository.Update(place);
@@ -236,7 +250,7 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
         {
-            bool status = false;
+            GameTaskStatus status;
             string message = string.Empty;
             string photoMessage = string.Empty;
             var user = _userService.GetCurrentUser();
@@ -262,15 +276,92 @@ namespace C_bool.WebApp.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Message = new StatusMessage($"Błąd: {photoMessage}", StatusMessage.Status.FAIL);
-                return RedirectToAction("Participate", new { id = gameTaskId });
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Something went wrong...",
+                    Message = "No photo submitted or photo is in wrong format, try again"
+                };
+                return View("CustomError", error);
             }
 
             _userGameTasksRepository.Update(userGameTask);
-            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto) _gameTaskService.ManuallyCompleteTask(gameTaskId, user.Id);
-            else _gameTaskService.CompleteTask(gameTaskId, user.Id, out message);
 
-            return Json(new { success = status, responseText = message });
+            status = _gameTaskService.CompleteTask(gameTaskId, user.Id, out message);
+
+            if (status == GameTaskStatus.InReview)
+            {
+                var messageToSend = new Message
+                {
+                    CreatedById = user.Id,
+                    CreatedByName = user.UserName,
+                    RootId = 0,
+                    ParentId = 0,
+                    Title = $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}",
+                    Body = HtmlRenderer.CheckTaskPhoto(userGameTask),
+                    IsViewed = false
+                };
+
+                _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
+                return View("AfterDone/WaitForApproval");
+            }
+
+            if (status == GameTaskStatus.NotDone)
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Task not completed...",
+                    Message = message
+                };
+                return View("CustomError", error);
+            }
+
+
+            return RedirectToAction("TaskDone", new { gameTaskId = userGameTask.GameTask.Id });
+
+        }
+
+        [Authorize]
+        public ActionResult TaskDone(int gameTaskId)
+        {
+            var user = _userService.GetCurrentUser();
+            var gameTask = _gameTasksRepository.GetAllQueryable().FirstOrDefault(x => x.Id == gameTaskId);
+            
+            ViewData["points"] = gameTask?.Points;
+            ViewData["gameTaskId"] = gameTaskId;
+
+            return View("AfterDone/Congratulations");
+
+        }
+
+        [Authorize]
+        public ActionResult ApproveUserSubmission(int userToApproveId, int userGameTask)
+        {
+            var user = _userService.GetCurrentUser();
+            var taskToApprove = _userGameTasksRepository.GetAllQueryable()
+                .Where(x => x.GameTask.CreatedById == user.Id)
+                .Where(x => !x.IsDone)
+                .Where(x => x.UserId == userToApproveId);
+
+            if (!taskToApprove.Any())
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "No task to approve",
+                    Message = "No task to approve with given criteria or you have no permission to approve this task"
+                };
+                return View("CustomError", error);
+            }
+
+            var task = taskToApprove.FirstOrDefault();
+
+            ViewData["points"] = task?.GameTask.Points;
+            ViewData["gameTaskId"] = task.GameTaskId;
+
+            return View("AfterDone/Congratulations");
+
         }
 
         [Authorize]

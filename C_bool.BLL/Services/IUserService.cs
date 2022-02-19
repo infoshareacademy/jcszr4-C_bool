@@ -35,6 +35,6 @@ namespace C_bool.BLL.Services
         List<User> SearchActive(bool isActive);
         List<User> OrderByPoints(bool isDescending);
         List<User> SearchUsers(string name, string email, string gender, string isActive, string isDescending);
-
+        bool PostMessage(int userId, Message message);
     }
 }
