@@ -53,7 +53,7 @@
                     }
                     @if (Model.ValidFrom != DateTime.MinValue && Model.ValidThru != DateTime.MinValue)
                     {
-                        if (Model.ValidFrom < DateTime.Now && Model.ValidThru >= DateTime.Now)
+                        if (Model.ValidFrom < DateTime.UtcNow && Model.ValidThru >= DateTime.UtcNow)
                         {
                             <div class="alert alert-success" role="alert">
                                 <h4 class="alert-heading"><svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg> Jesteś o czasie!</h4>

@@ -2,7 +2,10 @@
 @using C_bool.BLL.Enums
 @model IEnumerable<PlaceViewModel>
 @{
-    var events = Model?.SelectMany(x => x.Tasks).Where(x => x.Type == TaskType.Event);
+    var events = Model?
+        .SelectMany(x => x.Tasks)
+        .Where(x => x.Type == TaskType.Event)
+        .Where(x => x.ValidThru.Date >= DateTime.UtcNow.Date);
 }
 
 

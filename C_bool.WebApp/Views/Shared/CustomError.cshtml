@@ -1,7 +1,7 @@
 ﻿@model C_bool.WebApp.Models.CustomErrorModel
 
 @{
-    ViewData["Title"] = "Something Is No Yes";
+    ViewData["Title"] = Model.Title;
     Layout = "_SimpleLayout";
 }
 
@@ -10,7 +10,14 @@
         <div class="row">
             <div class="col-12 text-center d-flex align-items-center justify-content-center">
                 <div>
-                    <img class="img-fluid w-75" src="/img/onion-error.png" alt="Error">
+                    @if (Model.Type == CustomErrorModel.MessageType.Error)
+                    {
+                        <img class="img-fluid w-75" src="/img/onion-error.png" alt="Error">
+                    }
+                    @if (Model.Type == CustomErrorModel.MessageType.Success)
+                    {
+                        <img class="img-fluid w-75" src="/img/onion-happy.png" alt="Success">
+                    }
                     <h1 class="mt-5">@Model.Title</h1>
                     <p class="lead my-4">@Model.Message</p>
                     <a asp-action="Index" class="btn btn-gray-800 d-inline-flex justify-content-center mb-4">

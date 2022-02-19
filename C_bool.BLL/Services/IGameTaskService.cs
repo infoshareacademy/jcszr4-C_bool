@@ -7,8 +7,10 @@ namespace C_bool.BLL.Services
     public interface IGameTaskService
     {
         public UserGameTask GetById(int taskId);
+        public GameTaskStatus ManuallyCompleteTask(int taskId, int userId, int extraPoints, out string message);
         public GameTaskStatus CompleteTask(int taskId, int userId, out string message);
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId);
         public void AddBonusPoints(int userId, int taskId, int bonusPoints);
+        public void AddBonusPoints(UserGameTask userGameTask, int bonusPoints);
     }
 }

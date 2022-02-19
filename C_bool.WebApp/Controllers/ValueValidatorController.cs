@@ -20,8 +20,8 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public JsonResult IsValid_ValidFromDate(string validFrom, string validThru)
         {
-            var validFromMin = DateTime.Now;
-            var validFromMax = DateTime.Now.AddYears(1);
+            var validFromMin = DateTime.UtcNow;
+            var validFromMax = DateTime.UtcNow.AddYears(1);
             var message = "Wprowadź prawidłową datę";
             try
             {

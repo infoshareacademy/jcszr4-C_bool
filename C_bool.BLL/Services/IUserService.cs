@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 
@@ -9,6 +11,8 @@ namespace C_bool.BLL.Services
     {
         int GetCurrentUserId();
         User GetCurrentUser();
+        Task<List<string>> GetUserRoles();
+        Task<List<string>> GetUserRoles(int id);
         int GetRankingPlace();
         void ChangeUserStatus(int userId);
 

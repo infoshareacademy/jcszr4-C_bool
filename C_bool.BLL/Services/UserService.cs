@@ -4,10 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace C_bool.BLL.Services
 {
@@ -19,6 +21,7 @@ namespace C_bool.BLL.Services
         private readonly IRepository<Place> _placeRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<User> _userManager;
 
         public UserService(IRepository<User> userRepository, 
             
@@ -26,7 +29,8 @@ namespace C_bool.BLL.Services
             IRepository<UserGameTask> userGameTaskRepository ,
             IRepository<Place> placeRepository,
             IRepository<GameTask> gameTaskRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, 
+            UserManager<User> userManager)
         { 
             _userRepository = userRepository;
             _userGameTaskRepository = userGameTaskRepository;
@@ -34,6 +38,7 @@ namespace C_bool.BLL.Services
             _placeRepository = placeRepository;
             _gameTaskRepository = gameTaskRepository;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
         //Andrzeju dopisałem
@@ -47,6 +52,20 @@ namespace C_bool.BLL.Services
             var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
            
             return _userRepository.GetById(userId);
+        }
+
+        public async Task<List<string>> GetUserRoles()
+        {
+            var user = await _userManager.FindByIdAsync(GetCurrentUserId().ToString());
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToList();
+        }
+
+        public async Task<List<string>> GetUserRoles(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToList();
         }
 
         public int GetRankingPlace()

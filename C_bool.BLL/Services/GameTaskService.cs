@@ -23,6 +23,25 @@ namespace C_bool.BLL.Services
             return userGameTask.SingleOrDefault(e => e.GameTaskId == taskId);
         }
 
+        public GameTaskStatus ManuallyCompleteTask(int taskId, int userId, int extraPoints, out string message)
+        {
+            var userGameTask = GetUserGameTaskByIds(userId, taskId);
+            message = string.Empty;
+
+
+            if (userGameTask.GameTask.Type is TaskType.TakeAPhoto)
+            {
+                if (extraPoints > 0) AddBonusPoints(userGameTask, extraPoints);
+                SetUserTaskAsDone(userGameTask);
+                _userGameTaskRepository.Update(userGameTask);
+                message += "The task has been completed successfully and the points have been added. Congratulations!";
+                return GameTaskStatus.Done;
+
+            }
+            message += "Task is not valid type, only task with Take a Photo type can be completed manually";
+            return GameTaskStatus.NotDone;
+        }
+
         public GameTaskStatus CompleteTask(int taskId, int userId, out string message)
         {
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
@@ -89,8 +108,6 @@ namespace C_bool.BLL.Services
 
             if (userGameTask.GameTask.Type is TaskType.TakeAPhoto)
             {
-                //TODO: Wysyłanie zdjęcia z wiadomością
-                //SetUserTaskAsDone(userGameTask);
                 _userGameTaskRepository.Update(userGameTask);
                 message = "Your submission has been sent to the task author for review, stay tuned!";
                 return GameTaskStatus.InReview;
@@ -118,11 +135,19 @@ namespace C_bool.BLL.Services
             _userGameTaskRepository.Update(userGameTask);
         }
 
+        public void AddBonusPoints(UserGameTask userGameTask, int bonusPoints)
+        {
+            //userGameTask.BonusPoints = bonusPoints;
+            userGameTask.User.Points += bonusPoints;
+
+            _userGameTaskRepository.Update(userGameTask);
+        }
+
         private void SetUserTaskAsDone(UserGameTask userGameTask)
         {
             userGameTask.User.Points += userGameTask.GameTask.Points;
             userGameTask.IsDone = true;
-            userGameTask.DoneOn = DateTime.Now;
+            userGameTask.DoneOn = DateTime.UtcNow;
 
             if (userGameTask.GameTask.IsDoneLimited)
             {

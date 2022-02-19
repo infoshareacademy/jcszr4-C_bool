@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
@@ -166,7 +167,7 @@ namespace C_bool.WebApp.Controllers
                 var place = _placesService.GetPlaceById(placeId);
                 gameTaskModel.Place = place;
                 gameTaskModel.Photo = ImageConverter.ConvertImage(file, out string message);
-                gameTaskModel.CreatedByName = _userService.GetCurrentUser().Email;
+                gameTaskModel.CreatedByName = _userService.GetCurrentUser().UserName;
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId();
                 _gameTasksRepository.Add(gameTaskModel);
                 place.Tasks.Add(gameTaskModel);
@@ -183,9 +184,24 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var model = _mapper.Map<GameTask, GameTaskEditModel>(_gameTasksRepository.GetById(id));
+            var task = _gameTasksRepository.GetById(id); ;
+            var roles = await _userService.GetUserRoles();
+            if (task.CreatedById != _userService.GetCurrentUserId())
+            {
+                if (!roles.Contains("Admin") || roles.Contains("Moderator"))
+                {
+                    var error = new CustomErrorModel
+                    {
+                        RequestId = Request.Headers["RequestId"],
+                        Title = "Cannot complete operation",
+                        Message = "Only the author, administrator or moderator can edit the content of a task"
+                    };
+                    return View("CustomError", error);
+                }
+            }
+            var model = _mapper.Map<GameTask, GameTaskEditModel>(task);
 
 
             return View("Edit", model);
@@ -261,7 +277,20 @@ namespace C_bool.WebApp.Controllers
                 .Include(x => x.GameTask)
                 .FirstOrDefault();
 
-            userGameTask.ArrivalTime = DateTime.Now;
+
+            if (userGameTask == null)
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Something went wrong...",
+                    Message = "Task is not assigned to user, you have to add task to your list first"
+                };
+                return View("CustomError", error);
+            }
+
+            userGameTask.ArrivalTime = DateTime.UtcNow;
+
 
             if (userGameTask.GameTask.Type == TaskType.TextEntry)
             {
@@ -336,32 +365,64 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public ActionResult ApproveUserSubmission(int userToApproveId, int userGameTask)
+        public ActionResult ApproveUserSubmission(int userToApproveId, int gameTaskId, int extraPoints)
         {
+            string message;
             var user = _userService.GetCurrentUser();
+
+            //BUG: zapytanie nie zwraca wynikow, do poprawy
             var taskToApprove = _userGameTasksRepository.GetAllQueryable()
                 .Where(x => x.GameTask.CreatedById == user.Id)
                 .Where(x => !x.IsDone)
-                .Where(x => x.UserId == userToApproveId);
+                .Where(x => x.UserId == userToApproveId)
+                .Where(x => x.GameTaskId == gameTaskId);
 
             if (!taskToApprove.Any())
             {
-                var error = new CustomErrorModel
+                var viewMessageOnNoTask = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
                     Title = "No task to approve",
                     Message = "No task to approve with given criteria or you have no permission to approve this task"
                 };
-                return View("CustomError", error);
+                return View("CustomError", viewMessageOnNoTask);
             }
 
             var task = taskToApprove.FirstOrDefault();
 
-            ViewData["points"] = task?.GameTask.Points;
-            ViewData["gameTaskId"] = task.GameTaskId;
+            GameTaskStatus status = _gameTaskService.ManuallyCompleteTask(task.GameTaskId, userToApproveId, extraPoints, out message);
 
-            return View("AfterDone/Congratulations");
+            if (status == GameTaskStatus.Done)
+            {
+                var messageToSend = new Message
+                {
+                    CreatedById = user.Id,
+                    CreatedByName = user.UserName,
+                    RootId = 0,
+                    ParentId = 0,
+                    Title = $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!",
+                    Body = HtmlRenderer.CheckTaskPhoto(task),
+                    IsViewed = false
+                };
+                _userService.PostMessage(userToApproveId, messageToSend);
 
+                    var viewMessageOk = new CustomErrorModel
+                    {
+                        RequestId = Request.Headers["RequestId"],
+                        Title = "Task approved",
+                        Message = "You approved user submission!",
+                        Type = CustomErrorModel.MessageType.Success
+                    };
+                    return View("CustomError", viewMessageOk);
+                
+            }
+            var viewMessageOnError = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "No task to approve",
+                Message = "No task to approve with given criteria or you have no permission to approve this task"
+            };
+            return View("CustomError", viewMessageOnError);
         }
 
         [Authorize]
