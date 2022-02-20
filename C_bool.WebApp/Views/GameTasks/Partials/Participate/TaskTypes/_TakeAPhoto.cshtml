@@ -1,0 +1,20 @@
+﻿@model C_bool.WebApp.Models.GameTask.GameTaskParticipateModel
+
+
+<div class="card card-body border-0 shadow mb-4">
+    <h2 class="h5 mb-4">Twoje rozwiązanie</h2>
+    <p>Tutaj dodaj swoją odpowiedź w formie zdjęcia, a następnie kliknij <b>Wykonaj zadanie!</b> aby zgarnąć cebulki!</p>
+    <div class="row align-items-center">
+        <div class="form-group">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:">
+                    <use xlink:href="#info-fill" />
+                </svg>
+                <div>
+                    Dopuszczalalne formaty: <b>.jpg</b> lub <b>.png</b> o maksymalnej wielkości <b>2Mb</b>
+                </div>
+            </div>
+            <input id="photo" class="form-control" name="file" type="file" accept="image/png, image/jpeg" />
+        </div>
+    </div>
+</div>

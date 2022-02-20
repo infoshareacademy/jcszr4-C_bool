@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace C_bool.BLL.Helpers
+namespace C_bool.BLL.Helpers.ValueConverters
 {
     class TypeValueConverter : ValueConverter<string[], string>
     {

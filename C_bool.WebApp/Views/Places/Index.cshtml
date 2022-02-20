@@ -2,6 +2,7 @@
 @using C_bool.WebApp.Config
 @using C_bool.WebApp.Helpers
 @using Microsoft.Extensions.Options
+@using C_bool.BLL.Config
 @model IEnumerable<C_bool.WebApp.Models.Place.PlaceViewModel>
 
 @{
@@ -48,14 +49,14 @@
                 @if (Model != null && Model.Any())
                 {
                     <!-- Patial with Card style places list -->
-                    <partial name="Partials/PlacesCards" model="Model" />
+                    <partial name="Partials/_PlacesCards" model="Model" />
                 }
                 else
                 {
                     <div class="alert alert-dismissible alert-warning" style="margin: 10px">
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         <h4 class="alert-heading">Nie bangla!</h4>
-                        <p class="mb-0">Wygląda na to, że nie ma takich miejsc w bazie...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz wyszukać tysiące nowych miejsc w menu <b>Szukaj w pobliżu</b> lub <b>Szukaj po nazwie</b>, lub dodać swoje miejsce wybierając opcję <b>Dodaj nowe</b></p>
+                        <p class="mb-0">Wygląda na to, że nie ma takich miejsc w bazie...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz wyszukać tysiące nowych miejsc w menu <b>Dodaj w pobliżu</b> lub <b>Dodaj po nazwie</b>, lub dodać swoje własne miejsce wybierając opcję <b>Dodaj nowe</b></p>
                     </div>
                 }
             </div>

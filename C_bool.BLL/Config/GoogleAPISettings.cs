@@ -1,6 +1,6 @@
 ﻿
 
-namespace C_bool.WebApp.Config
+namespace C_bool.BLL.Config
 {
     public class GoogleAPISettings
     {

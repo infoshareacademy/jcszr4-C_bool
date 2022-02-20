@@ -4,135 +4,204 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.BLL.Services
 {
     public class GameTaskService : IGameTaskService
     {
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
+        private readonly IRepository<GameTask> _gameTaskRepository;
 
-        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository)
+        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository)
         {
             _userGameTaskRepository = userGameTaskRepository;
+            _gameTaskRepository = gameTaskRepository;
         }
 
-        public void ManuallyCompleteTask(int taskId, int userId)
+        public IQueryable<GameTask> GetAllQueryable()
         {
-            //jak text entry - tylko manualnie
-            //pojawienie się informacji dla użytkownika, że pojawiło mu się zadanie do zatwierdzenia. (stworzyć klasę)
-            //dodajemy do UserGameTask - zdjecie stringa
-
-            //[AP] ponizej pobieramy full outer joina 3 tabel User i GameTask i UserGameTask takze mamy dostep do wszystkich pol i mozemy je dowolnie updatowac  
-            var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            
-            //[AP] tutaj dodalem 2 nowe propercje - jedna to flaga czy liczba wykonan ma byc okreslona, a druga to liczba wykonan, ktora zostala
-            if (!userGameTask.GameTask.IsDoneLimited || userGameTask.GameTask.LeftDoneAttempts > 0)
-            {
-                //[AP] tu sprawdzamy czy nas game task wziety z naszej zjoinowanej tabeli zgada sie z zalozonym typem zadania
-                if (userGameTask.GameTask.Type == TaskType.TakeAPhoto)
-                {
-                    //[AP] tu sprawdzamy czy zadanie jest aktywne - noramlnie mogloby to pojsc do tego ifa wyzej, ale chyba bedziemy chcieli kiedys dodac
-                    //[AP] cos to poinformuje uzytkownika, ze zadanie jest nieaktywne 
-                    if (userGameTask.GameTask.IsActive)
-                    {
-                        //[AP] tu ustawiamy wszystkie pola ktore sie zmieniaja w zwiazku z pomyslnym zakonczeniem zadania
-                        SetUserTaskAsDone(userGameTask);
-                    }
-                    //[AP] tu na koniec update bazy poprzez dbcontext, ktore pobieramy z repo
-                    _userGameTaskRepository.Update(userGameTask);
-                }
-            }
+            return _gameTaskRepository.GetAllQueryable();
         }
-        public void CompleteTask(int taskId, int userId)
+
+        public IQueryable<UserGameTask> GetAllUserGameTasksQueryable()
         {
-            // nie ma ram czasowych i nie wymaga lokalizacji - tylko okazania dowodu w postaci tekstu
-            // zaliczenie automatyczne - taki sam (tylko z malych liter albo duzych albo bez polskich znakow)
-            
-            //[AP] tu w zasadzie ta sama sytuacja co powyzej czyli robimy joina 3 tabel i wszystko leci tak samo jak w metodzie wyzej
+            return _userGameTaskRepository.GetAllQueryable();
+        }
+
+        public GameTask GetById(int taskId)
+        {
+            var gameTask = _gameTaskRepository.GetAllQueryable();
+            return gameTask.SingleOrDefault(e => e.Id == taskId);
+        }
+
+        public UserGameTask GetUserGameTaskById(int taskId)
+        {
+            var userGameTask = _userGameTaskRepository.GetAllQueryable();
+            return userGameTask.SingleOrDefault(e => e.GameTaskId == taskId);
+        }
+
+        public GameTaskStatus ManuallyCompleteTask(int taskId, int userId, int extraPoints, out string message)
+        {
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            
-            if (!userGameTask.GameTask.IsDoneLimited || userGameTask.GameTask.LeftDoneAttempts > 0)
+            message = string.Empty;
+
+
+            if (userGameTask.GameTask.Type is TaskType.TakeAPhoto)
             {
-                if (userGameTask.GameTask.Type == TaskType.TextEntry)
-                {
-                    //[AP] tu na razie ustawilem ze musi byc equal - do ewentualnego rozkminienia
-                    if (userGameTask.GameTask.IsActive && userGameTask.TextCriterion.ToLower()
-                        .Equals(userGameTask.GameTask.TextCriterion.ToLower()))
-                    {
-                        SetUserTaskAsDone(userGameTask);
-                    }
-                }
-
-                //TODO:
-                //zadanie tego typu ma ustawione ramy czasowe ValidFrom i ValidThru, czyli można to traktować jako wydarzenie
-                //np osoba tworzaca zadanie ustawia ze dnia 1 lutego o godzinie 20 -22 jest koncert Zenka, na któym możesz się pojawić
-                //tego typu zadania miałyby "kalendarz" na stronie głównej
-                if (userGameTask.GameTask.Type == TaskType.Event)
-                {
-                    if (userGameTask.GameTask.IsActive &&
-                        userGameTask.ArrivalTime <= userGameTask.GameTask.ValidFrom.Date &&
-                        userGameTask.ArrivalTime >= userGameTask.GameTask.ValidThru.Date)
-                    {
-                        SetUserTaskAsDone(userGameTask);
-                    }
-                }
-
-                //to zadanie zakłąda że użytkownik odwiedzi lokalizację i może je zaliczyć tylko jak w niej jest, podobne jak event tylko bez ram czasowych
-                if (userGameTask.GameTask.Type == TaskType.CheckInToALocation)
-                {
-                    //tu wyciagnalem sprawdzanie czy place jest null wyzej bo przy wyznaczaniu range juz potrzebujemy tej informacji
-                    // z drugiej strony w przyszlosci moze jakos ogarniemy informacje dla uzytkownika dlatego nie wyciagam tego to glownego ifa
-                    if (userGameTask.GameTask.Place != null)
-                    {
-                        //[AP] tu wiadomo wyciagamy odleglosc miedy miejscem a userem
-                        var range = SearchNearbyPlaces.DistanceBetweenPlaces(userGameTask.User.Latitude,
-                            userGameTask.User.Longitude,
-                            userGameTask.GameTask.Place.Latitude, userGameTask.GameTask.Place.Longitude);
-
-                        //[AP] dodalem nowa property MaxRange do GameTaska zeby dalo sie okreslic jak maksymalnie daleko moze byc user od danego miejsca z zadania
-                        // w zaleznosci od zadania moze byc mniej albo wiecej
-                        if (userGameTask.GameTask.IsActive && range <= 100) 
-                        {
-                            SetUserTaskAsDone(userGameTask);
-                        }
-                    }
-                }
-                //[AP] no i na koniec update calego userGameTaska w bazie przez dbContext z repo
+                if (extraPoints > 0) AddBonusPoints(userGameTask, extraPoints);
+                SetUserTaskAsDone(userGameTask);
                 _userGameTaskRepository.Update(userGameTask);
+                message += "The task has been completed successfully and the points have been added. Congratulations!";
+                return GameTaskStatus.Done;
+
             }
+            message += "Task is not valid type, only task with Take a Photo type can be completed manually";
+            return GameTaskStatus.NotDone;
         }
 
-        //[AP] tu zrobilem taka metode do wyciagania konktretnego UserGameTaska z bazy - potem wystarczy kliknac .User albo .Task i mamy caly obiekt danego typu
-        //[AP] co moze byc przydatene w kontrolerach
+        public GameTaskStatus CompleteTask(int taskId, int userId, out string message)
+        {
+            var userGameTask = GetUserGameTaskByIds(userId, taskId);
+            message = string.Empty;
+
+            if (!userGameTask.GameTask.IsActive)
+            {
+                message = "Task is already inactive, cannot continue";
+                return GameTaskStatus.NotDone;
+            }
+
+            if (userGameTask.GameTask.IsDoneLimited && userGameTask.GameTask.LeftDoneAttempts == 0)
+            {
+                message = "Task is already inactive, cannot continue";
+                return GameTaskStatus.NotDone;
+            }
+
+            if (userGameTask.GameTask.ValidFrom != DateTime.MinValue &&
+                userGameTask.GameTask.ValidThru != DateTime.MinValue)
+            {
+                if (userGameTask.ArrivalTime >= userGameTask.GameTask.ValidFrom.Date && userGameTask.ArrivalTime <= userGameTask.GameTask.ValidThru.Date)
+                {
+                    message = "You showed up at good time.";
+                }
+                else
+                {
+                    message = "You showed up at wrong time.";
+                    return GameTaskStatus.NotDone;
+                }
+            }
+
+            if (userGameTask.GameTask.Type == TaskType.TextEntry)
+            {
+                if (userGameTask.GameTask.IsActive && userGameTask.TextCriterion.ToLower()
+                    .Equals(userGameTask.GameTask.TextCriterion.ToLower()))
+                {
+                    message = "Task completed, text matched. ";
+                }
+                else
+                {
+                    message = "You have entered an incorrect solution for the task";
+                    return GameTaskStatus.NotDone;
+                }
+            }
+
+            if (userGameTask.GameTask.Type is TaskType.CheckInToALocation or TaskType.Event)
+            {
+                if (userGameTask.GameTask.Place == null)
+                {
+                    message = "You are outside the location of the selected task";
+                    return GameTaskStatus.NotDone;
+                }
+                var range = SearchNearbyPlaces.DistanceBetweenPlaces(userGameTask.User.Latitude,
+                    userGameTask.User.Longitude,
+                    userGameTask.GameTask.Place.Latitude, userGameTask.GameTask.Place.Longitude);
+
+                if (range >= 100)
+                {
+                    message = "You are outside the location of the selected task";
+                    return GameTaskStatus.NotDone;
+                }
+
+            }
+
+            if (userGameTask.GameTask.Type is TaskType.TakeAPhoto)
+            {
+                _userGameTaskRepository.Update(userGameTask);
+                message = "Your submission has been sent to the task author for review, stay tuned!";
+                return GameTaskStatus.InReview;
+
+            }
+
+            SetUserTaskAsDone(userGameTask);
+            _userGameTaskRepository.Update(userGameTask);
+            message += "The task has been completed successfully and the points have been added. Congratulations!";
+            return GameTaskStatus.Done;
+        }
+
         public UserGameTask GetUserGameTaskByIds(int userId, int gameTaskId)
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
-
-            return usersGameTasks.Single(e => e.UserId == userId && e.GameTaskId == gameTaskId);
+            return usersGameTasks
+                .Include(x => x.GameTask.Place)
+                .Include(x => x.User)
+                .SingleOrDefault(e => e.UserId == userId && e.GameTaskId == gameTaskId);
         }
 
-        //[AP] dodalem jeszcze metode do ewentualnego dodawania punktow bonusowych uzytkownikowi do konkretnego zadania 
         public void AddBonusPoints(int userId, int taskId, int bonusPoints)
         {
             var userGameTask = GetUserGameTaskByIds(userId, taskId);
-            userGameTask.BonusPoints = bonusPoints;
+            //userGameTask.BonusPoints = bonusPoints;
             userGameTask.User.Points += bonusPoints;
 
             _userGameTaskRepository.Update(userGameTask);
         }
-        
-        //[AP] ta metode zabralem z UserService, troche przerobilem i wrzucam ja jednak tutaj bo jest bardziej pozyteczna tutaj - nie powinna byc uzywana nigdzie indziej w aplikacji
+
+        public void AddBonusPoints(UserGameTask userGameTask, int bonusPoints)
+        {
+            //userGameTask.BonusPoints = bonusPoints;
+            userGameTask.User.Points += bonusPoints;
+
+            _userGameTaskRepository.Update(userGameTask);
+        }
+
+        public void Add(GameTask gameTask)
+        {
+            _gameTaskRepository.Add(gameTask);
+        }
+
+        public void Update(GameTask gameTask)
+        {
+            _gameTaskRepository.Update(gameTask);
+        }
+
         private void SetUserTaskAsDone(UserGameTask userGameTask)
         {
             userGameTask.User.Points += userGameTask.GameTask.Points;
             userGameTask.IsDone = true;
-            userGameTask.DoneOn = DateTime.Now;
-            
-            //[AP] jesli flaga isDoneLimited to odejmujemy 1 bo ktos wlasnie zrobil to zadanie
+            userGameTask.DoneOn = DateTime.UtcNow;
+
             if (userGameTask.GameTask.IsDoneLimited)
             {
                 userGameTask.GameTask.LeftDoneAttempts--;
+                if (userGameTask.GameTask.LeftDoneAttempts == 0)
+                {
+                    userGameTask.GameTask.IsActive = false;
+                }
             }
+            _userGameTaskRepository.Update(userGameTask);
+        }
+
+        public void UpdateUserGameTask(UserGameTask userGameTask)
+        {
+            _userGameTaskRepository.Update(userGameTask);
+        }
+
+        public void AssignPropertiesFromParticipateModel(UserGameTask userGameTask, string textCriterion, string base64Image)
+        {
+            userGameTask.ArrivalTime = DateTime.UtcNow;
+            userGameTask.TextCriterion = textCriterion;
+            userGameTask.Photo = base64Image;
+            UpdateUserGameTask(userGameTask);
         }
     }
 }

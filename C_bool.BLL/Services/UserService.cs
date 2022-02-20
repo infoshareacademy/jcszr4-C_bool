@@ -4,10 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace C_bool.BLL.Services
 {
@@ -19,6 +21,7 @@ namespace C_bool.BLL.Services
         private readonly IRepository<Place> _placeRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<User> _userManager;
 
         public UserService(IRepository<User> userRepository, 
             
@@ -27,7 +30,7 @@ namespace C_bool.BLL.Services
             IRepository<Place> placeRepository,
             IRepository<GameTask> gameTaskRepository,
             IHttpContextAccessor httpContextAccessor, 
-            IPlaceService placesService)
+            UserManager<User> userManager)
         { 
             _userRepository = userRepository;
             _userGameTaskRepository = userGameTaskRepository;
@@ -35,19 +38,38 @@ namespace C_bool.BLL.Services
             _placeRepository = placeRepository;
             _gameTaskRepository = gameTaskRepository;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
-        //Andrzeju dopisałem
+        public IQueryable<User> GetAllQueryable()
+        {
+            return _userRepository.GetAllQueryable();
+        }
+
         public int GetCurrentUserId()
         {
-            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return int.Parse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         public User GetCurrentUser()
         {
-            var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier));
            
             return _userRepository.GetById(userId);
+        }
+
+        public async Task<List<string>> GetUserRoles()
+        {
+            var user = await _userManager.FindByIdAsync(GetCurrentUserId().ToString());
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToList();
+        }
+
+        public async Task<List<string>> GetUserRoles(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToList();
         }
 
         public int GetRankingPlace()
@@ -64,14 +86,7 @@ namespace C_bool.BLL.Services
         {
             var user = _userRepository.GetById(userId);
 
-            if (user.IsActive)
-            {
-                user.IsActive = false;
-            }
-            else
-            {
-                user.IsActive = true;
-            }
+            user.IsActive = !user.IsActive;
 
             _userRepository.Update(user);
         }
@@ -112,15 +127,26 @@ namespace C_bool.BLL.Services
             var userPlaces = _placeRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return userPlaces.Where(e => e.CreatedById == currentUserId.ToString()).ToList();
+            return userPlaces.Where(e => e.CreatedById == currentUserId).ToList();
         }
 
-        public void AddTaskToUser(GameTask gameTask)
+        public bool AddTaskToUser(GameTask gameTask)
         {
             var currentUser = GetCurrentUser();
-
+            var userGameTasks = GetAllTasks();
+            if (userGameTasks.Any(x => x.Id.Equals(gameTask.Id))) return false;
             currentUser.UserGameTasks.Add(new UserGameTask(currentUser, gameTask));
             _userRepository.Update(currentUser);
+            return true;
+        }
+
+        public List<GameTask> GetAllTasks()
+        {
+            var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
+            var currentUserId = GetCurrentUserId();
+
+            return usersGameTasks.Where(ugt => ugt.UserId == currentUserId && !ugt.IsDone)
+                .Select(ugt => ugt.GameTask).ToList();
         }
 
         public List<GameTask> GetToDoTasks()
@@ -162,7 +188,6 @@ namespace C_bool.BLL.Services
                 .Where(gt => gt.ValidThru >= DateTime.UtcNow || gt.ValidFrom == null)
                 .Where(gt => gt.IsActive)
                 .ToList();
-
         }
 
         public List<GameTask> GetDoneTasks()
@@ -185,7 +210,7 @@ namespace C_bool.BLL.Services
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == currentUserId.ToString())
+            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == currentUserId)
                 .Select(ugt => ugt.GameTask).ToList();
         }
 
@@ -193,7 +218,7 @@ namespace C_bool.BLL.Services
         {
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
 
-            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == userId.ToString())
+            return usersGameTasks.Where(ugt => ugt.Photo != null && !ugt.IsDone && ugt.GameTask.CreatedById == userId)
                 .Select(ugt => ugt.GameTask).ToList();
         }
 
@@ -202,7 +227,7 @@ namespace C_bool.BLL.Services
             var userGameTasks = _gameTaskRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return userGameTasks.Where(e => e.CreatedById == currentUserId.ToString()).ToList();
+            return userGameTasks.Where(e => e.CreatedById == currentUserId).ToList();
         }
 
         public List<User> SearchByName(string name)
@@ -266,6 +291,15 @@ namespace C_bool.BLL.Services
             }
 
             return users.ToList();
+        }
+
+        public bool PostMessage(int userId, Message message)
+        {
+            var user = _userRepository.GetAllQueryable().SingleOrDefault(x => x.Id == userId);
+
+            user.Messages.Add(message);
+            _userRepository.Update(user);
+            return true;
         }
     }
 }

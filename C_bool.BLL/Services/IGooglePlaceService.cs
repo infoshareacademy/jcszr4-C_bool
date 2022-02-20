@@ -6,8 +6,8 @@ namespace C_bool.BLL.Services
 {
     public interface IGooglePlaceService
     {
-        public void CreateNewOrUpdateExisting(List<GooglePlace> googlePlaces);
-        public List<GooglePlace> GetGooglePlacesForUser();
-        public GooglePlace GetGooglePlaceById(string placeId);
+        void CreateNewOrUpdateExisting(List<GooglePlace> googlePlaces);
+        List<GooglePlace> GetGooglePlacesForUser();
+        GooglePlace GetGooglePlaceById(string placeId);
     }
 }

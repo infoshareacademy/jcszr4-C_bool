@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,12 +18,11 @@ namespace C_bool.BLL.DAL.Entities
         [NotMapped]
         public int Id { get; set; }
         public DateTime CreatedOn { get; set; }
-
-        //user set photo - for approval
         public string Photo { get; set; }
         public string TextCriterion { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public int BonusPoints { get; set; }
+
+        public IList<Message> Messages { get; set; }
 
         public UserGameTask()
         {
@@ -34,6 +34,7 @@ namespace C_bool.BLL.DAL.Entities
             GameTask = gameTask;
             IsDone = false;
             CreatedOn = DateTime.UtcNow;
+            Messages = new List<Message>();
         }
 
     }

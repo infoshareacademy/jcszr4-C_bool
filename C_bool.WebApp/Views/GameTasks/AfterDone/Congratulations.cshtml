@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "_SimpleLayout";
+    var points = (int)ViewData["points"];
+    var gameTaskId = (int)ViewData["gameTaskId"];
+}
+
+<style>
+
+    body {
+        background-color: #323232;
+    }
+    .tick {
+        font-size:3rem; 
+        white-space:nowrap; 
+        font-family:arial,sans-serif;
+    }
+
+    .tick-flip,.tick-text-inline {
+        font-size:2.5em;
+    }
+
+    .tick-label {
+        margin-top:1em;font-size:1em;
+    }
+
+    .tick-char {
+        width:1.5em;
+    }
+
+    .tick-text-inline {
+        font-size: 2rem;
+        display: inline-block;
+        text-align: center;
+        min-width: 1em;
+    }
+
+    .tick-text-inline+.tick-text-inline {
+        margin-left:-.325em;
+    }
+
+    .tick-group {
+        margin:0 .5em;text-align:center;
+    }
+
+    .tick-text-inline {
+        color: #595d63 !important; 
+    }
+
+    .tick-label {
+        color: #595d63 !important; 
+    }
+
+    .tick-flip-panel {
+        color: #fff !important; 
+    }
+
+    .tick-flip {
+        font-family: !important; 
+    }
+
+    .tick-flip-panel-text-wrapper {
+        line-height: 1.45 !important; 
+    }
+
+    .tick-flip-panel {
+        background-color: #3c3e3c !important; 
+    }
+
+    .tick-flip {
+        border-radius:0.12em !important; 
+    }
+
+    .tick-credits {
+        visibility: hidden;
+    }
+</style>
+
+<canvas id="custom_canvas" style="position: fixed; width: 100%; height: 100%; top: 0px; left: 0px; z-index: 1000; pointer-events: none;" width="900" height="941"></canvas>
+
+<section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+    <div class="container">
+        <div class="card mb-3 text-center bg-taskcompleted">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="/img/thumbup.gif" class="card-img" alt="...">
+                </div>
+                <div class="col-md-8 d-flex align-items-center">
+
+                    <div class="card-body">
+                        <h2 class="display-2 mb-3">Zadanie zaliczone!</h2>
+                        <h4><span class="font-weight-bold">Udało Ci się ukończyć zadanie, na twoje konto wędruje:</span></h4>
+                        <br />
+                        <div class="tick" data-value="0" data-did-init="handleTickInit">
+
+                            <div data-layout="horizontal center" data-repeat="true" data-transform="arrive(9, .0001) -> round -> pad('   ') -> split -> delay(rtl, 100, 150)">
+
+                                <span data-view="flip"></span>
+
+                            </div>
+
+                        </div>
+                        <br />
+                        <h4><b>cebul!</b></h4>
+                        <br />
+                        <a asp-action="Index" asp-controller="Home" class="btn btn-gray-800 d-inline-flex justify-content-center mb-4">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
+                            Wróć do strony głównej
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+
+<script>
+    function handleTickInit(tick) {
+
+        // set final value, tick will animate towards it
+        setTimeout(function () {
+            tick.value = @Html.Raw(points);
+        }, 100);
+
+        // play with arrive() values to tune animation speed and duration
+        // 1. first value is maximum speed of increase
+        // 2. second value is speed at which the increase ramps up
+
+    }
+</script>
+
+<!-- END OF FLIP EXAMPLE PRESET -->
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@0.9.0/dist/js-confetti.browser.js"></script>
+<script src="/vendor/flip/flip.min.js"></script>
+<script type="text/javascript">
+    const canvas = document.getElementById('custom_canvas');
+    const button = document.getElementById('button');
+
+    const jsConfetti = new JSConfetti({ canvas });
+
+    setTimeout(() => {
+        jsConfetti.addConfetti({
+            emojis: ['🦄', '🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+            emojiSize: 80,
+            confettiNumber: 60
+        });
+    }, 4000);
+
+    setTimeout(() => {
+        jsConfetti.addConfetti({
+            emojis: ['🦄', '🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+            emojiSize: 80,
+            confettiNumber: 60
+        });
+    }, 5000);
+
+    setTimeout(() => {
+        jsConfetti.addConfetti({
+            emojis: ['🦄', '🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+            emojiSize: 80,
+            confettiNumber: 60
+        });
+    }, 6000);
+
+
+
+</script>

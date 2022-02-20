@@ -31,12 +31,10 @@ namespace C_bool.WebApp.Controllers
         private IConfiguration _configuration;
 
         private readonly ApplicationDbContext _context;
-        private IRepository<Place> _placesRepository;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
 
         private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
+        private readonly IGameTaskService _gameTaskService;
         private readonly UserManager<User> _userManager;
 
 
@@ -45,23 +43,19 @@ namespace C_bool.WebApp.Controllers
             IMapper mapper,
             IConfiguration configuration,
             ApplicationDbContext context,
-            IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
             IUserService usersService,
-            UserManager<User> userManager)
+            UserManager<User> userManager, 
+            IGameTaskService gameTaskService)
         {
             _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _context = context;
-            _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _userService = usersService;
             _userManager = userManager;
+            _gameTaskService = gameTaskService;
         }
 
         [Authorize]
@@ -72,27 +66,21 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Longitude = user.Longitude;
 
             if (range == 0) range = 5000;
-            ViewBag.Range = range / 1000;
-
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyTask"] = searchOnlyWithTasks;
-            ViewData["CurrentRange"] = range;
-            ViewData["MapZoom"] = range;
 
             //list of UserViewModel with top 10 users (by points count)
-            var usersCount = _usersRepository.GetAllQueryable().Count();
+            var usersCount = _userService.GetAllQueryable().Count();
             ViewBag.UserRank = _userService.OrderByPoints(true).GetRange(0,usersCount < 10 ? usersCount : 10 ).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
 
             ViewBag.UserPoints = user.Points;
-            ViewBag.UserRankPosition = _usersRepository.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
+            ViewBag.UserRankPosition = _userService.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
 
             //list of all places - count, last added
-            var places = _placesRepository.GetAllQueryable();
+            var places = _placesService.GetAllQueryable();
             ViewBag.AllPlacesCount = places.Count();
             ViewBag.LastAddedPlace = _mapper.Map<PlaceViewModel>(places.OrderBy(x=> x.CreatedOn).LastOrDefault());
 
             //list of all gametasks in places - count
-            var gameTasks = _gameTasksRepository.GetAllQueryable();
+            var gameTasks = _gameTaskService.GetAllQueryable();
             //ViewBag.ActiveTasksCount = gameTasks.Count(x => x.IsActive);
             ViewBag.ActiveTasksCount = gameTasks.Count();
             ViewBag.LastAddedGameTask = gameTasks.OrderBy(x => x.CreatedOn).LastOrDefault();
@@ -100,6 +88,13 @@ namespace C_bool.WebApp.Controllers
             //query only properties used to calculate range ang get place Id
             var placesToSearchFrom = await places.Select(place => new Place() { Id = place.Id, Latitude = place.Latitude, Longitude = place.Longitude }).ToListAsync();
             var nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            if (nearbyPlacesIds.Count == 0)
+            {
+                range = 100000;
+                nearbyPlacesIds = SearchNearbyPlaces.GetPlacesId(placesToSearchFrom, user.Latitude, user.Longitude, range);
+            }
+
+            //get places by range
             places = places.Where(s => nearbyPlacesIds.Contains(s.Id));
 
             //search queries, based on user input
@@ -118,6 +113,14 @@ namespace C_bool.WebApp.Controllers
             places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
 
             var placesList = _mapper.Map<List<PlaceViewModel>>(places);
+
+            ViewBag.Range = range / 1000;
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["OnlyTask"] = searchOnlyWithTasks;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
+
             ViewBag.NearbyPlacesCount = places.Count();
             ViewBag.NearbyPlaces = placesList;
             ViewBag.Message = new StatusMessage($"Znaleziono {placesList.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);

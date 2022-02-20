@@ -16,11 +16,9 @@ namespace C_bool.WebApp.Models.Profiles
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<BLL.DAL.Entities.GameTask, GameTaskEditModel>()
                 .ForMember(dest => dest.PlaceId, o => o.MapFrom(src => src.Place.Id))
-                .ForMember(dest => dest.ShortDescription, o => o.NullSubstitute("?"))
-                .ForMember(dest => dest.Description, o => o.NullSubstitute("?"))
-                .ForMember(dest => dest.Type, o => o.MapFrom(src => src.Type))
-                .ForMember(dest => dest.TextCriterion, o => o.NullSubstitute("?"))
-                .ReverseMap();
+                .ForMember(dest => dest.Type, o => o.MapFrom(src => src.Type));
+            CreateMap<GameTaskEditModel, BLL.DAL.Entities.GameTask>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

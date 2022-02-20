@@ -63,7 +63,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             }
 
             var currentPhoto = user.Photo;
-            var newPhoto = ImageConverter.ConvertImage(Input.NewPhoto);
+            var newPhoto = ImageConverter.ConvertImage(Input.NewPhoto, out string message);
             if (newPhoto != currentPhoto)
             {
                 user.Photo = newPhoto;

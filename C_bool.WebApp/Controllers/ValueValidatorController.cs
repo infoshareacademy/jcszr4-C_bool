@@ -20,8 +20,8 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public JsonResult IsValid_ValidFromDate(string validFrom, string validThru)
         {
-            var validFromMin = DateTime.Now;
-            var validFromMax = DateTime.Now.AddYears(1);
+            var validFromMin = DateTime.UtcNow;
+            var validFromMax = DateTime.UtcNow.AddYears(1);
             var message = "Wprowadź prawidłową datę";
             try
             {
@@ -95,12 +95,11 @@ namespace C_bool.WebApp.Controllers
         public JsonResult IsValid_TextCriterion(string type, string textCriterion)
         {
             Enum.TryParse(type, true, out TaskType typeEnum);
-            var message = "Ustaw swoje hasło do zaliczenia zadania";
             if (typeEnum == TaskType.TextEntry)
             {
                 if (textCriterion.IsNullOrEmpty())
                 {
-                    message = "Hasło nie może być puste";
+                    var message = "Hasło nie może być puste";
                     return Json(message);
                 }
                 else

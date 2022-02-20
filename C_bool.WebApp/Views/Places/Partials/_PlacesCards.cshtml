@@ -1,5 +1,6 @@
 ﻿@using C_bool.BLL.Logic
 @using System.Globalization
+@using C_bool.BLL.Config
 @using C_bool.BLL.DAL.Entities
 @using C_bool.WebApp.Config
 @using Castle.Core.Internal
@@ -21,7 +22,11 @@
                         <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none"><h3>@Html.DisplayFor(modelItem => item.Name)</h3></a>
                     </div>
                     <div class="d-flex ms-auto">
-                        <button class="btn btn-outline-primary">@item.ActiveTaskCount zadań</button>
+                        @*<button class="btn btn-outline-primary">@item.ActiveTaskCount zadań</button>*@
+                        <button type="button" class="btn btn-outline-primary">
+                            Zadań <span class="badge bg-secondary">@item.ActiveTaskCount</span>
+                            <span class="visually-hidden">Zadań do wykonania</span>
+                        </button>
                     </div>
                 </div>
             }

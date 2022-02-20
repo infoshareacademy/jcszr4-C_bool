@@ -1,5 +1,16 @@
 ﻿@model C_bool.WebApp.Models.GameTask.GameTaskEditModel
 
+@{
+    if (Model?.ValidFrom == DateTime.MinValue)
+    {
+        Model.ValidFrom = null;
+    }
+    if (Model?.ValidThru == DateTime.MinValue)
+    {
+        Model.ValidThru = null;
+    }
+}
+
 <div class="card card-body border-0 shadow mb-4">
     <h2 class="h5 mb-4">Data i czas</h2>
     <div class="row align-items-center">

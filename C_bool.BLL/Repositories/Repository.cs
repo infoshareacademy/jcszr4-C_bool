@@ -22,7 +22,7 @@ namespace C_bool.BLL.Repositories
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-            entity.CreatedOn = DateTime.Now;
+            entity.CreatedOn = DateTime.UtcNow;
             _entities.Add(entity);
             _context.SaveChanges();
         }

@@ -24,6 +24,7 @@ namespace C_bool.BLL.DAL.Entities
 
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public IList<Message> Messages { get; set; }
 
         public User()
         {
@@ -32,6 +33,7 @@ namespace C_bool.BLL.DAL.Entities
             CreatedOn = DateTime.UtcNow;
             FavPlaces = new List<UserPlace>();
             UserGameTasks = new List<UserGameTask>();
+            Messages = new List<Message>();
         }
     }
 }

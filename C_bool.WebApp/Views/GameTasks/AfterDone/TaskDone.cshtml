@@ -1,0 +1,342 @@
+﻿@using C_bool.WebApp.Config
+@using Microsoft.Extensions.Options
+@using System.Globalization
+@using C_bool.BLL.Config
+@using C_bool.BLL.DAL.Entities
+@using C_bool.BLL.Logic
+@using Castle.Core.Internal
+@using Microsoft.AspNetCore.Identity
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject UserManager<User> UserManager
+@model UserGameTask;
+
+@{
+
+    ViewData["Title"] = "Wykonaj zadanie";
+}
+
+<style>
+    .tick {
+        font-size: 3rem;
+        white-space: nowrap;
+        font-family: arial,sans-serif;
+    }
+
+    .tick-flip, .tick-text-inline {
+        font-size: 2.5em;
+    }
+
+    .tick-label {
+        margin-top: 1em;
+        font-size: 1em;
+    }
+
+    .tick-char {
+        width: 1.5em;
+    }
+
+    .tick-text-inline {
+        font-size: 2rem;
+        display: inline-block;
+        text-align: center;
+        min-width: 1em;
+    }
+
+        .tick-text-inline + .tick-text-inline {
+            margin-left: -.325em;
+        }
+
+    .tick-group {
+        margin: 0 .5em;
+        text-align: center;
+    }
+
+    .tick-text-inline {
+        color: #595d63 !important;
+    }
+
+    .tick-label {
+        color: #595d63 !important;
+    }
+
+    .tick-flip-panel {
+        color: #fff !important;
+    }
+
+    .tick-flip {
+        font-family: !important;
+    }
+
+    .tick-flip-panel-text-wrapper {
+        line-height: 1.45 !important;
+    }
+
+    .tick-flip-panel {
+        background-color: #3c3e3c !important;
+    }
+
+    .tick-flip {
+        border-radius: 0.12em !important;
+    }
+
+    .tick-credits {
+        visibility: hidden;
+    }
+</style>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+    </symbol>
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+</svg>
+
+<canvas id="custom_canvas" style="position: fixed; width: 100%; height: 100%; top: 0px; left: 0px; z-index: 1000; pointer-events: none;" width="779" height="941"></canvas>
+
+<div class="row mb-4 px-4">
+
+    <h1>Jesteś Zwycięzcą!</h1>
+    <p>Udało Ci się wykonać zadanie!</p>
+
+</div>
+
+<!-- three steps to get task done - accordion buttons with kind-a-like progress bar-->
+<div class="accordion accordion-flush mb-4 px-4" id="accordionExample">
+    <div class="steps">
+        <progress id="progress" value=100 max=100></progress>
+        <div class="step-item">
+            <button class="step-button text-center done collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                1
+            </button>
+            <div class="step-title">
+                Zapoznaj się
+            </div>
+        </div>
+        <div class="step-item">
+            <button class="step-button text-center done collapsed" disabled type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                2
+            </button>
+            <div class="step-title">
+                Wykonaj zadanie
+            </div>
+        </div>
+        <div class="step-item">
+            <button id="button" class="step-button done text-center" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                3
+            </button>
+            <div class="step-title">
+                Zgarnij cebule!
+            </div>
+        </div>
+    </div>
+
+    <!-- step contents-->
+    <div>
+        <!-- step 1 - task details-->
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="row">
+                <div class="col-5 mb-4">
+                    <div class="card border-0 shadow mb-4">
+                        <div class="card-header">
+                            <h1>@Model.GameTask.Name</h1>
+                            <h4>
+                                <small class="text-muted">
+                                    <a asp-action="Details" asp-controller="Places" asp-route-id="@Model.GameTask.Place.Id" class="text-decoration-none">@Html.DisplayFor(modelItem => Model.GameTask.Place.Name)</a>
+                                </small>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <!-- Task points to get -->
+                            <div class="card border-0 mb-2" style="background-color: #ebfff6">
+                                <div class="card-body">
+                                    <div class="row d-block d-xl-flex align-items-center">
+                                        <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                                            <div class="icon-shape icon-sm icon-shape-success rounded me-3">
+                                                <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-7 px-xl-0">
+                                            <div class="d-none d-sm-block">
+                                                <h3 class="fw-extrabold mb-2">@Model.GameTask.Points cebul do zdobycia!</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-7 mb-4">
+                    @if (!Model.GameTask.ShortDescription.IsNullOrEmpty())
+                    {
+                        <div class="card border-0 shadow mb-4">
+                            <div class="card-header">
+                                <h4>Opis zadania</h4>
+                            </div>
+                            <div class="card-body">
+
+                                <div>
+                                    <p class="card-text">@Model.GameTask.ShortDescription</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <!--Task description - short and full, if exist-->
+                    @if (!Model.GameTask.ShortDescription.IsNullOrEmpty())
+                    {
+                        <div class="card border-0 shadow mb-4">
+                            <div class="card-header">
+                                <h4>Szczegóły zadania</h4>
+                            </div>
+                            <div class="card-body">
+
+                                @if (!Model.GameTask.Description.IsNullOrEmpty())
+                                {
+                                    <div>
+                                        @Html.Raw(Model.GameTask.Description)
+                                    </div>
+                                }
+                                else
+                                {
+
+                                    <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                                        <div>
+                                            To zadanie nie posiada rozszerzonego opisu
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- step 2 - task criteria validation (based on task type) -->
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        </div>
+        <!--step 3 - task done - get points and final message-->
+        <div id="collapseThree" class="accordion-collapse collapse mb-4 show" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="row">
+                <div class="col-5 mb-4">
+                    <div class="card border-0 shadow mb-4">
+                        <div class="card-header">
+                            <div class="tick" data-value="0" data-did-init="handleTickInit">
+
+                                <div data-layout="horizontal" data-repeat="true" data-transform="arrive(9, .0001) -> round -> pad('   ') -> split -> delay(rtl, 100, 150)">
+
+                                    <span data-view="flip"></span>
+
+                                </div>
+                            </div>
+                            <br/>
+                            <h4>
+                                <small class="text-muted">
+                                    Zgarniętych cebulek!
+                                </small>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <!-- Task points to get -->
+                            <div class="card border-0 mb-2" style="background-color: #ebfff6">
+                                <div class="card-body">
+                                    <div class="row d-block d-xl-flex align-items-center">
+                                        <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                                            <div class="icon-shape icon-sm icon-shape-success rounded me-3">
+                                                <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-xl-7 px-xl-0">
+                                            <div class="d-none d-sm-block">
+                                                <h3 class="fw-extrabold mb-2">@Model.GameTask.Points cebul do zdobycia!</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-7 mb-4">
+
+                    <div class="card border-0 shadow mb-4">
+                        <div class="card-header">
+                            <h4>Wiadomość po ukończeniu</h4>
+                        </div>
+                        <div class="card-body">
+                            @if (!Model.GameTask.AfterDoneMessage.IsNullOrEmpty())
+                            {
+                                <div>
+                                    <p class="card-text">@Html.Raw(Model.GameTask.AfterDoneMessage)</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                                    <div>
+                                        To zadanie nie posiada dodatkowych informacji
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function handleTickInit(tick) {
+
+        // set final value, tick will animate towards it
+        setTimeout(function () {
+            tick.value = @Html.Raw(Model.GameTask.Points);
+        }, 100);
+
+        // play with arrive() values to tune animation speed and duration
+        // 1. first value is maximum speed of increase
+        // 2. second value is speed at which the increase ramps up
+
+    }
+</script>
+
+<!-- END OF FLIP EXAMPLE PRESET -->
+
+
+<script src="/vendor/flip/flip.min.js"></script>
+<script type="text/javascript">
+    const stepButtons = document.querySelectorAll('.step-button');
+    const progress = document.querySelector('#progress');
+
+    Array.from(stepButtons).forEach((button, index) => {
+        button.addEventListener('click', () => {
+            progress.setAttribute('value', index * 100 / (stepButtons.length - 1));//there are 3 buttons. 2 spaces.
+
+            stepButtons.forEach((item, secindex) => {
+                if (index > secindex) {
+                    item.classList.add('done');
+                }
+                if (index < secindex) {
+                    item.classList.remove('done');
+                }
+            });
+        });
+    });
+
+</script>

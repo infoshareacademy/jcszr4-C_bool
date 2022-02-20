@@ -1,4 +1,6 @@
-﻿namespace C_bool.WebApp.Config
+﻿using C_bool.BLL.Config;
+
+namespace C_bool.WebApp.Config
 {
     public class IndexConfig
     {

@@ -11,7 +11,6 @@ namespace C_bool.BLL.Logic
     {
         public static Dictionary<TaskType, string> EnumTaskTypeTranslated { get; set; } = new()
         {
-            { TaskType.FirstComeFirstServed, "Kto pierwszy ten lepszy" },
             { TaskType.TakeAPhoto, "Zrób zdjęcie" },
             { TaskType.CheckInToALocation, "Zamelduj się w wybranym miejscu" },
             { TaskType.Event, "Zameldowanie o określonej godzinie" },

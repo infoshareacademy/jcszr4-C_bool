@@ -9,7 +9,7 @@ namespace C_bool.BLL.Services
 {
     public class GooglePlaceService : IGooglePlaceService
     {
-        private static readonly Dictionary<int, List<GooglePlace>> _tempPlaces = new();
+        private static readonly Dictionary<int, List<GooglePlace>> TempPlaces = new();
         private readonly IUserService _userService;
 
         public GooglePlaceService(IUserService userService)
@@ -21,24 +21,24 @@ namespace C_bool.BLL.Services
         {
             var userId = _userService.GetCurrentUser().Id;
 
-            if (_tempPlaces.ContainsKey(userId))
+            if (TempPlaces.ContainsKey(userId))
             {
-                _tempPlaces[userId] = googlePlaces;
+                TempPlaces[userId] = googlePlaces;
             }
             else
             {
-                _tempPlaces.Add(userId, googlePlaces);
+                TempPlaces.Add(userId, googlePlaces);
             }
         }
 
         public List<GooglePlace> GetGooglePlacesForUser()
         {
 
-            var test = _tempPlaces;
+            var test = TempPlaces;
 
             var userId = _userService.GetCurrentUser().Id;
 
-            return _tempPlaces.Where(kv => kv.Key == userId).Select(kv => kv.Value).SingleOrDefault();
+            return TempPlaces.Where(kv => kv.Key == userId).Select(kv => kv.Value).SingleOrDefault();
         }
 
         public GooglePlace GetGooglePlaceById(string placeId)

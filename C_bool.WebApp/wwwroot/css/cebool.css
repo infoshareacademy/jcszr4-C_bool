@@ -33,6 +33,10 @@
     background-color: #10b981;
 }
 
+.bg-taskcompleted {
+    background: #b2c772;
+}
+
 
 .f-left {
     float: left;
@@ -62,3 +66,69 @@
     color: white;
     border-color: #e16c82
 }
+
+/*Participate view step-by-step layout*/
+:root {
+    --prm-color: #0381ff;
+    --prm-gray: #e7e7e7;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.step-button {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--prm-gray);
+    transition: .4s;
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+.step-button[aria-expanded="true"] {
+    width: 90px;
+    height: 90px;
+    background-color: var(--prm-color);
+    color: #fff;
+}
+
+.done {
+    background-color: var(--prm-color);
+    color: #fff;
+}
+
+.step-item {
+    z-index: 10;
+    text-align: center;
+    font-size: large;
+}
+
+#progress {
+    -webkit-appearance: none;
+    position: absolute;
+    width: 95%;
+    z-index: 5;
+    height: 15px;
+    margin-left: 18px;
+    margin-bottom: 18px;
+}
+
+/* to customize progress bar */
+#progress::-webkit-progress-value {
+    background-color: var(--prm-color);
+    transition: .5s ease;
+}
+
+#progress::-webkit-progress-bar {
+    background-color: var(--prm-gray);
+}
+
+/*tick*/
+

@@ -17,6 +17,23 @@ namespace C_bool.BLL.Services
             _placeRepository = placeRepository;
         }
 
+        public IQueryable<Place> GetAllQueryable()
+        {
+            return _placeRepository.GetAllQueryable();
+        }
+
+        public Place GetById(int placeId)
+        {
+            var places = _placeRepository.GetAllQueryable();
+            return places.SingleOrDefault(e => e.Id == placeId);
+        }
+
+        public Place GetById(string placeId)
+        {
+            var id = int.Parse(placeId);
+            return _placeRepository.GetAllQueryable().SingleOrDefault(x => id.Equals(x.Id));
+        }
+
         public List<Place> GetNearbyPlaces(double latitude, double longitude, double radius)
         {
             var queryPlaces = _placeRepository.GetAllQueryable();
@@ -31,24 +48,20 @@ namespace C_bool.BLL.Services
             return queryPlaces.Where(s => nearbyPlacesIds.Contains(s.Id));
         }
 
-        public Place GetPlaceById(int placeId)
-        {
-            var places = _placeRepository.GetAllQueryable();
-            return places.SingleOrDefault(e => e.Id == placeId);
-        }
-
-        public Place GetPlaceById(string placeId)
-        {
-            var id = int.Parse(placeId);
-            return _placeRepository.GetAllQueryable().SingleOrDefault(x => id.Equals(x.Id));
-        }
-
-        public void AddPlace(Place place)
+        public void Add(Place place)
         {
             if (place.GoogleId != null && _placeRepository.GetAllQueryable().Any(x => place.GoogleId.Equals(x.GoogleId))) return;
             place.IsActive = true;
             place.CreatedOn = DateTime.UtcNow;
             _placeRepository.Add(place);
+        }
+        public void Update(Place place)
+        {
+            _placeRepository.Update(place);
+        }
+        public void Delete(int placeId)
+        {
+            _placeRepository.Delete(placeId);
         }
     }
 }

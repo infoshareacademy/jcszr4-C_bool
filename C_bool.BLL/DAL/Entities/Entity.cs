@@ -6,5 +6,10 @@ namespace C_bool.BLL.DAL.Entities
     {
         public int Id { get; set; }
         public DateTime CreatedOn { get; set; }
+
+        public Entity()
+        {
+            CreatedOn = DateTime.UtcNow;
+        }
     }
 }
