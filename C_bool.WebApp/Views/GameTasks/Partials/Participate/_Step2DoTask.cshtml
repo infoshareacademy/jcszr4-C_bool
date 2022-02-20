@@ -4,8 +4,7 @@
 @using C_bool.WebApp.Models.Place
 @model C_bool.WebApp.Models.GameTask.GameTaskViewModel
 @{
-    var places = new List<PlaceViewModel>();
-    places.Add(Model.Place);
+    var places = new List<PlaceViewModel> { Model.Place };
     ViewData["places"] = places;
 }
 

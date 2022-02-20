@@ -20,28 +20,25 @@ namespace C_bool.WebApp.Helpers
                 "image/gif"
             };
 
-            if (files != null)
+            if (files is { Length: > 0 })
             {
-                if (files.Length > 0)
+                if (!acceptedTypes.Contains(files.ContentType))
                 {
-                    if (!acceptedTypes.Contains(files.ContentType))
-                    {
-                        message = "Image has unknown content type, or it's not a image";
-                        return null;
-                    }
-                    var fileName = Path.GetFileName(files.FileName);
-                    var fileExtension = Path.GetExtension(fileName);
-                    var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtension);
-                    string base64String;
-                    using (var target = new MemoryStream())
-                    {
-                        files.CopyTo(target);
-                        base64String = Convert.ToBase64String(target.ToArray());
-                    }
-
-                    message = "Image converted";
-                    return base64String;
+                    message = "Image has unknown content type, or it's not a image";
+                    return null;
                 }
+                var fileName = Path.GetFileName(files.FileName);
+                var fileExtension = Path.GetExtension(fileName);
+                var newFileName = String.Concat(Convert.ToString(Guid.NewGuid()), fileExtension);
+                string base64String;
+                using (var target = new MemoryStream())
+                {
+                    files.CopyTo(target);
+                    base64String = Convert.ToBase64String(target.ToArray());
+                }
+
+                message = "Image converted";
+                return base64String;
             }
 
             message = "Image is null";

@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using C_bool.BLL.Config;
 using C_bool.BLL.Models.GooglePlaces;
-using C_bool.WebApp.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

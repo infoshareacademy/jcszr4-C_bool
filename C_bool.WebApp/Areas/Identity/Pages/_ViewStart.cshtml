@@ -1,10 +1,4 @@
-﻿@{
-    if (Context.User.Identity.IsAuthenticated)
-    {
-        Layout = "/Views/Shared/_Layout.cshtml";
-    }
-    else
-    {
-        Layout = "/Views/Shared/_LoginLayout.cshtml";
-    }
+﻿
+@{
+    Layout = Context.User.Identity.IsAuthenticated ? "/Views/Shared/_Layout.cshtml" : "/Views/Shared/_LoginLayout.cshtml";
 }

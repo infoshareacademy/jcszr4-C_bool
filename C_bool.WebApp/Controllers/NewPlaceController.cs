@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using C_bool.BLL.Config;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Helpers;
 using C_bool.BLL.Models.GooglePlaces;

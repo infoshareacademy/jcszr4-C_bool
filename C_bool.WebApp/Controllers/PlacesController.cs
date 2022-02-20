@@ -26,8 +26,8 @@ namespace C_bool.WebApp.Controllers
     public class PlacesController : Controller
     {
         private readonly ILogger<PlacesController> _logger;
-        private IUserService _userService;
-        private IPlaceService _placesService;
+        private readonly IUserService _userService;
+        private readonly IPlaceService _placesService;
 
         private readonly IMapper _mapper;
 
@@ -141,7 +141,7 @@ namespace C_bool.WebApp.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             var userId = _userService.GetCurrentUserId();
             var place = _placesService.GetById(id);
@@ -180,7 +180,7 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
             _placesService.Delete(id);
             return RedirectToAction(nameof(Index));

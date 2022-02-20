@@ -86,14 +86,7 @@ namespace C_bool.BLL.Services
         {
             var user = _userRepository.GetById(userId);
 
-            if (user.IsActive)
-            {
-                user.IsActive = false;
-            }
-            else
-            {
-                user.IsActive = true;
-            }
+            user.IsActive = !user.IsActive;
 
             _userRepository.Update(user);
         }

@@ -95,12 +95,11 @@ namespace C_bool.WebApp.Controllers
         public JsonResult IsValid_TextCriterion(string type, string textCriterion)
         {
             Enum.TryParse(type, true, out TaskType typeEnum);
-            var message = "Ustaw swoje hasło do zaliczenia zadania";
             if (typeEnum == TaskType.TextEntry)
             {
                 if (textCriterion.IsNullOrEmpty())
                 {
-                    message = "Hasło nie może być puste";
+                    var message = "Hasło nie może być puste";
                     return Json(message);
                 }
                 else
