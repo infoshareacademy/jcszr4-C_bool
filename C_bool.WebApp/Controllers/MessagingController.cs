@@ -8,37 +8,33 @@ using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace C_bool.WebApp.Controllers
 {
+    [Authorize]
     public class MessagingController : Controller
     {
         private readonly ILogger<MessagingController> _logger;
         private readonly IUserService _userService;
-        private IRepository<Message> _messagesRepository;
-        private IRepository<User> _usersRepository;
         private readonly IMapper _mapper;
 
         public MessagingController(
             ILogger<MessagingController> logger,
             IMapper mapper,
-            IRepository<Message> messagesRepository, 
             IUserService userService, IRepository<User> usersRepository)
         {
             _logger = logger;
             _mapper = mapper;
-            _messagesRepository = messagesRepository;
             _userService = userService;
-            _usersRepository = usersRepository;
         }
-
         // GET: MessagingController
         public ActionResult Index()
         {
             var user = _userService.GetCurrentUser();
-            var model = (_usersRepository.GetAllQueryable()
+            var model = (_userService.GetAllQueryable()
                     .Where(x => x.Id == user.Id)
                     .Select(x => x.Messages)
                     .AsNoTracking()
@@ -53,7 +49,7 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Details(int id)
         {
             var user = _userService.GetCurrentUser();
-            var model = _usersRepository.GetAllQueryable().Where(x => x.Id == user.Id).SelectMany(x => x.Messages).SingleOrDefault(x => x.Id == id);
+            var model = _userService.GetAllQueryable().Where(x => x.Id == user.Id).SelectMany(x => x.Messages).SingleOrDefault(x => x.Id == id);
             return View(model);
         }
 

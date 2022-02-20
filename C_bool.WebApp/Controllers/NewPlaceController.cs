@@ -8,7 +8,6 @@ using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Helpers;
 using C_bool.BLL.Models.GooglePlaces;
-using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
@@ -112,7 +111,7 @@ namespace C_bool.WebApp.Controllers
                 placeModel.IsUserCreated = true;
                 placeModel.CreatedById = _usersService.GetCurrentUserId();
                 placeModel.Photo = ImageConverter.ConvertImage(file, out string message);
-                _placesService.AddPlace(placeModel);
+                _placesService.Add(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", "Places", new { id = placeModel.Id });
             }
@@ -149,8 +148,9 @@ namespace C_bool.WebApp.Controllers
             {
                 var googlePlace = _googlePlaceService.GetGooglePlaceById(request.Id);
                 var place = _mapper.Map<GooglePlace, Place>(googlePlace);
+                place.CreatedById = _usersService.GetCurrentUserId();
                 place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
-                _placesService.AddPlace(place);
+                _placesService.Add(place);
                 return Json(new { success = true, responseText = "Dodano do bazy!"});
             }
             catch (Exception ex)

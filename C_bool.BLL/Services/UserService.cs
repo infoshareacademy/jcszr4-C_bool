@@ -41,15 +41,19 @@ namespace C_bool.BLL.Services
             _userManager = userManager;
         }
 
-        //Andrzeju dopisałem
+        public IQueryable<User> GetAllQueryable()
+        {
+            return _userRepository.GetAllQueryable();
+        }
+
         public int GetCurrentUserId()
         {
-            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return int.Parse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         public User GetCurrentUser()
         {
-            var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier));
            
             return _userRepository.GetById(userId);
         }

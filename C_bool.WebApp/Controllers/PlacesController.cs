@@ -28,21 +28,18 @@ namespace C_bool.WebApp.Controllers
         private readonly ILogger<PlacesController> _logger;
         private IUserService _userService;
         private IPlaceService _placesService;
-        private IRepository<Place> _placesRepository;
 
         private readonly IMapper _mapper;
 
         public PlacesController(
             ILogger<PlacesController> logger,
             IMapper mapper,
-            IRepository<Place> placesRepository,
             IPlaceService placesService,
             IUserService userService
         )
         {
             _logger = logger;
             _mapper = mapper;
-            _placesRepository = placesRepository;
             _placesService = placesService;
             _userService = userService;
         }
@@ -89,11 +86,9 @@ namespace C_bool.WebApp.Controllers
 
             var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
 
-            //TODO: brzydka proteza, trzeba załatwić przez mapowanie może?
-            foreach (var item in model.Where(item => favPlacesId.Contains(item.Id)))
-            {
-                item.IsUserFavorite = true;
-            }
+            //mark model items as favorite
+            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
@@ -104,7 +99,7 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public IActionResult AddToFavs([FromBody] ReturnString request)
         {
-            var place = _placesService.GetPlaceById(request.Id);
+            var place = _placesService.GetById(request.Id);
             if (_userService.AddFavPlace(place))
             {
                 return Json(new { success = true, responseText = "Dodano do ulubionych!", isAdded = true });
@@ -117,7 +112,7 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult Details(int id)
         {
-            var model = _placesRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
+            var model = _placesService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
             ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
             ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
             return View(model);
@@ -149,7 +144,7 @@ namespace C_bool.WebApp.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var userId = _userService.GetCurrentUserId();
-            var place = _placesRepository.GetById(id);
+            var place = _placesService.GetById(id);
             if (place.CreatedById != userId)
             {
                 return Json(new { success = false, responseText = "Tylko twórca może edytować miejsce"});
@@ -166,7 +161,7 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, PlaceEditModel model, IFormFile file)
         {
-            var place = _placesRepository.GetById(id);
+            var place = _placesService.GetById(id);
             try
             {
                 if (!ModelState.IsValid)
@@ -175,7 +170,7 @@ namespace C_bool.WebApp.Controllers
                 }
                 place = _mapper.Map<PlaceEditModel, Place>(model, place);
                 if (file != null) { place.Photo = ImageConverter.ConvertImage(file, out string message); }
-                _placesRepository.Update(place);
+                _placesService.Update(place);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -187,7 +182,7 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            _placesRepository.Delete(id);
+            _placesService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
     }

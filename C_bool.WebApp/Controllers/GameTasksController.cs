@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+//todo: przeniesc repo do serwisów
 namespace C_bool.WebApp.Controllers
 {
     public class GameTasksController : Controller
@@ -31,9 +31,6 @@ namespace C_bool.WebApp.Controllers
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
 
-        private IRepository<GameTask> _gameTasksRepository;
-        private IRepository<UserGameTask> _userGameTasksRepository;
-        private IRepository<Place> _placesRepository;
 
         private readonly IMapper _mapper;
 
@@ -42,25 +39,63 @@ namespace C_bool.WebApp.Controllers
             IMapper mapper,
             IPlaceService placesService,
             IUserService usersService,
-            IGameTaskService gameTaskService,
-            IRepository<GameTask> gameTasksRepository,
-            IRepository<Place> placesRepository,
-            IRepository<UserGameTask> userGameTasksRepository)
+            IGameTaskService gameTaskService)
         {
             _logger = logger;
             _mapper = mapper;
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
-            _gameTasksRepository = gameTasksRepository;
-            _placesRepository = placesRepository;
-            _userGameTasksRepository = userGameTasksRepository;
         }
 
         [Authorize]
-        public ActionResult Index()
+        public async Task<IActionResult> Index(string searchString, bool searchOnlyFavs, bool searchOnlyWithTasks, double range)
         {
-            return View();
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+            if (range == 0) range = 100000;
+
+            ViewBag.Range = range / 1000;
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["OnlyFavs"] = searchOnlyFavs;
+            ViewData["OnlyTask"] = searchOnlyWithTasks;
+            ViewData["CurrentRange"] = range;
+            ViewData["MapZoom"] = range;
+
+            var placesWithTasksIds = await _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range).Where(p => p.Tasks.Any()).Select(x => x.Id).ToListAsync();
+
+            var tasks = _gameTaskService.GetAllQueryable().Where(x => placesWithTasksIds.Contains(x.Place.Id));
+
+            //search queries, based on user input
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                tasks = tasks.Where(x => x.Name.Contains(searchString) || x.ShortDescription.Contains(searchString) || x.Place.Name.Contains(searchString) || x.Place.Address.Contains(searchString));
+            }
+
+
+            if (searchOnlyFavs)
+            {
+                if (user.UserGameTasks != null)
+                {
+                    tasks = tasks.Where(x => _userService.GetAllTasks().Contains(x));
+                }
+            }
+
+            if (searchOnlyWithTasks)
+            {
+                tasks = tasks.Where(p => p.IsActive);
+            }
+
+            var model = _mapper.Map<List<GameTaskViewModel>>(tasks.AsNoTracking().Include(x => x.Place));
+
+
+            ViewBag.PlacesCount = tasks.Count();
+
+            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
+            return View(model);
         }
 
         [Authorize]
@@ -73,8 +108,8 @@ namespace C_bool.WebApp.Controllers
             // if user already completed task - get different view
             if (_userService.GetDoneTasks(user.Id).Any(x => x.Id == gameTaskId))
             {
-                var userGameTask = _userGameTasksRepository
-                    .GetAllQueryable()
+                var userGameTask = _gameTaskService
+                    .GetAllUserGameTasksQueryable()
                     .Where(x => x.GameTaskId == gameTaskId && x.UserId == user.Id)
                     .Include(x => x.User)
                     .Include(x => x.GameTask)
@@ -87,7 +122,7 @@ namespace C_bool.WebApp.Controllers
             // check if task is in user list - different buttons on view
             ViewData["IsInUserGameTasks"] = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId) != null;
 
-            var model = _gameTasksRepository
+            var model = _gameTaskService
                 .GetAllQueryable()
                 .Where(x => x.Id == gameTaskId)
                 .Include(x => x.Place)
@@ -99,7 +134,7 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public ActionResult ChooseToCreate(int placeId)
         {
-            var model = _mapper.Map<PlaceViewModel>(_placesService.GetPlaceById(placeId));
+            var model = _mapper.Map<PlaceViewModel>(_placesService.GetById(placeId));
             ViewData["PlaceId"] = placeId;
             return View(model);
         }
@@ -164,14 +199,12 @@ namespace C_bool.WebApp.Controllers
                 }
 
                 //assign necessary properties to newly created GameTask object & update repository
-                var place = _placesService.GetPlaceById(placeId);
+                var place = _placesService.GetById(placeId);
                 gameTaskModel.Place = place;
                 gameTaskModel.Photo = ImageConverter.ConvertImage(file, out string message);
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().UserName;
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId();
-                _gameTasksRepository.Add(gameTaskModel);
-                place.Tasks.Add(gameTaskModel);
-                _placesRepository.Update(place);
+                _gameTaskService.Add(gameTaskModel);
 
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
@@ -186,7 +219,7 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
-            var task = _gameTasksRepository.GetById(id); ;
+            var task = _gameTaskService.GetById(id); ;
             var roles = await _userService.GetUserRoles();
             if (task.CreatedById != _userService.GetCurrentUserId())
             {
@@ -212,14 +245,14 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, GameTaskEditModel model, IFormFile file)
         {
-            var gameTask = _gameTasksRepository
+            var gameTask = _gameTaskService
                 .GetAllQueryable()
                 .Where(x => x.Id == id)
                 .Include(x => x.Place)
                 .Include(x => x.UserGameTasks)
                 .FirstOrDefault();
 
-            model.Type = gameTask.Type;
+            model.Type = gameTask?.Type;
             try
             {
                 if (model.Type == TaskType.TextEntry && model.TextCriterion.IsNullOrEmpty())
@@ -239,7 +272,7 @@ namespace C_bool.WebApp.Controllers
 
                 gameTask = _mapper.Map<GameTaskEditModel, GameTask>(model, gameTask);
                 if (file != null) gameTask.Photo = ImageConverter.ConvertImage(file, out string message);
-                _gameTasksRepository.Update(gameTask);
+                _gameTaskService.Update(gameTask);
                 return RedirectToAction("Details", new { gameTaskId = gameTask.Id });
             }
             catch (Exception ex)
@@ -256,7 +289,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            var gameTask = _gameTasksRepository.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
+            var gameTask = _gameTaskService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
             var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
             return View(model);
         }
@@ -266,17 +299,9 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
         {
-            GameTaskStatus status;
-            string message = string.Empty;
-            string photoMessage = string.Empty;
             var user = _userService.GetCurrentUser();
-            var userGameTask = _userGameTasksRepository
-                .GetAllQueryable()
-                .Where(x => x.GameTaskId == gameTaskId && x.UserId == user.Id)
-                .Include(x => x.User)
-                .Include(x => x.GameTask)
-                .FirstOrDefault();
 
+            var userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
 
             if (userGameTask == null)
             {
@@ -289,47 +314,25 @@ namespace C_bool.WebApp.Controllers
                 return View("CustomError", error);
             }
 
-            userGameTask.ArrivalTime = DateTime.UtcNow;
-
-
-            if (userGameTask.GameTask.Type == TaskType.TextEntry)
-            {
-                userGameTask.TextCriterion = model.UserTextCriterion;
-            }
-            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto)
-            {
-                if (file == null) ModelState.AddModelError("Photo", "Nie wybrałeś zdjęcia");
-                else userGameTask.Photo = ImageConverter.ConvertImage(file, out photoMessage);
-                if (userGameTask.Photo == null) ModelState.AddModelError("Photo", "Zdjęcie jest nieprawidłowego formatu");
-            }
-
-            if (!ModelState.IsValid)
+            var base64Photo = ImageConverter.ConvertImage(file, out string photoMessage);
+            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto && base64Photo.IsNullOrEmpty())
             {
                 var error = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
                     Title = "Something went wrong...",
-                    Message = "No photo submitted or photo is in wrong format, try again"
+                    Message = $"No photo submitted or photo is in wrong format, try again: {photoMessage}"
                 };
                 return View("CustomError", error);
             }
 
-            _userGameTasksRepository.Update(userGameTask);
-
-            status = _gameTaskService.CompleteTask(gameTaskId, user.Id, out message);
+            _gameTaskService.AssignPropertiesFromParticipateModel(userGameTask, model.UserTextCriterion, base64Photo);
+            GameTaskStatus status = _gameTaskService.CompleteTask(gameTaskId, user.Id, out string message);
 
             if (status == GameTaskStatus.InReview)
             {
-                var messageToSend = new Message
-                {
-                    CreatedById = user.Id,
-                    CreatedByName = user.UserName,
-                    RootId = 0,
-                    ParentId = 0,
-                    Title = $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}",
-                    Body = HtmlRenderer.CheckTaskPhoto(userGameTask),
-                    IsViewed = false
-                };
+                var messageToSend = new Message(user.Id, user.UserName,
+                    $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}", HtmlRenderer.CheckTaskPhoto(userGameTask));
 
                 _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
                 return View("AfterDone/WaitForApproval");
@@ -355,7 +358,7 @@ namespace C_bool.WebApp.Controllers
         public ActionResult TaskDone(int gameTaskId)
         {
             var user = _userService.GetCurrentUser();
-            var gameTask = _gameTasksRepository.GetAllQueryable().FirstOrDefault(x => x.Id == gameTaskId);
+            var gameTask = _gameTaskService.GetAllQueryable().FirstOrDefault(x => x.Id == gameTaskId);
             
             ViewData["points"] = gameTask?.Points;
             ViewData["gameTaskId"] = gameTaskId;
@@ -370,7 +373,7 @@ namespace C_bool.WebApp.Controllers
             string message;
             var user = _userService.GetCurrentUser();
 
-            var taskToApprove = _userGameTasksRepository.GetAllQueryable()
+            var taskToApprove = _gameTaskService.GetAllUserGameTasksQueryable()
                 .Where(x => x.GameTask.CreatedById == user.Id)
                 .Where(x => !x.IsDone)
                 .Where(x => x.UserId == userToApproveId)
@@ -393,16 +396,9 @@ namespace C_bool.WebApp.Controllers
 
             if (status == GameTaskStatus.Done)
             {
-                var messageToSend = new Message
-                {
-                    CreatedById = user.Id,
-                    CreatedByName = user.UserName,
-                    RootId = 0,
-                    ParentId = 0,
-                    Title = $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!",
-                    Body = HtmlRenderer.CheckTaskPhoto(task),
-                    IsViewed = false
-                };
+                var messageToSend = new Message(user.Id, user.UserName,
+                    $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!", HtmlRenderer.CheckTaskPhoto(task));
+                
                 _userService.PostMessage(userToApproveId, messageToSend);
 
                     var viewMessageOk = new CustomErrorModel
@@ -428,7 +424,7 @@ namespace C_bool.WebApp.Controllers
         [HttpPost]
         public ActionResult AddToFavs([FromBody] ReturnString request)
         {
-            var gameTask = _gameTasksRepository.GetById(int.Parse(request.Id));
+            var gameTask = _gameTaskService.GetById(int.Parse(request.Id));
             if (_userService.AddTaskToUser(gameTask))
             {
                 return Json(new { success = true, responseText = "Dodano do twoich zadań!", isAdded = true });

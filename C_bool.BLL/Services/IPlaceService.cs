@@ -7,10 +7,13 @@ namespace C_bool.BLL.Services
 {
     public interface IPlaceService
     {
-        public List<Place> GetNearbyPlaces(double latitude, double longitude, double radius);
-        public IQueryable<Place> GetNearbyPlacesQueryable(double latitude, double longitude, double radius);
-        public Place GetPlaceById(int placeId);
-        public Place GetPlaceById(string placeId);
-        public void AddPlace(Place place);
+        IQueryable<Place> GetAllQueryable();
+        Place GetById(int placeId);
+        Place GetById(string placeId);
+        List<Place> GetNearbyPlaces(double latitude, double longitude, double radius);
+        IQueryable<Place> GetNearbyPlacesQueryable(double latitude, double longitude, double radius);
+        void Add(Place place);
+        void Update(Place place);
+        void Delete(int placeId);
     }
 }

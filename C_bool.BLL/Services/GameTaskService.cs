@@ -11,13 +11,31 @@ namespace C_bool.BLL.Services
     public class GameTaskService : IGameTaskService
     {
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
+        private readonly IRepository<GameTask> _gameTaskRepository;
 
-        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository)
+        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository)
         {
             _userGameTaskRepository = userGameTaskRepository;
+            _gameTaskRepository = gameTaskRepository;
         }
 
-        public UserGameTask GetById(int taskId)
+        public IQueryable<GameTask> GetAllQueryable()
+        {
+            return _gameTaskRepository.GetAllQueryable();
+        }
+
+        public IQueryable<UserGameTask> GetAllUserGameTasksQueryable()
+        {
+            return _userGameTaskRepository.GetAllQueryable();
+        }
+
+        public GameTask GetById(int taskId)
+        {
+            var gameTask = _gameTaskRepository.GetAllQueryable();
+            return gameTask.SingleOrDefault(e => e.Id == taskId);
+        }
+
+        public UserGameTask GetUserGameTaskById(int taskId)
         {
             var userGameTask = _userGameTaskRepository.GetAllQueryable();
             return userGameTask.SingleOrDefault(e => e.GameTaskId == taskId);
@@ -146,6 +164,16 @@ namespace C_bool.BLL.Services
             _userGameTaskRepository.Update(userGameTask);
         }
 
+        public void Add(GameTask gameTask)
+        {
+            _gameTaskRepository.Add(gameTask);
+        }
+
+        public void Update(GameTask gameTask)
+        {
+            _gameTaskRepository.Update(gameTask);
+        }
+
         private void SetUserTaskAsDone(UserGameTask userGameTask)
         {
             userGameTask.User.Points += userGameTask.GameTask.Points;
@@ -161,6 +189,19 @@ namespace C_bool.BLL.Services
                 }
             }
             _userGameTaskRepository.Update(userGameTask);
+        }
+
+        public void UpdateUserGameTask(UserGameTask userGameTask)
+        {
+            _userGameTaskRepository.Update(userGameTask);
+        }
+
+        public void AssignPropertiesFromParticipateModel(UserGameTask userGameTask, string textCriterion, string base64Image)
+        {
+            userGameTask.ArrivalTime = DateTime.UtcNow;
+            userGameTask.TextCriterion = textCriterion;
+            userGameTask.Photo = base64Image;
+            UpdateUserGameTask(userGameTask);
         }
     }
 }

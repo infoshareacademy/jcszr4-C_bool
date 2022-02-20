@@ -31,12 +31,10 @@ namespace C_bool.WebApp.Controllers
         private IConfiguration _configuration;
 
         private readonly ApplicationDbContext _context;
-        private IRepository<Place> _placesRepository;
-        private IRepository<User> _usersRepository;
-        private IRepository<GameTask> _gameTasksRepository;
 
         private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
+        private readonly IGameTaskService _gameTaskService;
         private readonly UserManager<User> _userManager;
 
 
@@ -45,23 +43,19 @@ namespace C_bool.WebApp.Controllers
             IMapper mapper,
             IConfiguration configuration,
             ApplicationDbContext context,
-            IRepository<Place> placesRepository,
-            IRepository<User> usersRepository,
-            IRepository<GameTask> gameTasksRepository,
             IPlaceService placesService,
             IUserService usersService,
-            UserManager<User> userManager)
+            UserManager<User> userManager, 
+            IGameTaskService gameTaskService)
         {
             _logger = logger;
             _mapper = mapper;
             _configuration = configuration;
             _context = context;
-            _placesRepository = placesRepository;
-            _usersRepository = usersRepository;
-            _gameTasksRepository = gameTasksRepository;
             _placesService = placesService;
             _userService = usersService;
             _userManager = userManager;
+            _gameTaskService = gameTaskService;
         }
 
         [Authorize]
@@ -74,19 +68,19 @@ namespace C_bool.WebApp.Controllers
             if (range == 0) range = 5000;
 
             //list of UserViewModel with top 10 users (by points count)
-            var usersCount = _usersRepository.GetAllQueryable().Count();
+            var usersCount = _userService.GetAllQueryable().Count();
             ViewBag.UserRank = _userService.OrderByPoints(true).GetRange(0,usersCount < 10 ? usersCount : 10 ).Select(x => _mapper.Map<UserViewModel>(x)).ToList();
 
             ViewBag.UserPoints = user.Points;
-            ViewBag.UserRankPosition = _usersRepository.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
+            ViewBag.UserRankPosition = _userService.GetAllQueryable().Count(x => x.Points > user.Points) + 1;
 
             //list of all places - count, last added
-            var places = _placesRepository.GetAllQueryable();
+            var places = _placesService.GetAllQueryable();
             ViewBag.AllPlacesCount = places.Count();
             ViewBag.LastAddedPlace = _mapper.Map<PlaceViewModel>(places.OrderBy(x=> x.CreatedOn).LastOrDefault());
 
             //list of all gametasks in places - count
-            var gameTasks = _gameTasksRepository.GetAllQueryable();
+            var gameTasks = _gameTaskService.GetAllQueryable();
             //ViewBag.ActiveTasksCount = gameTasks.Count(x => x.IsActive);
             ViewBag.ActiveTasksCount = gameTasks.Count();
             ViewBag.LastAddedGameTask = gameTasks.OrderBy(x => x.CreatedOn).LastOrDefault();
