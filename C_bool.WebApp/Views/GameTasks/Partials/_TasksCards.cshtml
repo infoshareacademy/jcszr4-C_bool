@@ -1,0 +1,130 @@
+﻿@using C_bool.BLL.Logic
+@using System.Globalization
+@using C_bool.BLL.Config
+@using C_bool.BLL.DAL.Entities
+@using C_bool.BLL.Enums
+@using C_bool.WebApp.Config
+@using Castle.Core.Internal
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject UserManager<User> UserManager
+@model IEnumerable<C_bool.WebApp.Models.GameTask.GameTaskViewModel>
+
+<div class="card-group task-card-group">
+    @foreach (var item in Model)
+    {
+        var image = !item.Photo.IsNullOrEmpty() ? item.Photo : item.Place.Photo;
+        var defaultStyle = "";
+        var style = "";
+        var active = item.IsActive;
+        var completed = item.IsUserCompleted;
+        var overdue = item.ValidThru < DateTime.UtcNow && item.ValidThru != DateTime.MinValue;
+
+        style = item.Type == TaskType.Event ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #bb6666 100%)" : defaultStyle;
+        style = item.Type == TaskType.TextEntry ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #456e99 100%)" : style;
+        style = item.Type == TaskType.TakeAPhoto ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #6a997f 100%)" : style;
+        style = item.Type == TaskType.CheckInToALocation ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #a2ad48 100%)" : style;
+        style = !active || completed || overdue ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #000000 100%)" : style;
+
+        var btnClass = "";
+        if (item.IsUserFavorite) btnClass = "btn-fav";
+
+        string readableDistance = @SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, item.Place.Latitude, item.Place.Longitude));
+
+        <div class="card task-card text-white task-card-has-bg click-col"
+             style="background-image: url('data:image/png;base64,@image'); background-size: 200%; min-width: 450px; max-width: 600px; margin: 10px;">
+            <a class="stretched-link" asp-action="Details" asp-route-gameTaskId="@item.Id"></a>
+            <img class="card-img task-card-img d-none" src="https://source.unsplash.com/600x900/?tech,street"
+                 alt="@item.Name">
+            <div class="card-img-overlay task-card-img-overlay d-flex flex-column" style="@style">
+
+                <div class="card-body task-card-body">
+
+                    @if (active && !overdue && !completed && item.IsDoneLimited && item.LeftDoneAttempts < 20)
+                    {
+                        <span class="badge rounded-pill bg-indigo">Pozostało @item.LeftDoneAttempts miejsc!</span>
+                    }
+                    @if (overdue)
+                    {
+                        <span class="badge rounded-pill bg-warning">Po terminie</span>
+                    }
+                    @if (!active)
+                    {
+                        <span class="badge rounded-pill bg-danger">Nieaktywne</span>
+                    }
+                    <small class="mb-2">@Html.DisplayFor(modelItem => item.Type)</small>
+                    <br/>
+                    <h3 class="card-title mb-2">
+                        <a class="text-white text-decoration-none" herf="#">@item.Name</a>
+                    </h3>
+                    <p class="text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="far fa-info"></i>@item.ShortDescription</p>
+                    <small><i class="far fa-compass"></i> <b>@readableDistance</b> od Ciebie</small>
+                    <br>
+                    <small><i class="far fa-bookmark"></i> @item.Place.Name</small>
+                    <br>
+                    @if (item.ValidFrom != DateTime.MinValue && item.ValidThru != DateTime.MinValue)
+                    {
+                        <small><i class="far fa-clock"></i> @item.ValidFrom.ToString("dddd, d MMM hh:mm") - @item.ValidThru.ToString("dddd, d MMM hh:mm") UTC</small>
+                    }
+
+
+                </div>
+
+                <div class="card-footer task-card-footer d-flex justify-content-between" style="z-index: 2; position: relative;">
+                    <form method="post" style="display: flex; justify-content: left;">
+                        <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+
+                            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Place.Latitude.ToString(CultureInfo.InvariantCulture), @item.Place.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                            @if (completed)
+                            {
+                                <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-light @btnClass" onclick="addToFavs('GameTasks', 'AddToFavs', '@item.Id')"><l class="bi-heart"> Dodaj do listy</l></button>
+                            }
+                            
+                        </div>
+                    </form>
+                    <span class="badge badge-lg bg-indigo text-lg-center">@item.Points CBL</span>
+                </div>
+            </div>
+
+        </div>
+    }
+    </div>
+
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć wskazane miejsce?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
+            </div>
+        </div>
+    </div>
+</div>

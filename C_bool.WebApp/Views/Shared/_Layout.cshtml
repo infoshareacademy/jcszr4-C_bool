@@ -135,7 +135,15 @@
                                     <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
                                 </svg>
                             </span><span class="sidebar-text">Wiadomości</span>
-                        </span><span class="badge badge-sm bg-danger badge-pill notification-count">4</span>
+                        </span>
+                        @{
+                            var count = UserManager.GetUserAsync(User).Result.Messages.Count(x => !x.IsViewed);
+                            @if (count > 0)
+                            {
+                                <span class="badge badge-sm bg-danger badge-pill notification-count">@count</span>
+                            }
+                        }
+
                     </a>
                 </li>
                 <li class="nav-item ">
@@ -224,6 +232,15 @@
                                         @* <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>*@
                                     </span>
                                     <span class="sidebar-text">W pobliżu</span>
+                                </a>
+                            </li>
+                            <li class="nav-item @(controller == "gametasks" && action == "index" ? "active" : "")">
+                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compass" viewBox="0 0 496 512"><path fill="currentColor" d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z" /></svg>
+                                        @* <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>*@
+                                    </span>
+                                    <span class="sidebar-text">Do zrobienia</span>
                                 </a>
                             </li>
                             <li class="nav-item @(controller == "gametasks" && action == "mytasks" ? "active" : "")">

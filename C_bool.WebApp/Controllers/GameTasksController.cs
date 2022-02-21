@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Context;
@@ -49,7 +50,13 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, bool searchOnlyFavs, bool searchOnlyWithTasks, double range)
+        public async Task<IActionResult> Index(string searchString, 
+            bool onlyUserFavs, 
+            bool onlyActive, 
+            bool onlyNotDone, 
+            int createdById,
+            int placeId,
+            double range)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
@@ -60,14 +67,17 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Range = range / 1000;
 
             ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyFavs"] = searchOnlyFavs;
-            ViewData["OnlyTask"] = searchOnlyWithTasks;
+            ViewData["OnlyFavs"] = onlyUserFavs;
+            ViewData["OnlyTask"] = onlyActive;
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
 
             var placesWithTasksIds = await _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range).Where(p => p.Tasks.Any()).Select(x => x.Id).ToListAsync();
 
             var tasks = _gameTaskService.GetAllQueryable().Where(x => placesWithTasksIds.Contains(x.Place.Id));
+            var favTasksId = await tasks.Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
+            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
+
 
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
@@ -75,8 +85,12 @@ namespace C_bool.WebApp.Controllers
                 tasks = tasks.Where(x => x.Name.Contains(searchString) || x.ShortDescription.Contains(searchString) || x.Place.Name.Contains(searchString) || x.Place.Address.Contains(searchString));
             }
 
+            if (onlyActive)
+            {
+                tasks = tasks.Where(p => p.IsActive).Where(x => x.ValidThru != DateTime.MinValue && x.ValidThru >= DateTime.UtcNow);
+            }
 
-            if (searchOnlyFavs)
+            if (onlyUserFavs)
             {
                 if (user.UserGameTasks != null)
                 {
@@ -84,18 +98,17 @@ namespace C_bool.WebApp.Controllers
                 }
             }
 
-            if (searchOnlyWithTasks)
-            {
-                tasks = tasks.Where(p => p.IsActive);
-            }
-
             var model = _mapper.Map<List<GameTaskViewModel>>(tasks.AsNoTracking().Include(x => x.Place));
+            model.Where(item => favTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            model.Where(item => completedTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserCompleted = true);
+            model.Where(item => item.ValidThru != DateTime.MinValue && item.ValidThru > DateTime.UtcNow).ToList().ForEach(x => x.IsOverdue = true);
 
+            var ordered = model.OrderByDescending(x => x.IsUserCompleted).ThenByDescending(x => x.IsOverdue).ThenByDescending(x => x.IsActive);
 
             ViewBag.PlacesCount = tasks.Count();
 
-            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
-            return View(model);
+            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących zadań", StatusMessage.Status.INFO);
+            return View(ordered);
         }
 
         [Authorize]
