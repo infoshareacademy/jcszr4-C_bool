@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
-using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
-using C_bool.BLL.Repositories;
+using C_bool.BLL.Logic;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
@@ -17,12 +14,10 @@ using C_bool.WebApp.Models.Place;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-//todo: przeniesc repo do serwisów
+
 namespace C_bool.WebApp.Controllers
 {
     public class GameTasksController : Controller
@@ -51,6 +46,7 @@ namespace C_bool.WebApp.Controllers
 
         [Authorize]
         public async Task<IActionResult> Index(string searchString, 
+            string sortBy,
             bool onlyUserFavs, 
             bool onlyActive, 
             bool onlyNotDone, 
@@ -71,6 +67,7 @@ namespace C_bool.WebApp.Controllers
             ViewData["OnlyTask"] = onlyActive;
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
+            ViewData["IsInPlaceView"] = false;
 
             var placesWithTasksIds = await _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range).Where(p => p.Tasks.Any()).Select(x => x.Id).ToListAsync();
 
@@ -92,23 +89,49 @@ namespace C_bool.WebApp.Controllers
 
             if (onlyUserFavs)
             {
-                if (user.UserGameTasks != null)
-                {
-                    tasks = tasks.Where(x => _userService.GetAllTasks().Contains(x));
-                }
+                tasks = tasks.Where(x => _userService.GetAllTasks().Contains(x));
             }
 
-            var model = _mapper.Map<List<GameTaskViewModel>>(tasks.AsNoTracking().Include(x => x.Place));
-            model.Where(item => favTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
-            model.Where(item => completedTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserCompleted = true);
-            model.Where(item => item.ValidThru != DateTime.MinValue && item.ValidThru > DateTime.UtcNow).ToList().ForEach(x => x.IsOverdue = true);
+            if (onlyNotDone)
+            {
+                tasks = tasks.Where(x => !_userService.GetDoneTasks().Contains(x));
+            }
 
-            var ordered = model.OrderByDescending(x => x.IsUserCompleted).ThenByDescending(x => x.IsOverdue).ThenByDescending(x => x.IsActive);
+            // sort order
+            tasks = sortBy switch
+            {
+                "name" => tasks.OrderBy(s => s.Name),
+                "name_desc" => tasks.OrderByDescending(s => s.Name),
+                "active" => tasks.OrderBy(s => s.IsActive),
+                "active_desc" => tasks.OrderByDescending(s => s.IsActive),
+                "from_date" => tasks.OrderBy(s => s.ValidFrom),
+                "from_date_desc" => tasks.OrderByDescending(s => s.ValidFrom),
+                _ => tasks.OrderBy(s => s.IsActive)
+            };
+
+            var model = _mapper.Map<List<GameTaskViewModel>>(tasks.AsNoTracking().Include(x => x.Place));
+            await AssignViewModelProperties(model);
 
             ViewBag.PlacesCount = tasks.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących zadań", StatusMessage.Status.INFO);
-            return View(ordered);
+            return View(model);
+        }
+
+        private async Task AssignViewModelProperties(List<GameTaskViewModel> model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favTasksId = await _gameTaskService.GetAllQueryable().Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
+            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
+
+            // is user favorite
+            model.Where(item => favTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            // is user completed
+            model.Where(item => completedTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserCompleted = true);
+            // is overdue
+            model.Where(item => item.ValidThru != DateTime.MinValue && item.ValidThru > DateTime.UtcNow).ToList().ForEach(x => x.IsOverdue = true);
+            // distance from user
+            model.ForEach(x => x.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(x.Place.Latitude, x.Place.Longitude, user.Latitude, user.Longitude));
         }
 
         [Authorize]

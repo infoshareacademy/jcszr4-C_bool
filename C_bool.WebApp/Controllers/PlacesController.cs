@@ -85,14 +85,26 @@ namespace C_bool.WebApp.Controllers
             }
 
             var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
+            await AssignViewModelProperties(model);
 
-            //mark model items as favorite
-            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            model.OrderByDescending(x => x.DistanceFromUser);
+            
 
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
             return View(model);
+        }
+
+        private async Task AssignViewModelProperties(List<PlaceViewModel> model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favPlacesId = await _placesService.GetAllQueryable().Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToListAsync();
+
+            // mark model items as favorite
+            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            // add distance to model
+            model.ForEach(x => x.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(x.Latitude, x.Longitude, user.Latitude, user.Longitude));
         }
 
         [Authorize]

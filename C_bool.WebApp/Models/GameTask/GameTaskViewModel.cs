@@ -12,6 +12,7 @@ namespace C_bool.WebApp.Models.GameTask
         public int Id { get; set; }
         public int PlaceId { get; set; }
         public PlaceViewModel Place { get; set; }
+        public double DistanceFromUser { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string Description { get; set; }

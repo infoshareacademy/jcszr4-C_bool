@@ -30,12 +30,12 @@
         var btnClass = "";
         if (item.IsUserFavorite) btnClass = "btn-fav";
 
-        string readableDistance = @SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, item.Place.Latitude, item.Place.Longitude));
+        string readableDistance = @SearchNearbyPlaces.ReadableDistance(item.DistanceFromUser);
 
         <div class="card task-card text-white task-card-has-bg click-col"
-             style="background-image: url('data:image/png;base64,@image'); background-size: 200%; min-width: 450px; max-width: 600px; margin: 10px;">
+             style="background-image: url('data:image;base64,@image'); background-size: 200%; min-width: 450px; max-width: 600px; margin: 10px;">
             <a class="stretched-link" asp-action="Details" asp-route-gameTaskId="@item.Id"></a>
-            <img class="card-img task-card-img d-none" src="https://source.unsplash.com/600x900/?tech,street"
+            <img class="card-img task-card-img d-none" src="data:image/png;base64,@image"
                  alt="@item.Name">
             <div class="card-img-overlay task-card-img-overlay d-flex flex-column" style="@style">
 
@@ -54,7 +54,7 @@
                         <span class="badge rounded-pill bg-danger">Nieaktywne</span>
                     }
                     <small class="mb-2">@Html.DisplayFor(modelItem => item.Type)</small>
-                    <br/>
+                    <br />
                     <h3 class="card-title mb-2">
                         <a class="text-white text-decoration-none" herf="#">@item.Name</a>
                     </h3>
@@ -74,13 +74,8 @@
                 <div class="card-footer task-card-footer d-flex justify-content-between" style="z-index: 2; position: relative;">
                     <form method="post" style="display: flex; justify-content: left;">
                         <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
-
                             <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Place.Latitude.ToString(CultureInfo.InvariantCulture), @item.Place.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                            @if (completed)
-                            {
-                                <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-light @btnClass" onclick="addToFavs('GameTasks', 'AddToFavs', '@item.Id')"><l class="bi-heart"> Dodaj do listy</l></button>
-                            }
-                            
+                            <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-light @btnClass" onclick="addToFavs('GameTasks', 'AddToFavs', '@item.Id')"><l class="bi-heart"> Dodaj do listy</l></button>
                         </div>
                     </form>
                     <span class="badge badge-lg bg-indigo text-lg-center">@item.Points CBL</span>
@@ -89,7 +84,7 @@
 
         </div>
     }
-    </div>
+</div>
 
 <!-- MapModal -->
 <div class="modal" id="mapModal">
