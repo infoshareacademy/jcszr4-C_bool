@@ -14,6 +14,7 @@ using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.GameTask;
 using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -51,7 +52,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            if (range == 0) range = 100000;
+            if (range == 0) range = 40000000;
 
             ViewBag.Range = range / 1000;
 
@@ -125,9 +126,11 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Details(int id)
         {
             var model = _placesService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
+            var modelMapped = _mapper.Map<PlaceViewModel>(model);
+
             ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
             ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
-            return View(model);
+            return View(modelMapped);
         }
 
         [Authorize]

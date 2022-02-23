@@ -30,7 +30,6 @@
         </span>
         <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
         <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie zadania" value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
-        @*<a asp-action="Index" class="btn btn-outline-secondary" role="button">Wyczyść</a>*@
         <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
         <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
     </div>
@@ -41,10 +40,16 @@
         <div class="tab-content" id="tabcontent1">
             <div class="tab-pane fade show active" style="" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
 
+
                 @if (Model != null && Model.Any())
                 {
-                    <!-- Patial with Card style places list -->
-                    <partial name="Partials/_TasksCards" model="Model" />
+                    <div class="card-group task-card-group">
+                        @foreach (var item in Model)
+                        {
+                            <!-- Patial with Card style places list -->
+                            <partial name="Partials/_TasksCard" model="item" />
+                        }
+                    </div>
                 }
                 else
                 {
@@ -56,9 +61,47 @@
                 }
             </div>
             <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                <div  style="height: calc(100vh - 160px);">
+                <div style="height: calc(100vh - 160px);">
                     @await Component.InvokeAsync("MapView", new { placesList = (Model?.Select(x => x.Place) ?? Array.Empty<C_bool.WebApp.Models.Place.PlaceViewModel>()).ToList(), range = @ViewData["MapZoom"], noBounds = true })
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MapModal -->
+<div class="modal" id="mapModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="background-color: gainsboro; width: 100%; height: 600px"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete place Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Usuń</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Czy na pewno chcesz usunąć wskazane miejsce?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-danger">Usuń</button>
             </div>
         </div>
     </div>

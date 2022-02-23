@@ -11,6 +11,7 @@ namespace C_bool.WebApp.Models.Place
         public double DistanceFromUser { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }
+        public string Description { get; set; }
         public string Address { get; set; }
         public int ActiveTaskCount { get; set; }
         public IList<GameTaskViewModel> Tasks { get; set; }

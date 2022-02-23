@@ -12,6 +12,7 @@ namespace C_bool.WebApp.Models.Profiles
         public GameTaskProfile()
         {
             CreateMap<BLL.DAL.Entities.GameTask, GameTaskViewModel>();
+            CreateMap<BLL.DAL.Entities.UserGameTask, UserGameTaskViewModel>();
             CreateMap<GameTaskEditModel, BLL.DAL.Entities.GameTask>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<BLL.DAL.Entities.GameTask, GameTaskEditModel>()

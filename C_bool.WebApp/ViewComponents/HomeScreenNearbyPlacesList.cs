@@ -11,7 +11,6 @@ namespace C_bool.WebApp.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList)
         {
-
             return View("HomeScreenNearbyPlacesList", placesList);
         }
     }

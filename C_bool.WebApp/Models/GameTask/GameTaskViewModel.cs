@@ -16,6 +16,7 @@ namespace C_bool.WebApp.Models.GameTask
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string Description { get; set; }
+        public string AfterDoneMessage { get; set; }
         public string Photo { get; set; }
         public TaskType Type { get; set; }
         public int Points { get; set; }
