@@ -19,26 +19,33 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly ILogger<MessagingController> _logger;
         private readonly IUserService _userService;
+        private readonly IMessagingService _messagingService;
         private readonly IMapper _mapper;
 
         public MessagingController(
             ILogger<MessagingController> logger,
             IMapper mapper,
-            IUserService userService, IRepository<User> usersRepository)
+            IUserService userService, IRepository<User> usersRepository, 
+            IMessagingService messagingService)
         {
             _logger = logger;
             _mapper = mapper;
             _userService = userService;
+            _messagingService = messagingService;
         }
         // GET: MessagingController
         public ActionResult Index()
         {
             var user = _userService.GetCurrentUser();
-            var model = (_userService.GetAllQueryable()
-                    .Where(x => x.Id == user.Id)
-                    .Select(x => x.Messages)
-                    .AsNoTracking()
-                    .SingleOrDefault() ?? new List<Message>())
+            //var model = (_userService.GetAllQueryable()
+            //        .Where(x => x.Id == user.Id)
+            //        .Select(x => x.Messages)
+            //        .AsNoTracking()
+            //        .SingleOrDefault() ?? new List<Message>())
+            //    .OrderByDescending(x => x.CreatedOn)
+            //    .ToList();
+
+            var model = _messagingService.GetUserMessages(user.Id)
                 .OrderByDescending(x => x.CreatedOn)
                 .ToList();
 
@@ -95,25 +102,31 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-        // GET: MessagingController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         // POST: MessagingController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id)
         {
-            try
+            var message = _messagingService.GetMessageById(id);
+            if (message == null) return Json(new { success = false, responseText = "Nie znaleziono wiadomości" });
+            _messagingService.Delete(message);
+            return Json(new { success = true, responseText = "Wiadomość usunięta" });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult MarkAsRead([FromBody] ReturnString request)
+        {
+            var message = _messagingService.GetMessageById(int.Parse(request.Id));
+            if (message == null) return Json(new { success = false, responseText = "Nie znaleziono wiadomości"});
+            if (message.IsViewed)
             {
-                return RedirectToAction(nameof(Index));
+                _messagingService.MarkAsRead(message, false);
+                return Json(new { success = true, responseText = "Oznaczono jako nieprzeczytane"});
             }
-            catch
-            {
-                return View();
-            }
+            _messagingService.MarkAsRead(message, true);
+            return Json(new { success = true, responseText = "Oznaczono jako przeczytane" });
         }
     }
 }

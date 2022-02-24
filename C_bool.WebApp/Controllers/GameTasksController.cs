@@ -45,8 +45,11 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString,
+        public async Task<IActionResult> Index(
+            string searchString,
+            string taskType,
             string sortBy,
+            bool sortOrder,
             bool onlyUserFavs,
             bool onlyActive,
             bool onlyNotDone,
@@ -62,10 +65,15 @@ namespace C_bool.WebApp.Controllers
 
             ViewBag.Range = range / 1000;
 
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyFavs"] = onlyUserFavs;
-            ViewData["OnlyTask"] = onlyActive;
-            ViewData["CurrentRange"] = range;
+            ViewData["searchString"] = searchString;
+            ViewData["taskType"] = taskType;
+            ViewData["sortBy"] = sortBy;
+            ViewData["sortOrder"] = sortOrder;
+            ViewData["onlyUserFavs"] = onlyUserFavs;
+            ViewData["onlyActive"] = onlyActive;
+            ViewData["onlyNotDone"] = onlyNotDone;
+            ViewData["userCreated"] = userCreated;
+            ViewData["range"] = range;
             ViewData["MapZoom"] = range;
             ViewData["IsInPlaceView"] = false;
 
@@ -80,6 +88,12 @@ namespace C_bool.WebApp.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 tasks = tasks.Where(x => x.Name.Contains(searchString) || x.ShortDescription.Contains(searchString) || x.Place.Name.Contains(searchString) || x.Place.Address.Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(taskType))
+            {
+                Enum.TryParse(taskType, true, out TaskType type);
+                tasks = tasks.Where(x => x.Type == type);
             }
 
             if (onlyActive)
@@ -106,13 +120,10 @@ namespace C_bool.WebApp.Controllers
             tasks = sortBy switch
             {
                 "name" => tasks.OrderBy(s => s.Name),
-                "name_desc" => tasks.OrderByDescending(s => s.Name),
                 "active" => tasks.OrderBy(s => s.IsActive),
-                "active_desc" => tasks.OrderByDescending(s => s.IsActive),
                 "from_date" => tasks.OrderBy(s => s.ValidFrom),
-                "from_date_desc" => tasks.OrderByDescending(s => s.ValidFrom),
+                "to_date" => tasks.OrderBy(s => s.ValidThru),
                 "create_date" => tasks.OrderBy(s => s.CreatedOn),
-                "create_date_desc" => tasks.OrderByDescending(s => s.CreatedOn),
                 _ => tasks.OrderBy(s => s.IsActive)
             };
 
@@ -122,9 +133,10 @@ namespace C_bool.WebApp.Controllers
             model = sortBy switch
             {
                 "distance" => model.OrderBy(x => x.DistanceFromUser).ToList(),
-                "distance_desc" => model.OrderByDescending(s => s.ValidFrom).ToList(),
                 _ => model
             };
+
+            if (sortOrder) model.Reverse();
 
             ViewBag.PlacesCount = tasks.Count();
 
@@ -146,15 +158,15 @@ namespace C_bool.WebApp.Controllers
             }
 
             // get model
-            var model = _gameTaskService
+            var model = await _gameTaskService
                 .GetAllQueryable()
                 .Where(x => x.Id == gameTaskId)
                 .Include(x => x.Place)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             // return details view or redirect to "participate" action
 
-            if (model != null && model.CreatedById == user.Id) return View(model);
+            if (model != null && model.CreatedById == user.Id) return RedirectToAction("UserCreatedDetails", new { id = gameTaskId });
 
             if (model != null) return RedirectToAction("Participate", new { id = gameTaskId });
 
@@ -169,6 +181,35 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
+        public async Task<ActionResult> UserCreatedDetails(int id)
+        {
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+
+            // get model
+            var model = await _gameTaskService
+                .GetAllQueryable()
+                .Where(x => x.Id == id)
+                .Include(x => x.Place)
+                .FirstOrDefaultAsync();
+
+
+            if (model != null && model.CreatedById == user.Id) return View("Details", model);
+
+
+            var error = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "Something went wrong...",
+                Message = "You are not authorized to view this task in Creator mode"
+            };
+            return View("CustomError", error);
+
+        }
+
+        [Authorize]
         public async Task<ActionResult> TaskDoneDetails(int id)
         {
 
@@ -177,13 +218,13 @@ namespace C_bool.WebApp.Controllers
             // if user already completed task - get different view
             if (_userService.GetDoneTasks(user.Id).Any(x => x.Id == id))
             {
-                var userGameTask = _gameTaskService
+                var userGameTask = await _gameTaskService
                     .GetAllUserGameTasksQueryable()
                     .Where(x => x.GameTaskId == id && x.UserId == user.Id)
                     .Include(x => x.User)
                     .Include(x => x.GameTask)
                     .ThenInclude(x => x.Place)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
 
                 var userGameTaskModel = _mapper.Map<UserGameTaskViewModel>(userGameTask);
                 await AssignViewModelProperties(userGameTaskModel.GameTask);
@@ -193,7 +234,7 @@ namespace C_bool.WebApp.Controllers
             var error = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "Something went wrong...",
+                Title = "Task not found...",
                 Message = "Game task with specified ID was not found"
             };
             return View("CustomError", error);
@@ -233,7 +274,7 @@ namespace C_bool.WebApp.Controllers
                     var error = new CustomErrorModel
                     {
                         RequestId = Request.Headers["RequestId"],
-                        Title = "Cannot complete operation",
+                        Title = "Cannot edit this task",
                         Message = "Only the author, administrator or moderator can edit the content of a task"
                     };
                     return View("CustomError", error);
@@ -263,6 +304,17 @@ namespace C_bool.WebApp.Controllers
                 };
                 return View("CustomError", error);
             }
+            if (gameTask.CreatedById == user.Id)
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Cannot participate in own quests",
+                    Message = "The creator cannot participate in the quest, go play somewhere else :-)"
+                };
+                return View("CustomError", error);
+            }
+
             var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
             await AssignViewModelProperties(model);
             return View(model);
@@ -548,6 +600,9 @@ namespace C_bool.WebApp.Controllers
             var favTasksId = await _gameTaskService.GetAllQueryable().Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
             var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
 
+            // is created by current user
+            if (model.CreatedById == user.Id)
+                model.IsUserCreated = true;
             // is user favorite
             if (favTasksId.Contains(model.Id))
                 model.IsUserFavorite = true;
@@ -568,6 +623,8 @@ namespace C_bool.WebApp.Controllers
             var favTasksId = await _gameTaskService.GetAllQueryable().Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
             var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
 
+            // is created by current user
+            model.Where(item => item.CreatedById == user.Id).ToList().ForEach(x => x.IsUserCreated = true);
             // is user favorite
             model.Where(item => favTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
             // is user completed

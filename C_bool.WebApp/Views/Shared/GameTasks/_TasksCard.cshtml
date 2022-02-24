@@ -49,7 +49,7 @@
             {
                 <p class="badge badge-lg bg-c-blue">Zdobyłeś @Model.Points cebul!</p>
             }
-            <br />
+            <br/>
             @if (completed)
             {
                 <span class="badge rounded-pill bg-c-green">Zadanie zaliczone!</span>
@@ -88,7 +88,10 @@
             <form method="post" style="display: flex; justify-content: left;">
                 <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
                     <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Place.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Place.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                    <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary @btnClass" data-bs-toggle="modal" data-bs-target="@Html.Raw($"#modal-gametask{Model.Id}")" onclick="addToFavs('GameTasks', 'AddToFavs', '@Model.Id')"><l class="bi-star"> Dodaj do listy</l></button>
+                    @if (!Model.IsUserCreated)
+                    {
+                        <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary @btnClass" data-bs-toggle="modal" data-bs-target="@Html.Raw($"#modal-gametask{Model.Id}")" onclick="addToFavs('GameTasks', 'AddToFavs', '@Model.Id')"><l class="bi-star"> Dodaj do listy</l></button>
+                    }
                 </div>
             </form>
             @if (!completed)

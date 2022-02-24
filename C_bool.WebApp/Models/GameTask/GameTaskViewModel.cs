@@ -23,12 +23,13 @@ namespace C_bool.WebApp.Models.GameTask
         public DateTime ValidFrom { get; set; }
         public DateTime ValidThru { get; set; }
         public bool IsActive { get; set; }
-        public string CreatedById { get; set; }
+        public int CreatedById { get; set; }
         public string CreatedByName { get; set; }
         public bool IsDoneLimited { get; set; }
         public int LeftDoneAttempts { get; set; }
         public bool IsUserFavorite { get; set; }
         public bool IsUserCompleted { get; set; }
         public bool IsOverdue { get; set; }
+        public bool IsUserCreated { get; set; }
     }
 }

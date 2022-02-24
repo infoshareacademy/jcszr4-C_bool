@@ -58,6 +58,7 @@ namespace C_bool.WebApp
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMessagingService, MessagingService>();
             services.AddTransient<DatabaseSeeder>();
 
 
