@@ -1,9 +1,9 @@
+using C_bool.BLL.Config;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Helpers;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
-using C_bool.WebApp.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using C_bool.BLL.Config;
+using System.Net;
+using System.Net.Mail;
 
 namespace C_bool.WebApp
 {
@@ -58,6 +59,7 @@ namespace C_bool.WebApp
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
             services.AddTransient<DatabaseSeeder>();
 
 
@@ -74,6 +76,20 @@ namespace C_bool.WebApp
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);
 
+            //FluentEmail
+            services
+                .AddFluentEmail(Configuration["SmtpClient:UserName"])
+                .AddSmtpSender(new SmtpClient()
+                {
+                    Host = Configuration["SmtpClient:Host"],
+                    Port = int.Parse(Configuration["SmtpClient:Port"]),
+                    EnableSsl = true,
+                    UseDefaultCredentials = false,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Credentials = new NetworkCredential(
+                        Configuration["SmtpClient:UserName"],
+                        Configuration["SmtpClient:Password"])
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

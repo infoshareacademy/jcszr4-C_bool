@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using AutoMapper;
-using C_bool.BLL.DAL.Context;
+﻿using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
-using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
@@ -16,11 +9,13 @@ using C_bool.WebApp.Models.Place;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 //todo: przeniesc repo do serwisów
 namespace C_bool.WebApp.Controllers
 {
@@ -30,6 +25,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
+        private readonly IEmailSenderService _emailSenderService;
 
 
         private readonly IMapper _mapper;
@@ -39,13 +35,16 @@ namespace C_bool.WebApp.Controllers
             IMapper mapper,
             IPlaceService placesService,
             IUserService usersService,
-            IGameTaskService gameTaskService)
+            IGameTaskService gameTaskService,
+            IEmailSenderService emailSenderService
+            )
         {
             _logger = logger;
             _mapper = mapper;
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
+            _emailSenderService = emailSenderService;
         }
 
         [Authorize]
@@ -333,6 +332,8 @@ namespace C_bool.WebApp.Controllers
             {
                 var messageToSend = new Message(user.Id, user.UserName,
                     $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}", HtmlRenderer.CheckTaskPhoto(userGameTask));
+
+                _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
 
                 _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
                 return View("AfterDone/WaitForApproval");
