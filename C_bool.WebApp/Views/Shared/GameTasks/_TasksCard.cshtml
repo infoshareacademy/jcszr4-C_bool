@@ -1,0 +1,134 @@
+﻿@using C_bool.BLL.Logic
+@using System.Globalization
+@using C_bool.BLL.Config
+@using C_bool.BLL.DAL.Entities
+@using C_bool.BLL.Enums
+@using C_bool.WebApp.Config
+@using Castle.Core.Internal
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
+@inject UserManager<User> UserManager
+@model C_bool.WebApp.Models.GameTask.GameTaskViewModel
+
+
+@{
+    var minWidth = ViewData["minWidth"];
+
+    var minWidthStr = minWidth == null ? "450px" : minWidth.ToString();
+
+    var image = !Model.Photo.IsNullOrEmpty() ? Model.Photo : Model.Place.Photo;
+    var defaultStyle = "";
+    var style = "";
+    var active = Model.IsActive;
+    var completed = Model.IsUserCompleted;
+    var overdue = Model.IsOverdue;
+
+    style = Model.Type == TaskType.Event ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #bb6666 100%)" : defaultStyle;
+    style = Model.Type == TaskType.TextEntry ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #456e99 100%)" : style;
+    style = Model.Type == TaskType.TakeAPhoto ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #6a997f 100%)" : style;
+    style = Model.Type == TaskType.CheckInToALocation ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #a2ad48 100%)" : style;
+    style = !active || completed || overdue ? "background: linear-gradient(0deg, rgba(4, 69, 114, 0.5) 0%, #000000 100%)" : style;
+
+    var btnClass = "";
+    if (Model.IsUserFavorite) btnClass = "btn-fav";
+
+    string readableDistance = @SearchNearbyPlaces.ReadableDistance(Model.DistanceFromUser);
+}
+
+<div class="card task-card text-white task-card-has-bg click-col"
+     style="background-image: url('data:image;base64,@image'); background-size: 200%; min-width: @minWidthStr; margin: 10px;">
+    <a class="stretched-link" asp-controller="GameTasks" asp-action="Details" asp-route-gameTaskId="@Model.Id"></a>
+    <img class="card-img task-card-img d-none" src="data:image/png;base64,@image"
+         alt="@Model.Name">
+    <div class="card-img-overlay task-card-img-overlay d-flex flex-column" style="@style">
+
+        <div class="card-body task-card-body">
+
+            @if (completed)
+            {
+                <p class="badge badge-lg bg-c-blue">Zdobyłeś @Model.Points cebul!</p>
+            }
+            <br/>
+            @if (completed)
+            {
+                <span class="badge rounded-pill bg-c-green">Zadanie zaliczone!</span>
+            }
+            @if (active && !overdue && !completed && Model.IsDoneLimited && Model.LeftDoneAttempts < 20)
+            {
+                <span class="badge rounded-pill bg-indigo">Pozostało @Model.LeftDoneAttempts miejsc!</span>
+            }
+            @if (overdue)
+            {
+                <span class="badge rounded-pill bg-warning">Po terminie</span>
+            }
+            @if (!active)
+            {
+                <span class="badge rounded-pill bg-danger">Nieaktywne</span>
+            }
+            <small class="mb-2">@Html.DisplayFor(modelItem => Model.Type)</small>
+            <br />
+            <h3 class="card-title mb-2">
+                <a class="text-white text-decoration-none" herf="#">@Model.Name</a>
+            </h3>
+            <p class="text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="far fa-info"></i>@Model.ShortDescription</p>
+            <small><i class="far fa-compass"></i> <b>@readableDistance</b> od Ciebie</small>
+            <br>
+            <small><i class="far fa-bookmark"></i> @Model.Place.Name</small>
+            <br>
+            @if (Model.ValidFrom != DateTime.MinValue && Model.ValidThru != DateTime.MinValue)
+            {
+                <small><i class="far fa-clock"></i> @Model.ValidFrom.ToString("dddd, d MMM hh:mm") - @Model.ValidThru.ToString("dddd, d MMM hh:mm") UTC</small>
+            }
+
+
+        </div>
+
+        <div class="card-footer task-card-footer d-flex justify-content-between" style="z-index: 2; position: relative;">
+            <form method="post" style="display: flex; justify-content: left;">
+                <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Place.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Place.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
+                    @if (!Model.IsUserCreated)
+                    {
+                        <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary @btnClass" data-bs-toggle="modal" data-bs-target="@Html.Raw($"#modal-gametask{Model.Id}")" onclick="addToFavs('GameTasks', 'AddToFavs', '@Model.Id')"><l class="bi-star"> Dodaj do listy</l></button>
+                    }
+                </div>
+            </form>
+            @if (!completed)
+            {
+                <span class="badge badge-lg bg-indigo text-lg-center">@Model.Points CBL</span>
+            }
+        </div>
+    </div>
+
+</div>
+
+<!-- Game task modal -->
+<div class="modal fade" id="@Html.Raw($"modal-gametask{Model.Id}")" tabindex="-1" aria-labelledby="@Html.Raw($"modal-gametask{Model.Id}")" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-info modal-dialog-centered" role="document">
+        <div class="modal-content bg-gradient-secondary">
+            <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload()"></button>
+            <div class="modal-header">
+                <p class="modal-title text-gray-200" id="modal-title-notification">Tutaj zaczyna się zabawa!</p>
+            </div>
+            <div class="modal-body text-white">
+                <div class="py-3 text-center">
+                    <span class="modal-icon">
+                        <svg class="icon icon-xl text-gray-200" data-darkreader-inline-fill="" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    <h2 class="h4 modal-title my-3">Bierzesz udział w @Model.Name!</h2>
+                    <p>Zadanie @Model.Name zostało dodane do Twojej listy, możesz je wykonać teraz (o ile spełniasz kryteria) lub później, przechodząc do listy zadań <b>Do zrobienia</b></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary btn-lg" asp-controller="GameTasks" asp-action="Participate" asp-route-id="@Model.Id">
+                    <l class="bi-star"> Wykonuję zadanie!</l>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+

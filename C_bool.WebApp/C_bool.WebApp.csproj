@@ -45,6 +45,9 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.7.0" />
+    <PackageReference Include="Serilog.UI" Version="2.1.1" />
+    <PackageReference Include="Serilog.UI.MsSqlServerProvider" Version="2.1.1" />
     <PackageReference Include="TinyMCE" Version="5.10.2" />
   </ItemGroup>
 

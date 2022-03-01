@@ -114,9 +114,13 @@
             {
                 @await Html.PartialAsync("Partials/Participate/TaskTypes/_TakeAPhoto", new GameTaskParticipateModel())
             }
-
+            @{
+                var disabled = "";
+                if (!Model.IsActive || Model.IsOverdue || Model.IsUserCompleted) disabled = "disabled";
+            }
+            
             <div class="form-group">
-                <input type="submit" value="Wykonaj zadanie!" class="btn btn-success btn-lg d-block" style="margin-top: 15px;" />
+                <input type="submit" value="Wykonaj zadanie!" class="btn btn-success btn-lg d-block" @disabled style="margin-top: 15px;" />
             </div>
 
         </form>

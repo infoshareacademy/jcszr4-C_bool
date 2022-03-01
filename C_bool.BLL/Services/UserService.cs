@@ -145,7 +145,7 @@ namespace C_bool.BLL.Services
             var usersGameTasks = _userGameTaskRepository.GetAllQueryable();
             var currentUserId = GetCurrentUserId();
 
-            return usersGameTasks.Where(ugt => ugt.UserId == currentUserId && !ugt.IsDone)
+            return usersGameTasks.Where(ugt => ugt.UserId == currentUserId)
                 .Select(ugt => ugt.GameTask).ToList();
         }
 

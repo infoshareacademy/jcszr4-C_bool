@@ -1,4 +1,6 @@
-﻿@using C_bool.WebApp.Config
+﻿@*View used to show game task details ONLY for user who created this task*@
+
+@using C_bool.WebApp.Config
 @using Microsoft.Extensions.Options
 @using System.Globalization
 @using C_bool.BLL.Config
@@ -12,7 +14,6 @@
 
 @{
     ViewData["Title"] = "Szczegóły zadania";
-    var isInUserTasks = (bool)ViewData["IsInUserGameTasks"];
 }
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -95,48 +96,24 @@
                     </div>
                 }
                 <br />
-
-                <!--fav button style if task is in favorities-->
-                @{
-                    var btnClass = "";
-                    if (isInUserTasks) btnClass = "btn-fav";
-                }
                 <!--buttons to gametask-->
                 <form method="post" style="display: flex;">
                     <ul class="list-group list-group-flush">
                         <div class="btn-group-lg" role="group" aria-label="Basic example" style="margin: 4px;">
-                            @if (isInUserTasks)
+
+                            <a class="btn btn-fav btn-lg" type="button" asp-action="Edit" asp-route-id="@Model.Id"><l class="bi bi-pencil"> Edytuj</l></a>
+                            @if (Model.IsActive)
                             {
-                                <a class="btn btn-fav btn-lg" type="button" asp-action="Participate" asp-route-id="@Model.Id"><l class="bi bi-star"> Wykonuję zadanie!</l></a>
-                                <a class="btn btn-primary btn-lg" type="button" asp-action="Participate" asp-route-id="@Model.Id"><l class="bi bi-emoji-frown"> Rezygnuję</l></a>
+                                <a class="btn btn-primary btn-lg" type="button" asp-action="ChangeActiveStatus" asp-route-id="@Model.Id" asp-route-active="false"><l class="bi bi-emoji-frown"> Oznacz jako nieaktywne</l></a>
                             }
                             else
                             {
-                                <button id="@Html.Raw($"favIndicatorId{Model.Id}")" type="button" class="btn btn-secondary @btnClass" data-bs-toggle="modal" data-bs-target="#modal-gametask" onclick="addToFavs('GameTasks', 'AddToFavs', '@Model.Id')"><l class="bi-star"> Biorę udział!</l></button>
+                                <a class="btn btn-primary btn-lg" type="button" asp-action="ChangeActiveStatus" asp-route-id="@Model.Id" asp-route-active="true"><l class="bi bi-emoji-smile"> Aktywuj zadanie</l></a>
                             }
+
                             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@Model.Place.Latitude.ToString(CultureInfo.InvariantCulture), @Model.Place.Longitude.ToString(CultureInfo.InvariantCulture))">
                                 <l class="bi-map"> Mapa</l>
                             </button>
-                            @if (Model.CreatedById != null && UserManager.GetUserId(User) == Model.CreatedById.ToString())
-                            {
-                                <div class="btn">
-                                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <l class="bi-three-dots"></l>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id"><l class="bi-pencil"> Edytuj</l></a></li>
-                                        <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "GameTasks", new { id = Model.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
-                                    </ul>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="btn">
-                                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="popover" title="Informacja" data-bs-content="Tylko twórca zadania lub administrator może je edytować.">
-                                        <l class="bi-three-dots"></l>
-                                    </button>
-                                </div>
-                            }
                         </div>
                     </ul>
                 </form>
