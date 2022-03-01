@@ -133,26 +133,6 @@ namespace C_bool.WebApp.Controllers
             return View(modelMapped);
         }
 
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         [Authorize]
         public IActionResult Edit(int id)

@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using C_bool.BLL.Config;
+using C_bool.WebApp.Middleware;
+using Serilog.Ui.MsSqlServerProvider;
+using Serilog.Ui.Web;
 
 namespace C_bool.WebApp
 {
@@ -61,6 +64,8 @@ namespace C_bool.WebApp
             services.AddTransient<IMessagingService, MessagingService>();
             services.AddTransient<DatabaseSeeder>();
 
+            services.AddSerilogUi(options => options.UseSqlServer(Configuration.GetConnectionString("Database"), "Logs"));
+
 
 
             //Google API Http client
@@ -99,6 +104,11 @@ namespace C_bool.WebApp
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSerilogUi();
+
+            //Error handler middleware
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             dataContext.Database.Migrate();
 

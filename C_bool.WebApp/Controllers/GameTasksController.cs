@@ -98,7 +98,7 @@ namespace C_bool.WebApp.Controllers
 
             if (onlyActive)
             {
-                tasks = tasks.Where(p => p.IsActive).Where(x => x.ValidThru != DateTime.MinValue && x.ValidThru >= DateTime.UtcNow);
+                tasks = tasks.Where(p => p.IsActive).Where(x => x.ValidThru >= DateTime.UtcNow || x.ValidThru == DateTime.MinValue);
             }
 
             if (onlyUserFavs)
@@ -124,6 +124,7 @@ namespace C_bool.WebApp.Controllers
                 "from_date" => tasks.OrderBy(s => s.ValidFrom),
                 "to_date" => tasks.OrderBy(s => s.ValidThru),
                 "create_date" => tasks.OrderBy(s => s.CreatedOn),
+                "type" => tasks.OrderBy(s => s.Type),
                 _ => tasks.OrderBy(s => s.IsActive)
             };
 
