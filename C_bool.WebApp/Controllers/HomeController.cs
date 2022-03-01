@@ -105,12 +105,12 @@ namespace C_bool.WebApp.Controllers
                                            || s.ShortDescription.Contains(searchString));
             }
 
+            places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
+
             if (searchOnlyWithTasks)
             {
-                places = places.Where(p => p.Tasks.Any());
+                places = places.Where(p => p.Tasks.Any()).Where(x => x.Tasks.All(x => x.IsActive));
             }
-
-            places = places.Include(x => x.Tasks).OrderByDescending(x => x.Tasks.Count);
 
             var placesList = _mapper.Map<List<PlaceViewModel>>(places);
 

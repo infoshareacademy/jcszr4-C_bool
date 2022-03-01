@@ -1,6 +1,12 @@
-﻿using AutoMapper;
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
+using C_bool.BLL.Logic;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
@@ -12,11 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-//todo: przeniesc repo do serwisów
+
 namespace C_bool.WebApp.Controllers
 {
     public class GameTasksController : Controller
@@ -48,25 +50,44 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, bool searchOnlyFavs, bool searchOnlyWithTasks, double range)
+        public async Task<IActionResult> Index(
+            string searchString,
+            string taskType,
+            string sortBy,
+            bool sortOrder,
+            bool onlyUserFavs,
+            bool onlyActive,
+            bool onlyNotDone,
+            bool userCreated,
+            int placeId,
+            double range)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            if (range == 0) range = 100000;
+            if (range == 0) range = 40000000;
 
             ViewBag.Range = range / 1000;
 
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyFavs"] = searchOnlyFavs;
-            ViewData["OnlyTask"] = searchOnlyWithTasks;
-            ViewData["CurrentRange"] = range;
+            ViewData["searchString"] = searchString;
+            ViewData["taskType"] = taskType;
+            ViewData["sortBy"] = sortBy;
+            ViewData["sortOrder"] = sortOrder;
+            ViewData["onlyUserFavs"] = onlyUserFavs;
+            ViewData["onlyActive"] = onlyActive;
+            ViewData["onlyNotDone"] = onlyNotDone;
+            ViewData["userCreated"] = userCreated;
+            ViewData["range"] = range;
             ViewData["MapZoom"] = range;
+            ViewData["IsInPlaceView"] = false;
 
             var placesWithTasksIds = await _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range).Where(p => p.Tasks.Any()).Select(x => x.Id).ToListAsync();
 
             var tasks = _gameTaskService.GetAllQueryable().Where(x => placesWithTasksIds.Contains(x.Place.Id));
+            var favTasksId = await tasks.Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
+            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
+
 
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
@@ -74,31 +95,63 @@ namespace C_bool.WebApp.Controllers
                 tasks = tasks.Where(x => x.Name.Contains(searchString) || x.ShortDescription.Contains(searchString) || x.Place.Name.Contains(searchString) || x.Place.Address.Contains(searchString));
             }
 
-
-            if (searchOnlyFavs)
+            if (!string.IsNullOrEmpty(taskType))
             {
-                if (user.UserGameTasks != null)
-                {
-                    tasks = tasks.Where(x => _userService.GetAllTasks().Contains(x));
-                }
+                Enum.TryParse(taskType, true, out TaskType type);
+                tasks = tasks.Where(x => x.Type == type);
             }
 
-            if (searchOnlyWithTasks)
+            if (onlyActive)
             {
-                tasks = tasks.Where(p => p.IsActive);
+                tasks = tasks.Where(p => p.IsActive).Where(x => x.ValidThru >= DateTime.UtcNow || x.ValidThru == DateTime.MinValue);
             }
+
+            if (onlyUserFavs)
+            {
+                tasks = tasks.Where(x => _userService.GetAllTasks().Contains(x));
+            }
+
+            if (onlyNotDone)
+            {
+                tasks = tasks.Where(x => !_userService.GetDoneTasks().Contains(x));
+            }
+
+            if (userCreated)
+            {
+                tasks = tasks.Where(x => x.CreatedById == user.Id);
+            }
+
+            // sort order
+            tasks = sortBy switch
+            {
+                "name" => tasks.OrderBy(s => s.Name),
+                "active" => tasks.OrderBy(s => s.IsActive),
+                "from_date" => tasks.OrderBy(s => s.ValidFrom),
+                "to_date" => tasks.OrderBy(s => s.ValidThru),
+                "create_date" => tasks.OrderBy(s => s.CreatedOn),
+                "type" => tasks.OrderBy(s => s.Type),
+                _ => tasks.OrderBy(s => s.IsActive)
+            };
 
             var model = _mapper.Map<List<GameTaskViewModel>>(tasks.AsNoTracking().Include(x => x.Place));
+            await AssignViewModelProperties(model);
 
+            model = sortBy switch
+            {
+                "distance" => model.OrderBy(x => x.DistanceFromUser).ToList(),
+                _ => model
+            };
+
+            if (sortOrder) model.Reverse();
 
             ViewBag.PlacesCount = tasks.Count();
 
-            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
+            ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących zadań", StatusMessage.Status.INFO);
             return View(model);
         }
 
         [Authorize]
-        public ActionResult Details(int gameTaskId)
+        public async Task<ActionResult> Details(int gameTaskId)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
@@ -107,27 +160,91 @@ namespace C_bool.WebApp.Controllers
             // if user already completed task - get different view
             if (_userService.GetDoneTasks(user.Id).Any(x => x.Id == gameTaskId))
             {
-                var userGameTask = _gameTaskService
-                    .GetAllUserGameTasksQueryable()
-                    .Where(x => x.GameTaskId == gameTaskId && x.UserId == user.Id)
-                    .Include(x => x.User)
-                    .Include(x => x.GameTask)
-                    .ThenInclude(x => x.Place)
-                    .FirstOrDefault();
-
-                return View("AfterDone/TaskDone", userGameTask);
+                return RedirectToAction("TaskDoneDetails", new { id = gameTaskId });
             }
 
-            // check if task is in user list - different buttons on view
-            ViewData["IsInUserGameTasks"] = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId) != null;
-
-            var model = _gameTaskService
+            // get model
+            var model = await _gameTaskService
                 .GetAllQueryable()
                 .Where(x => x.Id == gameTaskId)
                 .Include(x => x.Place)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-            return View(model);
+            // return details view or redirect to "participate" action
+
+            if (model != null && model.CreatedById == user.Id) return RedirectToAction("UserCreatedDetails", new { id = gameTaskId });
+
+            if (model != null) return RedirectToAction("Participate", new { id = gameTaskId });
+
+            var error = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "Something went wrong...",
+                Message = "Game task with specified ID was not found"
+            };
+            return View("CustomError", error);
+
+        }
+
+        [Authorize]
+        public async Task<ActionResult> UserCreatedDetails(int id)
+        {
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+
+            // get model
+            var model = await _gameTaskService
+                .GetAllQueryable()
+                .Where(x => x.Id == id)
+                .Include(x => x.Place)
+                .FirstOrDefaultAsync();
+
+
+            if (model != null && model.CreatedById == user.Id) return View("Details", model);
+
+
+            var error = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "Something went wrong...",
+                Message = "You are not authorized to view this task in Creator mode"
+            };
+            return View("CustomError", error);
+
+        }
+
+        [Authorize]
+        public async Task<ActionResult> TaskDoneDetails(int id)
+        {
+
+            var user = _userService.GetCurrentUser();
+
+            // if user already completed task - get different view
+            if (_userService.GetDoneTasks(user.Id).Any(x => x.Id == id))
+            {
+                var userGameTask = await _gameTaskService
+                    .GetAllUserGameTasksQueryable()
+                    .Where(x => x.GameTaskId == id && x.UserId == user.Id)
+                    .Include(x => x.User)
+                    .Include(x => x.GameTask)
+                    .ThenInclude(x => x.Place)
+                    .FirstOrDefaultAsync();
+
+                var userGameTaskModel = _mapper.Map<UserGameTaskViewModel>(userGameTask);
+                await AssignViewModelProperties(userGameTaskModel.GameTask);
+                return View("AfterDone/TaskDone", userGameTaskModel);
+            }
+
+            var error = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "Task not found...",
+                Message = "Game task with specified ID was not found"
+            };
+            return View("CustomError", error);
+
         }
 
         [Authorize]
@@ -136,6 +253,143 @@ namespace C_bool.WebApp.Controllers
             var model = _mapper.Map<PlaceViewModel>(_placesService.GetById(placeId));
             ViewData["PlaceId"] = placeId;
             return View(model);
+        }
+
+        [Authorize]
+        public ActionResult Create(int placeId, string taskType)
+        {
+            Enum.TryParse(taskType, true, out TaskType typeEnum);
+
+            ViewData["PlaceId"] = placeId;
+            ViewData["TaskType"] = typeEnum;
+
+            if (typeEnum == TaskType.CheckInToALocation) { }
+
+            return View();
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Edit(int id)
+        {
+            var task = _gameTaskService.GetById(id); ;
+            var roles = await _userService.GetUserRoles();
+            if (task.CreatedById != _userService.GetCurrentUserId())
+            {
+                if (!roles.Contains("Admin") || roles.Contains("Moderator"))
+                {
+                    var error = new CustomErrorModel
+                    {
+                        RequestId = Request.Headers["RequestId"],
+                        Title = "Cannot edit this task",
+                        Message = "Only the author, administrator or moderator can edit the content of a task"
+                    };
+                    return View("CustomError", error);
+                }
+            }
+            var model = _mapper.Map<GameTask, GameTaskEditModel>(task);
+
+
+            return View("Edit", model);
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Participate(int id)
+        {
+            var user = _userService.GetCurrentUser();
+            ViewBag.Latitude = user.Latitude;
+            ViewBag.Longitude = user.Longitude;
+
+            var gameTask = _gameTaskService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
+            if (gameTask == null)
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Something went wrong...",
+                    Message = "Task with specified ID was not found"
+                };
+                return View("CustomError", error);
+            }
+            if (gameTask.CreatedById == user.Id)
+            {
+                var error = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Cannot participate in own quests",
+                    Message = "The creator cannot participate in the quest, go play somewhere else :-)"
+                };
+                return View("CustomError", error);
+            }
+
+            var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
+            await AssignViewModelProperties(model);
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult AfterDoneSplashScreen(int gameTaskId)
+        {
+            var user = _userService.GetCurrentUser();
+            var gameTask = _gameTaskService.GetAllQueryable().FirstOrDefault(x => x.Id == gameTaskId);
+
+            ViewData["points"] = gameTask?.Points;
+            ViewData["gameTaskId"] = gameTaskId;
+
+            return View("AfterDone/Congratulations");
+
+        }
+
+        [Authorize]
+        public ActionResult ApproveUserSubmission(int userToApproveId, int gameTaskId, int extraPoints)
+        {
+            string message;
+            var user = _userService.GetCurrentUser();
+
+            var taskToApprove = _gameTaskService.GetAllUserGameTasksQueryable()
+                .Where(x => x.GameTask.CreatedById == user.Id)
+                .Where(x => !x.IsDone)
+                .Where(x => x.UserId == userToApproveId)
+                .Where(x => x.GameTaskId == gameTaskId);
+
+            if (!taskToApprove.Any())
+            {
+                var viewMessageOnNoTask = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "No task to approve",
+                    Message = "No task to approve with given criteria or you have no permission to approve this task"
+                };
+                return View("CustomError", viewMessageOnNoTask);
+            }
+
+            var task = taskToApprove.FirstOrDefault();
+
+            GameTaskStatus status = _gameTaskService.ManuallyCompleteTask(task.GameTaskId, userToApproveId, extraPoints, out message);
+
+            if (status == GameTaskStatus.Done)
+            {
+                var messageToSend = new Message(user.Id, user.UserName,
+                    $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!", HtmlRenderer.CheckTaskPhoto(task));
+
+                _userService.PostMessage(userToApproveId, messageToSend);
+
+                var viewMessageOk = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Task approved",
+                    Message = "You approved user submission!",
+                    Type = CustomErrorModel.MessageType.Success
+                };
+                return View("CustomError", viewMessageOk);
+
+            }
+            var viewMessageOnError = new CustomErrorModel
+            {
+                RequestId = Request.Headers["RequestId"],
+                Title = "No task to approve",
+                Message = "No task to approve with given criteria or you have no permission to approve this task"
+            };
+            return View("CustomError", viewMessageOnError);
         }
 
         [Authorize]
@@ -154,19 +408,6 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
-
-        [Authorize]
-        public ActionResult Create(int placeId, string taskType)
-        {
-            Enum.TryParse(taskType, true, out TaskType typeEnum);
-
-            ViewData["PlaceId"] = placeId;
-            ViewData["TaskType"] = typeEnum;
-
-            if (typeEnum == TaskType.CheckInToALocation) { }
-
-            return View();
-        }
 
         [Authorize]
         [HttpPost]
@@ -216,30 +457,6 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<ActionResult> Edit(int id)
-        {
-            var task = _gameTaskService.GetById(id); ;
-            var roles = await _userService.GetUserRoles();
-            if (task.CreatedById != _userService.GetCurrentUserId())
-            {
-                if (!roles.Contains("Admin") || roles.Contains("Moderator"))
-                {
-                    var error = new CustomErrorModel
-                    {
-                        RequestId = Request.Headers["RequestId"],
-                        Title = "Cannot complete operation",
-                        Message = "Only the author, administrator or moderator can edit the content of a task"
-                    };
-                    return View("CustomError", error);
-                }
-            }
-            var model = _mapper.Map<GameTask, GameTaskEditModel>(task);
-
-
-            return View("Edit", model);
-        }
-
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, GameTaskEditModel model, IFormFile file)
@@ -282,18 +499,6 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public ActionResult Participate(int id)
-        {
-            var user = _userService.GetCurrentUser();
-            ViewBag.Latitude = user.Latitude;
-            ViewBag.Longitude = user.Longitude;
-
-            var gameTask = _gameTaskService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Place).SingleOrDefault();
-            var model = _mapper.Map<GameTask, GameTaskViewModel>(gameTask);
-            return View(model);
-        }
-
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
@@ -304,13 +509,8 @@ namespace C_bool.WebApp.Controllers
 
             if (userGameTask == null)
             {
-                var error = new CustomErrorModel
-                {
-                    RequestId = Request.Headers["RequestId"],
-                    Title = "Something went wrong...",
-                    Message = "Task is not assigned to user, you have to add task to your list first"
-                };
-                return View("CustomError", error);
+                _userService.AddTaskToUser(_gameTaskService.GetById(gameTaskId));
+                userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
             }
 
             var base64Photo = ImageConverter.ConvertImage(file, out string photoMessage);
@@ -351,74 +551,8 @@ namespace C_bool.WebApp.Controllers
             }
 
 
-            return RedirectToAction("TaskDone", new { gameTaskId = userGameTask.GameTask.Id });
+            return RedirectToAction("AfterDoneSplashScreen", new { gameTaskId = userGameTask.GameTask.Id });
 
-        }
-
-        [Authorize]
-        public ActionResult TaskDone(int gameTaskId)
-        {
-            var user = _userService.GetCurrentUser();
-            var gameTask = _gameTaskService.GetAllQueryable().FirstOrDefault(x => x.Id == gameTaskId);
-            
-            ViewData["points"] = gameTask?.Points;
-            ViewData["gameTaskId"] = gameTaskId;
-
-            return View("AfterDone/Congratulations");
-
-        }
-
-        [Authorize]
-        public ActionResult ApproveUserSubmission(int userToApproveId, int gameTaskId, int extraPoints)
-        {
-            string message;
-            var user = _userService.GetCurrentUser();
-
-            var taskToApprove = _gameTaskService.GetAllUserGameTasksQueryable()
-                .Where(x => x.GameTask.CreatedById == user.Id)
-                .Where(x => !x.IsDone)
-                .Where(x => x.UserId == userToApproveId)
-                .Where(x => x.GameTaskId == gameTaskId);
-
-            if (!taskToApprove.Any())
-            {
-                var viewMessageOnNoTask = new CustomErrorModel
-                {
-                    RequestId = Request.Headers["RequestId"],
-                    Title = "No task to approve",
-                    Message = "No task to approve with given criteria or you have no permission to approve this task"
-                };
-                return View("CustomError", viewMessageOnNoTask);
-            }
-
-            var task = taskToApprove.FirstOrDefault();
-
-            GameTaskStatus status = _gameTaskService.ManuallyCompleteTask(task.GameTaskId, userToApproveId, extraPoints, out message);
-
-            if (status == GameTaskStatus.Done)
-            {
-                var messageToSend = new Message(user.Id, user.UserName,
-                    $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!", HtmlRenderer.CheckTaskPhoto(task));
-                
-                _userService.PostMessage(userToApproveId, messageToSend);
-
-                    var viewMessageOk = new CustomErrorModel
-                    {
-                        RequestId = Request.Headers["RequestId"],
-                        Title = "Task approved",
-                        Message = "You approved user submission!",
-                        Type = CustomErrorModel.MessageType.Success
-                    };
-                    return View("CustomError", viewMessageOk);
-                
-            }
-            var viewMessageOnError = new CustomErrorModel
-            {
-                RequestId = Request.Headers["RequestId"],
-                Title = "No task to approve",
-                Message = "No task to approve with given criteria or you have no permission to approve this task"
-            };
-            return View("CustomError", viewMessageOnError);
         }
 
         [Authorize]
@@ -433,25 +567,82 @@ namespace C_bool.WebApp.Controllers
             return Json(new { success = true, responseText = "Te zadanie jest już w Twojej kolejce!", isAdded = true });
         }
 
-        [Authorize]
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [HttpGet]
+        public ActionResult ChangeActiveStatus(int id, bool active)
         {
-            try
+            var user = _userService.GetCurrentUser();
+            var gameTask = _gameTaskService.GetAllQueryable()
+                .Where(x => x.CreatedById == user.Id)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (gameTask != null)
             {
-                return RedirectToAction(nameof(Index));
+                gameTask.IsActive = active;
+                _gameTaskService.Update(gameTask);
+
+                var viewMessageOk = new CustomErrorModel
+                {
+                    RequestId = Request.Headers["RequestId"],
+                    Title = "Task status changed",
+                    Message = $"You changed task status to {(active ? "active, other users can join now." : "inactive, from now no one can complete this task.")}",
+                    Type = CustomErrorModel.MessageType.Success
+                };
+                return View("CustomError", viewMessageOk);
             }
-            catch
+            var viewMessageOnError = new CustomErrorModel
             {
-                return View();
-            }
+                RequestId = Request.Headers["RequestId"],
+                Title = "No task to change",
+                Message = "No task to change with given criteria or you have no permission to change this task"
+            };
+            return View("CustomError", viewMessageOnError);
         }
+
+        #region private methods
+
+        private async Task AssignViewModelProperties(GameTaskViewModel model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favTasksId = await _gameTaskService.GetAllQueryable().Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
+            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
+
+            // is created by current user
+            if (model.CreatedById == user.Id)
+                model.IsUserCreated = true;
+            // is user favorite
+            if (favTasksId.Contains(model.Id))
+                model.IsUserFavorite = true;
+            // is user completed
+            if (completedTasksId.Contains(model.Id))
+                model.IsUserCompleted = true;
+            // is overdue
+            if (model.ValidThru != DateTime.MinValue && model.ValidThru < DateTime.UtcNow)
+                model.IsOverdue = true;
+
+            // distance from user
+            model.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(model.Place.Latitude, model.Place.Longitude, user.Latitude, user.Longitude);
+        }
+
+        private async Task AssignViewModelProperties(List<GameTaskViewModel> model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favTasksId = await _gameTaskService.GetAllQueryable().Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
+            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
+
+            // is created by current user
+            model.Where(item => item.CreatedById == user.Id).ToList().ForEach(x => x.IsUserCreated = true);
+            // is user favorite
+            model.Where(item => favTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            // is user completed
+            model.Where(item => completedTasksId.Contains(item.Id)).ToList().ForEach(x => x.IsUserCompleted = true);
+            // is overdue
+            model.Where(item => item.ValidThru != DateTime.MinValue && item.ValidThru < DateTime.UtcNow).ToList().ForEach(x => x.IsOverdue = true);
+            // distance from user
+            model.ForEach(x => x.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(x.Place.Latitude, x.Place.Longitude, user.Latitude, user.Longitude));
+        }
+
+        #endregion
     }
 }

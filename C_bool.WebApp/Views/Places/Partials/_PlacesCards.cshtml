@@ -17,7 +17,7 @@
 
             @if (item.ActiveTaskCount > 0)
             {
-                <div class="card-header d-sm-flex flex-row align-items-center flex-0" style="background-color: #dbedd2">
+                <div class="card-header d-sm-flex flex-row align-items-center flex-0 text-truncate" style="background-color: #dbedd2">
                     <div class="d-block" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none"><h3>@Html.DisplayFor(modelItem => item.Name)</h3></a>
                     </div>

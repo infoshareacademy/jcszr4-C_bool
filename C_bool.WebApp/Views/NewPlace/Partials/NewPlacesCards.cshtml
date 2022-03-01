@@ -41,9 +41,8 @@
                         <l class="bi-file-plus"> Dodaj</l>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToRepository','@item.Id')"><l class="bi-heart"> Do bazy</l></a></li>
-                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToFavs','@item.Id')"><l class="bi-heart"> Do ulubionych</l></a></li>
-                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddNewGameTask','@item.Id')"><l class="bi-heart"> Zadanie</l></a></li>
+                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToRepository','@item.Id')"><l class="bi bi-plus-circle"> Do bazy</l></a></li>
+                        <li><a class="dropdown-item" onclick="postToController('NewPlace','AddToFavs','@item.Id')"><l class="bi bi-heart"> Do ulubionych</l></a></li>
                     </ul>
                 </div>
                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Geometry.Location.Latitude.ToString(CultureInfo.InvariantCulture), @item.Geometry.Location.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>

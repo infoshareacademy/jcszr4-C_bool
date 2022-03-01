@@ -14,6 +14,7 @@ using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.GameTask;
 using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -51,7 +52,7 @@ namespace C_bool.WebApp.Controllers
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            if (range == 0) range = 100000;
+            if (range == 0) range = 40000000;
 
             ViewBag.Range = range / 1000;
 
@@ -85,14 +86,26 @@ namespace C_bool.WebApp.Controllers
             }
 
             var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
+            await AssignViewModelProperties(model);
 
-            //mark model items as favorite
-            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            model.OrderByDescending(x => x.DistanceFromUser);
+            
 
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
             return View(model);
+        }
+
+        private async Task AssignViewModelProperties(List<PlaceViewModel> model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favPlacesId = await _placesService.GetAllQueryable().Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToListAsync();
+
+            // mark model items as favorite
+            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            // add distance to model
+            model.ForEach(x => x.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(x.Latitude, x.Longitude, user.Latitude, user.Longitude));
         }
 
         [Authorize]
@@ -113,34 +126,15 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Details(int id)
         {
             var model = _placesService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
+            var modelMapped = _mapper.Map<PlaceViewModel>(model);
+
             ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
             ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
-            return View(model);
+            return View(modelMapped);
         }
 
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View();
-        }
 
         [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        [Authorize]
-        [HttpPost]
         public IActionResult Edit(int id)
         {
             var userId = _userService.GetCurrentUserId();

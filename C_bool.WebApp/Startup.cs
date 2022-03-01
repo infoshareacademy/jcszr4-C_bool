@@ -13,6 +13,10 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Net;
 using System.Net.Mail;
+using C_bool.BLL.Config;
+using C_bool.WebApp.Middleware;
+using Serilog.Ui.MsSqlServerProvider;
+using Serilog.Ui.Web;
 
 namespace C_bool.WebApp
 {
@@ -59,8 +63,14 @@ namespace C_bool.WebApp
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
+
             services.AddTransient<IEmailSenderService, EmailSenderService>();
+
+            services.AddTransient<IMessagingService, MessagingService>();
+
             services.AddTransient<DatabaseSeeder>();
+
+            services.AddSerilogUi(options => options.UseSqlServer(Configuration.GetConnectionString("Database"), "Logs"));
 
 
 
@@ -114,6 +124,11 @@ namespace C_bool.WebApp
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSerilogUi();
+
+            //Error handler middleware
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             dataContext.Database.Migrate();
 

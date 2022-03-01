@@ -23,7 +23,7 @@ namespace C_bool.WebApp.Controllers
 {
     public class NewPlaceController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<NewPlaceController> _logger;
 
 
         private readonly IConfiguration _configuration;
@@ -37,7 +37,7 @@ namespace C_bool.WebApp.Controllers
         private readonly GoogleApiAsync _googleApiAsync;
 
         public NewPlaceController(
-            ILogger<HomeController> logger,
+            ILogger<NewPlaceController> logger,
             IMapper mapper,
             IConfiguration configuration,
             IPlaceService placesService,
