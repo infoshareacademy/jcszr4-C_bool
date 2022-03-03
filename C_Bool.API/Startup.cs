@@ -33,7 +33,9 @@ namespace C_Bool.API
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddDbContext<ApiDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
-            services.AddTransient<IApiReportService, ApiReportService>();
+            services.AddTransient<IApReportingGameTaskService, ApiReportingGameTaskService>();
+            services.AddTransient<IApiReportingPlaceService, ApiReportingPlaceService>();
+            services.AddTransient<IApiReportingUserService, ApiReportingUserService>();
 
             services.AddControllers();
 

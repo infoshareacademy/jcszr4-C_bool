@@ -11,64 +11,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace C_Bool.API.Services
 {
-    public class ApiReportService : IApiReportService
+    public class ApiReportingGameTaskService : IApReportingGameTaskService
     {
         private readonly IRepository<Place> _placeRepository;
-        private readonly IRepository<User> _userRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
 
-        public ApiReportService(IRepository<Place> placeRepository, IRepository<User> useRepository, IRepository<GameTask> gameTaskRepository)
+        public ApiReportingGameTaskService(IRepository<Place> placeRepository, IRepository<GameTask> gameTaskRepository)
         {
             _placeRepository = placeRepository;
-            _userRepository = useRepository;
             _gameTaskRepository = gameTaskRepository;
         }
         // TODO: Dodać zakres czasowy do raportów
         // PLACE 
-        public IEnumerable<Place> GetPlaces()
-        {
-            return _placeRepository.GetAll();
-        }
-
-        public void Add(Place place)
-        {
-            _placeRepository.Add(place);
-        }
-
-        public Place GetPlace(int id)
-        {
-            return _placeRepository.GetById(id);
-        }
-
-        public IEnumerable<string> TopListPlaces(int seats)
-        {
-            var mostCommonAddress = _placeRepository.GetAll()
-                .GroupBy(x => x)
-                .Select(x => x.Key)
-                .OrderBy(x => x.Address)
-                .CountBy(x=>x.Address)
-                .Take(seats)
-                .Select(x=>x.Key);
-
-            return mostCommonAddress;
-        }
-
-        //USER
-        public IEnumerable<User> GetUser()
-        {
-            return _userRepository.GetAll();
-        }
-
-        public void Add(User user)
-        {
-            _userRepository.Add(user);
-        }
-
-        public int NumberOfActiveUsers()
-        {
-            var numberOfActiveUsers = _userRepository.GetAll().Count(x => x.IsActive==true);
-            return numberOfActiveUsers;
-        }
 
         //GAME TASK
         public IEnumerable<GameTask> GetGameTasks()
@@ -115,9 +69,24 @@ namespace C_Bool.API.Services
             return topListPlacesWithTheMostTask;
         }
 
-        public IEnumerable<int> Proba(int seats)
+        public List<KeyValuePair<int, int>> Test(int x)
         {
-            throw new NotImplementedException();
+            var test1 = _gameTaskRepository.GetAll()
+                .Join(_placeRepository.GetAll()
+                    , g => g.PlaceId
+                    , p => p.PlaceId
+                    ,(g, p) => new
+                        {
+                            gameTaskPlaceId=g.PlaceId
+                            ,placeeId = p.PlaceId
+                        });
+            var test2 = test1
+                .GroupBy(x => x)
+                .Select(x => x.Key)
+                .CountBy(x => x.placeeId)
+                .OrderByDescending(x => x.Value)
+                .Take(x).ToList();
+            return test2;
         }
     }
 }
