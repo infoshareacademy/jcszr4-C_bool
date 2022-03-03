@@ -4,18 +4,20 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using C_bool.WebApp.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace C_bool.WebApp.Middleware
 {
     public class ErrorHandlerMiddleware
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<ErrorHandlerMiddleware>();
+        private static ILogger<ErrorHandlerMiddleware> _logger;
         private readonly RequestDelegate _next;
 
-        public ErrorHandlerMiddleware(RequestDelegate next)
+        public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -40,7 +42,7 @@ namespace C_bool.WebApp.Middleware
                 }
 
                 var result = JsonSerializer.Serialize(new { message = error?.Message });
-                Log.Error("Middleware catched exception: {0}", error.Message);
+                _logger.LogError("Middleware catched exception: {exceptionMessage}", error.Message);
                 await response.WriteAsync(result);
             }
         }

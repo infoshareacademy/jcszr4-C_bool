@@ -4,6 +4,7 @@ using System.Linq;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace C_bool.BLL.Repositories
 {
