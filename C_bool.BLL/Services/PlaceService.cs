@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
@@ -10,11 +12,13 @@ namespace C_bool.BLL.Services
     public class PlaceService : IPlaceService
     {
         private readonly IRepository<Place> _placeRepository;
+        private readonly IHttpClientFactory _clientFactory;
 
 
-        public PlaceService(IRepository<Place> placeRepository)
+        public PlaceService(IRepository<Place> placeRepository, IHttpClientFactory clientFactory)
         {
             _placeRepository = placeRepository;
+            _clientFactory = clientFactory;
         }
 
         public IQueryable<Place> GetAllQueryable()
@@ -54,7 +58,9 @@ namespace C_bool.BLL.Services
             place.IsActive = true;
             place.CreatedOn = DateTime.UtcNow;
             _placeRepository.Add(place);
+
         }
+
         public void Update(Place place)
         {
             _placeRepository.Update(place);

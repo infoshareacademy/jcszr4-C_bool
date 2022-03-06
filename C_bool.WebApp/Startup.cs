@@ -88,6 +88,15 @@ namespace C_bool.WebApp
                 client.DefaultRequestHeaders.Clear();
             });
 
+            //Cebool API Http client
+            services.AddHttpClient("CeboolAPI", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5002/api/");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            });
+
+
             //automapper
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);
