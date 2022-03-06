@@ -33,11 +33,7 @@ namespace C_bool.BLL.Services
 
         public List<GooglePlace> GetGooglePlacesForUser()
         {
-
-            var test = TempPlaces;
-
             var userId = _userService.GetCurrentUser().Id;
-
             return TempPlaces.Where(kv => kv.Key == userId).Select(kv => kv.Value).SingleOrDefault();
         }
 

@@ -184,8 +184,8 @@ namespace C_bool.BLL.Services
 
             return usersGameTasks.Where(ugt => ugt.UserId == userId && !ugt.IsDone)
                 .Select(ugt => ugt.GameTask)
-                .Where(gt => gt.ValidFrom <= DateTime.UtcNow || gt.ValidFrom == null)
-                .Where(gt => gt.ValidThru >= DateTime.UtcNow || gt.ValidFrom == null)
+                .Where(gt => gt.ValidFrom <= DateTime.UtcNow || gt.ValidFrom == DateTime.MinValue)
+                .Where(gt => gt.ValidThru >= DateTime.UtcNow || gt.ValidFrom == DateTime.MinValue)
                 .Where(gt => gt.IsActive)
                 .ToList();
         }
@@ -297,8 +297,10 @@ namespace C_bool.BLL.Services
         {
             var user = _userRepository.GetAllQueryable().SingleOrDefault(x => x.Id == userId);
 
+            if (user == null) return false;
             user.Messages.Add(message);
             _userRepository.Update(user);
+
             return true;
         }
     }

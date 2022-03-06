@@ -5,6 +5,7 @@ using C_bool.BLL.Enums;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace C_bool.BLL.Services
 {
@@ -12,11 +13,13 @@ namespace C_bool.BLL.Services
     {
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
+        private readonly ILogger<GameTaskService> _logger;
 
-        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository)
+        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository, ILogger<GameTaskService> logger)
         {
             _userGameTaskRepository = userGameTaskRepository;
             _gameTaskRepository = gameTaskRepository;
+            _logger = logger;
         }
 
         public IQueryable<GameTask> GetAllQueryable()

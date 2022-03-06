@@ -9,6 +9,9 @@
 @{ var action = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
     var controller = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
     var area = (ViewContext.RouteData.DataTokens["area"] ?? "").ToString().ToLower();
+    var user = UserManager.GetUserAsync(User).Result;
+    var roles = UserManager.GetRolesAsync(user).Result;
+    var isAdmin = roles.Contains("Admin");
 }
 <!--
 
@@ -208,75 +211,78 @@
                     </div>
                 </li>
                 <!-- Sidebar - game tasks -->
-                <li class="nav-item ">
-                    <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
-                          data-bs-toggle="collapse" data-bs-target="#submenu-pages-gametask">
-                        <span>
-                            <span class="sidebar-icon">
-                                @*<svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>*@
-                                <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"></path></svg>
-                            </span>
-                            <span class="sidebar-text">Zadania</span>
+            <li class="nav-item ">
+                <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+                      data-bs-toggle="collapse" data-bs-target="#submenu-pages-gametask">
+                    <span>
+                        <span class="sidebar-icon">
+                            @*<svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z"></path></svg>*@
+                            <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"></path></svg>
                         </span>
-                        <span class="link-arrow">
-                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                        </span>
+                        <span class="sidebar-text">Zadania</span>
                     </span>
-                    <div class="multi-level collapse @(controller == "gametasks" ? "show" : "") " role="list"
-                         id="submenu-pages-gametask" aria-expanded="false">
-                        <ul class="flex-column nav">
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "nearby" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="nearby" asp-route-sortBy="distance" asp-route-onlyActive="true" asp-route-onlyNotdone="true" asp-route-range="5000">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compass" viewBox="0 0 496 512"><path fill="currentColor" d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
-                                    </span>
-                                    <span class="sidebar-text">W pobliżu</span>
-                                </a>
-                            </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "newest" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="newest" asp-route-onlyNotDone="true" asp-route-onlyActive="true" asp-route-sortBy="create_date" asp-route-sortOrder="true">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Najnowsze</span>
-                                </a>
-                            </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "todo" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="todo" asp-route-onlyNotDone="true" asp-route-onlyUserFavs="true" asp-route-sortBy="distance">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Do zrobienia</span>
-                                </a>
-                            </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "all" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="all" asp-route-sortBy="distance">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Wszystkie</span>
-                                </a>
-                            </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "active" ? "active" : "")">
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="active" asp-route-sortBy="distance" asp-route-onlyActive="true">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Aktywne</span>
-                                </a>
-                            </li>
-                            <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "my" ? "active" : "")">
+                    <span class="link-arrow">
+                        <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    </span>
+                </span>
+                <div class="multi-level collapse @(controller == "gametasks" ? "show" : "") " role="list"
+                     id="submenu-pages-gametask" aria-expanded="false">
+                    <ul class="flex-column nav">
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "nearby" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="nearby" asp-route-sortBy="distance" asp-route-onlyActive="true" asp-route-onlyNotdone="true" asp-route-range="5000">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="compass" viewBox="0 0 496 512"><path fill="currentColor" d="M225.38 233.37c-12.5 12.5-12.5 32.76 0 45.25 12.49 12.5 32.76 12.5 45.25 0 12.5-12.5 12.5-32.76 0-45.25-12.5-12.49-32.76-12.49-45.25 0zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm126.14 148.05L308.17 300.4a31.938 31.938 0 0 1-15.77 15.77l-144.34 65.97c-16.65 7.61-33.81-9.55-26.2-26.2l65.98-144.35a31.938 31.938 0 0 1 15.77-15.77l144.34-65.97c16.65-7.6 33.8 9.55 26.19 26.2z"/></svg>
+                                </span>
+                                <span class="sidebar-text">W pobliżu</span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "newest" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="newest" asp-route-onlyNotDone="true" asp-route-onlyActive="true" asp-route-sortBy="create_date" asp-route-sortOrder="true">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path></svg>
+                                </span>
+                                <span class="sidebar-text">Najnowsze</span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "todo" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="todo" asp-route-onlyNotDone="true" asp-route-onlyUserFavs="true" asp-route-sortBy="distance">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                </span>
+                                <span class="sidebar-text">Do zrobienia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "all" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="all" asp-route-sortBy="distance">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </span>
+                                <span class="sidebar-text">Wszystkie</span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "active" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="active" asp-route-sortBy="distance" asp-route-onlyActive="true">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </span>
+                                <span class="sidebar-text">Aktywne</span>
+                            </a>
+                        </li>
+                        <li class="nav-item @(controller == "gametasks" && action == "index" && Context.Request.Query["actionId"] == "my" ? "active" : "")">
 
-                                <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="my" asp-route-userCreated="true">
-                                    <span class="sidebar-icon">
-                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
-                                    </span>
-                                    <span class="sidebar-text">Moje zadania</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                            <a class="nav-link" asp-area="" asp-controller="GameTasks" asp-action="Index" asp-route-actionId="my" asp-route-userCreated="true">
+                                <span class="sidebar-icon">
+                                    <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+                                </span>
+                                <span class="sidebar-text">Moje zadania</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+                
+            @if (isAdmin)
+            {
                 <!-- Sidebar - users -->
                 <li class="nav-item ">
                     <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
@@ -302,24 +308,33 @@
                                     <span class="sidebar-text">Użytkownicy</span>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="./serilog-ui">
+                                    <span class="sidebar-icon">
+                                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path></svg> </span>
+                                    <span class="sidebar-text">Dziennik logów</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
+            }
                 <!-- Sidebar - footer a-like -->
                 <li class="nav-item">
                     <a class="btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro" asp-area="" asp-controller="Home" asp-action="Privacy">
                         <span class="sidebar-icon d-inline-flex align-items-center justify-content-center">
                             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M13.392 10.4362L14.8106 9.0176C14.1031 8.38476 13.169 8 12.145 8C9.93588 8 8.14502 9.79086 8.14502 12C8.14502 14.2091 9.93588 16 12.145 16C13.2563 16 14.2617 15.5468 14.9866 14.8152L13.674 13.5026L13.4646 13.503C13.1124 13.8124 12.6506 14 12.145 14C11.0405 14 10.145 13.1046 10.145 12C10.145 10.8954 11.0405 10 12.145 10C12.6166 10 13.0501 10.1632 13.392 10.4362Z" />
+                                <path d="M13.392 10.4362L14.8106 9.0176C14.1031 8.38476 13.169 8 12.145 8C9.93588 8 8.14502 9.79086 8.14502 12C8.14502 14.2091 9.93588 16 12.145 16C13.2563 16 14.2617 15.5468 14.9866 14.8152L13.674 13.5026L13.4646 13.503C13.1124 13.8124 12.6506 14 12.145 14C11.0405 14 10.145 13.1046 10.145 12C10.145 10.8954 11.0405 10 12.145 10C12.6166 10 13.0501 10.1632 13.392 10.4362Z"/>
                                 <path fill-rule="evenodd"
                                       clip-rule="evenodd"
-                                      d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12 5C15.866 5 19 8.13401 19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5Z" />
+                                      d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3ZM12 5C15.866 5 19 8.13401 19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5Z"/>
                             </svg>
                         </span>
                         <span>2021 team <b>C_BooL</b></span>
                     </a>
                 </li>
-            </ul>
+                </ul>
+            
         </div>
     </nav>
 

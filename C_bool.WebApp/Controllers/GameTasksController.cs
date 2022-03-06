@@ -1,5 +1,5 @@
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,7 +95,7 @@ namespace C_bool.WebApp.Controllers
                 tasks = tasks.Where(x => x.Name.Contains(searchString) || x.ShortDescription.Contains(searchString) || x.Place.Name.Contains(searchString) || x.Place.Address.Contains(searchString));
             }
 
-            if (!string.IsNullOrEmpty(taskType))
+            if (!string.IsNullOrEmpty(taskType) && taskType != "0")
             {
                 Enum.TryParse(taskType, true, out TaskType type);
                 tasks = tasks.Where(x => x.Type == type);
@@ -182,6 +182,7 @@ namespace C_bool.WebApp.Controllers
                 Title = "Something went wrong...",
                 Message = "Game task with specified ID was not found"
             };
+            _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, gameTaskId);
             return View("CustomError", error);
 
         }
@@ -211,6 +212,7 @@ namespace C_bool.WebApp.Controllers
                 Title = "Something went wrong...",
                 Message = "You are not authorized to view this task in Creator mode"
             };
+            _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, id);
             return View("CustomError", error);
 
         }
@@ -243,6 +245,7 @@ namespace C_bool.WebApp.Controllers
                 Title = "Task not found...",
                 Message = "Game task with specified ID was not found"
             };
+            _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, id);
             return View("CustomError", error);
 
         }
@@ -271,9 +274,10 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
-            var task = _gameTaskService.GetById(id); ;
+            var task = _gameTaskService.GetById(id);
+            var userId = _userService.GetCurrentUserId();
             var roles = await _userService.GetUserRoles();
-            if (task.CreatedById != _userService.GetCurrentUserId())
+            if (task.CreatedById != userId)
             {
                 if (!roles.Contains("Admin") || roles.Contains("Moderator"))
                 {
@@ -283,6 +287,7 @@ namespace C_bool.WebApp.Controllers
                         Title = "Cannot edit this task",
                         Message = "Only the author, administrator or moderator can edit the content of a task"
                     };
+                    _logger.LogWarning("User {userId}, tried to edit properties of GameTask with id:{gameTaskId}, but was not creator or Admin", userId, id);
                     return View("CustomError", error);
                 }
             }
@@ -318,6 +323,7 @@ namespace C_bool.WebApp.Controllers
                     Title = "Cannot participate in own quests",
                     Message = "The creator cannot participate in the quest, go play somewhere else :-)"
                 };
+                _logger.LogWarning("User {userId}, tried to participate in own GameTask with id:{gameTaskId}", user.Id, id);
                 return View("CustomError", error);
             }
 
@@ -359,6 +365,7 @@ namespace C_bool.WebApp.Controllers
                     Title = "No task to approve",
                     Message = "No task to approve with given criteria or you have no permission to approve this task"
                 };
+                _logger.LogWarning("User {userId} tried to approve submission of UserGameTask with id:{gameTaskId}, but has no permission", user.Id, gameTaskId);
                 return View("CustomError", viewMessageOnNoTask);
             }
 
@@ -397,15 +404,13 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChooseToCreate(int placeId, string taskType)
         {
-            Enum.TryParse(taskType, true, out TaskType typeEnum);
-            try
+            var parseStatus = Enum.TryParse(taskType, true, out TaskType typeEnum);
+            if (parseStatus)
             {
                 return RedirectToAction("Create", new { placeId, taskType });
             }
-            catch
-            {
-                return View();
-            }
+            _logger.LogError("Cannot continue to create new GameTask - task type {taskType} is not valid", taskType);
+            return View();
         }
 
 
@@ -451,6 +456,7 @@ namespace C_bool.WebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error when creating GameTask: {exceptionMessage}", ex.Message, gameTaskModel);
                 ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
                 return View(model);
             }
@@ -493,6 +499,7 @@ namespace C_bool.WebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error editing gametask with Id {gameTaskId}: {exceptionMessage.Message}", id, ex, model);
                 ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
                 return View();
             }
@@ -503,55 +510,68 @@ namespace C_bool.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
         {
-            var user = _userService.GetCurrentUser();
-
-            var userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
-
-            if (userGameTask == null)
+            try
             {
-                _userService.AddTaskToUser(_gameTaskService.GetById(gameTaskId));
-                userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
-            }
+                var user = _userService.GetCurrentUser();
+                var userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
 
-            var base64Photo = ImageConverter.ConvertImage(file, out string photoMessage);
-            if (userGameTask.GameTask.Type == TaskType.TakeAPhoto && base64Photo.IsNullOrEmpty())
+                if (userGameTask == null)
+                {
+                    _userService.AddTaskToUser(_gameTaskService.GetById(gameTaskId));
+                    userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
+                }
+
+                var base64Photo = ImageConverter.ConvertImage(file, out string photoMessage);
+                if (userGameTask.GameTask.Type == TaskType.TakeAPhoto && base64Photo.IsNullOrEmpty())
+                {
+                    var error = new CustomErrorModel
+                    {
+                        RequestId = Request.Headers["RequestId"],
+                        Title = "Something went wrong...",
+                        Message = $"No photo submitted or photo is in wrong format, try again: {photoMessage}"
+                    };
+                    return View("CustomError", error);
+                }
+
+                _gameTaskService.AssignPropertiesFromParticipateModel(userGameTask, model.UserTextCriterion,
+                    base64Photo);
+                GameTaskStatus status = _gameTaskService.CompleteTask(gameTaskId, user.Id, out string message);
+
+                if (status == GameTaskStatus.InReview)
+                {
+                    var messageToSend = new Message(user.Id, user.UserName,
+                        $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}",
+                        HtmlRenderer.CheckTaskPhoto(userGameTask));
+
+                    _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
+
+                    _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
+                    return View("AfterDone/WaitForApproval");
+                }
+
+                if (status == GameTaskStatus.NotDone)
+                {
+                    var error = new CustomErrorModel
+                    {
+                        RequestId = Request.Headers["RequestId"],
+                        Title = "Task not completed...",
+                        Message = message
+                    };
+                    return View("CustomError", error);
+                }
+                return RedirectToAction("AfterDoneSplashScreen", new { gameTaskId = userGameTask.GameTask.Id });
+            }
+            catch (Exception ex)
             {
                 var error = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Something went wrong...",
-                    Message = $"No photo submitted or photo is in wrong format, try again: {photoMessage}"
+                    Title = "Exception occured...",
+                    Message = ex.Message
                 };
+                _logger.LogError("Error while trying to set task as done for UserGameTask id:{gameTaskId}: {exceptionMessage.Message}", gameTaskId, ex);
                 return View("CustomError", error);
             }
-
-            _gameTaskService.AssignPropertiesFromParticipateModel(userGameTask, model.UserTextCriterion, base64Photo);
-            GameTaskStatus status = _gameTaskService.CompleteTask(gameTaskId, user.Id, out string message);
-
-            if (status == GameTaskStatus.InReview)
-            {
-                var messageToSend = new Message(user.Id, user.UserName,
-                    $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}", HtmlRenderer.CheckTaskPhoto(userGameTask));
-
-                _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
-
-                _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
-                return View("AfterDone/WaitForApproval");
-            }
-
-            if (status == GameTaskStatus.NotDone)
-            {
-                var error = new CustomErrorModel
-                {
-                    RequestId = Request.Headers["RequestId"],
-                    Title = "Task not completed...",
-                    Message = message
-                };
-                return View("CustomError", error);
-            }
-
-
-            return RedirectToAction("AfterDoneSplashScreen", new { gameTaskId = userGameTask.GameTask.Id });
 
         }
 

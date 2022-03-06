@@ -119,6 +119,7 @@ namespace C_bool.WebApp.Controllers
             catch (Exception ex)
             {
                 ViewBag.Message = new StatusMessage($"Błąd: {ex.Message}", StatusMessage.Status.FAIL);
+                _logger.LogError("Error when creating Place: {exceptionMessage}", ex.Message, placeModel);
                 return View(model);
             }
         }
@@ -137,6 +138,7 @@ namespace C_bool.WebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Cannot add place to user's favorites: {exceptionMessage}", ex.Message);
                 return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}"});
             }
         }
@@ -156,6 +158,7 @@ namespace C_bool.WebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Cannot add place to repository: {exceptionMessage}", ex.Message);
                 return Json(new { success = false, responseText = $"Nie udało się dodać: {ex.Message}" });
             }
         }

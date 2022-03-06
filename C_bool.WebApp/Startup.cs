@@ -70,7 +70,13 @@ namespace C_bool.WebApp
 
             services.AddTransient<DatabaseSeeder>();
 
-            services.AddSerilogUi(options => options.UseSqlServer(Configuration.GetConnectionString("Database"), "Logs"));
+            services.AddSerilogUi(options => options
+                .EnableAuthorization(authOptions =>
+                {
+                    authOptions.AuthenticationType = AuthenticationType.Cookie;
+                    authOptions.Roles = new[] { "Admin" };
+                })
+                .UseSqlServer(Configuration.GetConnectionString("Database"), "Logs"));
 
 
 
