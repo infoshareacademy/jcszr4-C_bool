@@ -17,7 +17,11 @@ namespace C_Bool.API.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
 
-        public ApiReportService(IRepository<Place> placeRepository, IRepository<User> useRepository, IRepository<GameTask> gameTaskRepository)
+        public ApiReportService(
+            IRepository<Place> placeRepository, 
+            IRepository<User> useRepository, 
+            IRepository<GameTask> gameTaskRepository
+        )
         {
             _placeRepository = placeRepository;
             _userRepository = useRepository;
@@ -30,7 +34,7 @@ namespace C_Bool.API.Services
             return _placeRepository.GetAll();
         }
 
-        public void Add(Place place)
+        public void AddPlace(Place place)
         {
             _placeRepository.Add(place);
         }
@@ -59,7 +63,7 @@ namespace C_Bool.API.Services
             return _userRepository.GetAll();
         }
 
-        public void Add(User user)
+        public void AddUser(User user)
         {
             _userRepository.Add(user);
         }
@@ -76,7 +80,7 @@ namespace C_Bool.API.Services
             return _gameTaskRepository.GetAll();
         }
 
-        public void Add(GameTask gameTask)
+        public void AddGameTask(GameTask gameTask)
         {
             _gameTaskRepository.Add(gameTask);
         }
@@ -114,6 +118,9 @@ namespace C_Bool.API.Services
 
             return topListPlacesWithTheMostTask;
         }
+
+        //UserGameTaskReport
+
 
         public IEnumerable<int> Proba(int seats)
         {

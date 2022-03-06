@@ -70,6 +70,14 @@ namespace C_bool.WebApp
                 client.DefaultRequestHeaders.Clear();
             });
 
+            //Report API Http client
+            services.AddHttpClient("ReportClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44349/");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            });
+
             //automapper
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);

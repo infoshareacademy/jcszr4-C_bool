@@ -18,10 +18,8 @@ namespace C_bool.BLL.DAL.Entities
         //TODO: rangi/odznaki
         public List<Badges> UserBadges { get; set; }
         public virtual List<UserPlace> FavPlaces { get; set; }
-
         //TODO: sprawdzić - czy IQueryable to łyknie??? :-)
         public virtual List<UserGameTask> UserGameTasks { get; set; }
-
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public IList<Message> Messages { get; set; }

@@ -80,17 +80,17 @@ namespace C_Bool.API.Controllers
         [HttpPost("place")]
         public void Post([FromBody] Place place)
         {
-            _apiReportService.Add(place);
+            _apiReportService.AddPlace(place);
         }
         [HttpPost("user")]
         public void Post([FromBody] User user)
         {
-            _apiReportService.Add(user);
+            _apiReportService.AddUser(user);
         }
         [HttpPost("gameTask")]
         public void Post([FromBody] GameTask gameTask)
         {
-            _apiReportService.Add(gameTask);
+            _apiReportService.AddGameTask(gameTask);
         }
 
         // PUT api/<ValuesController>/5

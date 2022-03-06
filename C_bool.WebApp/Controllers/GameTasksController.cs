@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Context;
@@ -9,6 +12,7 @@ using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
+using C_bool.WebApp.DTOs;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.GameTask;
@@ -21,6 +25,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
 //todo: przeniesc repo do serwisów
 namespace C_bool.WebApp.Controllers
 {
@@ -30,6 +36,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
 
         private readonly IMapper _mapper;
@@ -39,13 +46,16 @@ namespace C_bool.WebApp.Controllers
             IMapper mapper,
             IPlaceService placesService,
             IUserService usersService,
-            IGameTaskService gameTaskService)
+            IGameTaskService gameTaskService,
+            IHttpClientFactory httpClientFactory
+            )
         {
             _logger = logger;
             _mapper = mapper;
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
+            _httpClientFactory = httpClientFactory;
         }
 
         [Authorize]
@@ -335,6 +345,7 @@ namespace C_bool.WebApp.Controllers
                     $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}", HtmlRenderer.CheckTaskPhoto(userGameTask));
 
                 _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
+
                 return View("AfterDone/WaitForApproval");
             }
 
@@ -349,6 +360,7 @@ namespace C_bool.WebApp.Controllers
                 return View("CustomError", error);
             }
 
+            SendToReportModule(userGameTask);
 
             return RedirectToAction("TaskDone", new { gameTaskId = userGameTask.GameTask.Id });
 
@@ -451,6 +463,37 @@ namespace C_bool.WebApp.Controllers
             {
                 return View();
             }
+        }
+
+        private void SendToReportModule(UserGameTask userGameTask)
+        {
+            var userGameTaskReportDto = _mapper.Map<UserGameTaskReportDto>(userGameTask);
+
+            var client = _httpClientFactory.CreateClient("ReportClient");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "UserGameTaskReports/reports");
+
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            request.Content = new StringContent(JsonConvert.SerializeObject(userGameTaskReportDto), Encoding.UTF8, "application/json");
+
+            client.SendAsync(request);
+        }
+
+        public void SendToReportModule<T>(T task, string uri)
+        {
+            // Stworzyć klasę ReportSendingHandler ta klasa bedzie miała w ctorze httpClientFactory i jako lifecycle scope dajcie Singelton
+            // niech kontroler ma wstrzykiway ten ReportHandler
+
+            var userGameTaskReportDto = _mapper.Map<T>(task);
+
+            var client = _httpClientFactory.CreateClient("ReportClient");
+            // Podmienić na HttpContent właściwego typu (PostAsync + jakiś HttpContent);
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Content = new StringContent(JsonConvert.SerializeObject(userGameTaskReportDto), Encoding.UTF8, "application/json");
+
+            client.SendAsync(request);
         }
     }
 }

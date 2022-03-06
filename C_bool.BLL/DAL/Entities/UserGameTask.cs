@@ -21,7 +21,6 @@ namespace C_bool.BLL.DAL.Entities
         public string Photo { get; set; }
         public string TextCriterion { get; set; }
         public DateTime ArrivalTime { get; set; }
-
         public IList<Message> Messages { get; set; }
 
         public UserGameTask()
