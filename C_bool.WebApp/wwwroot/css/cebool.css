@@ -51,9 +51,9 @@
     display: none;
 }
 
-.validation-summary.validation-summary-errors {
-    display: block;
-}
+    .validation-summary.validation-summary-errors {
+        display: block;
+    }
 
 .cb-alert {
     font-size: small;
@@ -66,6 +66,18 @@
     color: white;
     border-color: #e16c82
 }
+
+    .btn-fav:hover {
+        background-color: #d74b65;
+        color: white;
+        border-color: #d74b65
+    }
+
+    .btn-fav:active {
+        background-color: #d74b65;
+        color: white;
+        border-color: #d74b65
+    }
 
 /*Participate view step-by-step layout*/
 :root {
@@ -92,12 +104,12 @@
     font-weight: bolder;
 }
 
-.step-button[aria-expanded="true"] {
-    width: 90px;
-    height: 90px;
-    background-color: var(--prm-color);
-    color: #fff;
-}
+    .step-button[aria-expanded="true"] {
+        width: 90px;
+        height: 90px;
+        background-color: var(--prm-color);
+        color: #fff;
+    }
 
 .done {
     background-color: var(--prm-color);
@@ -120,15 +132,15 @@
     margin-bottom: 18px;
 }
 
-/* to customize progress bar */
-#progress::-webkit-progress-value {
-    background-color: var(--prm-color);
-    transition: .5s ease;
-}
+    /* to customize progress bar */
+    #progress::-webkit-progress-value {
+        background-color: var(--prm-color);
+        transition: .5s ease;
+    }
 
-#progress::-webkit-progress-bar {
-    background-color: var(--prm-gray);
-}
+    #progress::-webkit-progress-bar {
+        background-color: var(--prm-gray);
+    }
 
 /*tick*/
 .wrapper {
@@ -139,41 +151,41 @@
     border-radius: 10px
 }
 
-.task-card-group > .card {
-    flex: 1 0 0%;
-    margin-bottom: 0
-}
+    .task-card-group > .card {
+        flex: 1 0 0%;
+        margin-bottom: 0
+    }
 
-.task-card-group > .card + .card {
-    margin-left: 0;
-    border-left: 0
-}
+        .task-card-group > .card + .card {
+            margin-left: 0;
+            border-left: 0
+        }
 
-.task-card-group > .card:not(:last-child) {
-     border-top-right-radius: 10px; 
-     border-bottom-right-radius: 10px 
-}
+        .task-card-group > .card:not(:last-child) {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px
+        }
 
-.task-card-group > .card:not(:last-child) .card-img-top, .task-card-group > .card:not(:last-child) .card-header {
-    border-top-right-radius: 10px
-}
+            .task-card-group > .card:not(:last-child) .card-img-top, .task-card-group > .card:not(:last-child) .card-header {
+                border-top-right-radius: 10px
+            }
 
-.task-card-group > .card:not(:last-child) .card-img-bottom, .task-card-group > .card:not(:last-child) .card-footer {
-    border-bottom-right-radius: 10px
-}
+            .task-card-group > .card:not(:last-child) .card-img-bottom, .task-card-group > .card:not(:last-child) .card-footer {
+                border-bottom-right-radius: 10px
+            }
 
-.task-card-group > .card:not(:first-child) {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px
-}
+        .task-card-group > .card:not(:first-child) {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px
+        }
 
-.task-card-group > .card:not(:first-child) .card-img-top, .task-card-group > .card:not(:first-child) .card-header {
-    border-top-left-radius: 10px
-}
+            .task-card-group > .card:not(:first-child) .card-img-top, .task-card-group > .card:not(:first-child) .card-header {
+                border-top-left-radius: 10px
+            }
 
-.task-card-group > .card:not(:first-child) .card-img-bottom, .task-card-group > .card:not(:first-child) .card-footer {
-    border-bottom-left-radius: 10px
-}
+            .task-card-group > .card:not(:first-child) .card-img-bottom, .task-card-group > .card:not(:first-child) .card-footer {
+                border-bottom-left-radius: 10px
+            }
 
 .task-card {
     border: none;
