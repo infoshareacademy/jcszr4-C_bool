@@ -29,7 +29,6 @@
             <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"></label>
         </span>
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterMenu" aria-controls="filterMenu">Więcej filtrów</button>
-        @*<select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["range"]" id="inputGroupSelectRange"></select>*@
         <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie zadania" value="@ViewData["searchString"]" aria-describedby="button-addon2">
         <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
         <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
@@ -76,14 +75,14 @@
                         <option value="to_date">Ważne do</option>
                         <option value="create_date">Daty utworzenia</option>
                     </select>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" name="sortOrder" type="radio" asp-for="@ViewData["sortOrder"]" id="sortOrderAsc" value="false">
-                        <label class="form-check-label" for="sortOrderAsc">Rosnąco</label>
+
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input asp-for="@ViewData["sortOrder"]" type="radio" class="btn-check" name="sortOrder" id="sortOrderAsc" value="false">
+                        <label class="btn btn-outline-primary" for="sortOrderAsc">Rosnąco</label>
+                        <input asp-for="@ViewData["sortOrder"]" type="radio" class="btn-check" name="sortOrder" id="sortOrderDesc" value="true">
+                        <label class="btn btn-outline-primary" for="sortOrderDesc">Malejąco</label>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" name="sortOrder" type="radio" asp-for="@ViewData["sortOrder"]" id="sortOrderDesc" value="true">
-                        <label class="form-check-label" for="sortOrderDesc">Malejąco</label>
-                    </div>
+
                 </div>
             </div>
             <div class="card mb-4">
