@@ -58,7 +58,9 @@ namespace C_bool.WebApp.Controllers
             bool onlyUserFavs,
             bool onlyActive,
             bool onlyNotDone,
+            bool all,
             bool userCreated,
+            bool completed,
             int placeId,
             double range)
         {
@@ -78,6 +80,7 @@ namespace C_bool.WebApp.Controllers
             ViewData["onlyActive"] = onlyActive;
             ViewData["onlyNotDone"] = onlyNotDone;
             ViewData["userCreated"] = userCreated;
+            ViewData["completed"] = completed;
             ViewData["range"] = range;
             ViewData["MapZoom"] = range;
             ViewData["IsInPlaceView"] = false;
@@ -85,9 +88,6 @@ namespace C_bool.WebApp.Controllers
             var placesWithTasksIds = await _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range).Where(p => p.Tasks.Any()).Select(x => x.Id).ToListAsync();
 
             var tasks = _gameTaskService.GetAllQueryable().Where(x => placesWithTasksIds.Contains(x.Place.Id));
-            var favTasksId = await tasks.Where(p => _userService.GetAllTasks().Contains(p)).Select(x => x.Id).ToListAsync();
-            var completedTasksId = _userService.GetDoneTasks(user.Id).Select(x => x.Id);
-
 
             //search queries, based on user input
             if (!string.IsNullOrEmpty(searchString))
@@ -116,10 +116,12 @@ namespace C_bool.WebApp.Controllers
                 tasks = tasks.Where(x => !_userService.GetDoneTasks().Contains(x));
             }
 
-            if (userCreated)
+            if (completed)
             {
-                tasks = tasks.Where(x => x.CreatedById == user.Id);
+                tasks = tasks.Where(x => _userService.GetDoneTasks().Contains(x));
             }
+
+            if (!all) tasks = userCreated ? tasks.Where(x => x.CreatedById == user.Id) : tasks.Where(x => x.CreatedById != user.Id);
 
             // sort order
             tasks = sortBy switch
@@ -179,8 +181,8 @@ namespace C_bool.WebApp.Controllers
             var error = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "Something went wrong...",
-                Message = "Game task with specified ID was not found"
+                Title = "Coś poszło nie tak...",
+                Message = "Zadanie o podanym ID nie zostało znalezione"
             };
             _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, gameTaskId);
             return View("CustomError", error);
@@ -209,8 +211,8 @@ namespace C_bool.WebApp.Controllers
             var error = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "Something went wrong...",
-                Message = "You are not authorized to view this task in Creator mode"
+                Title = "Coś poszło nie tak...",
+                Message = "Nie masz uprawnień do wyświetlenia tego zadania w trybie twórcy"
             };
             _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, id);
             return View("CustomError", error);
@@ -242,8 +244,8 @@ namespace C_bool.WebApp.Controllers
             var error = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "Task not found...",
-                Message = "Game task with specified ID was not found"
+                Title = "Nie znaleziono zadania...",
+                Message = "Zadanie o podanym ID nie zostało znalezione"
             };
             _logger.LogWarning("User {userId}, tried to show details to incorrect GameTask with id:{gameTaskId}", user.Id, id);
             return View("CustomError", error);
@@ -284,8 +286,8 @@ namespace C_bool.WebApp.Controllers
                     var error = new CustomErrorModel
                     {
                         RequestId = Request.Headers["RequestId"],
-                        Title = "Cannot edit this task",
-                        Message = "Only the author, administrator or moderator can edit the content of a task"
+                        Title = "Nie możesz edytować tego zadania",
+                        Message = "Tylko autor zadania, administrator lub moderator może edytować zadanie"
                     };
                     _logger.LogWarning("User {userId}, tried to edit properties of GameTask with id:{gameTaskId}, but was not creator or Admin", userId, id);
                     return View("CustomError", error);
@@ -310,8 +312,8 @@ namespace C_bool.WebApp.Controllers
                 var error = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Something went wrong...",
-                    Message = "Task with specified ID was not found"
+                    Title = "Coś poszło nie tak...",
+                    Message = "Zadanie o podanym ID nie zostało znalezione"
                 };
                 return View("CustomError", error);
             }
@@ -320,8 +322,8 @@ namespace C_bool.WebApp.Controllers
                 var error = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Cannot participate in own quests",
-                    Message = "The creator cannot participate in the quest, go play somewhere else :-)"
+                    Title = "Nie możesz uczestniczyć w tym zadaniu",
+                    Message = "Twórca nie może uczestniczyć we własnych zadaniach, idź pobawić się gdzieś indziej :-) "
                 };
                 _logger.LogWarning("User {userId}, tried to participate in own GameTask with id:{gameTaskId}", user.Id, id);
                 return View("CustomError", error);
@@ -362,8 +364,8 @@ namespace C_bool.WebApp.Controllers
                 var viewMessageOnNoTask = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "No task to approve",
-                    Message = "No task to approve with given criteria or you have no permission to approve this task"
+                    Title = "Brak zadania do zaliczenia",
+                    Message = "Zadanie zostało już zaliczone lub nie masz uprawnień do zaliczenia tego zadania"
                 };
                 _logger.LogWarning("User {userId} tried to approve submission of UserGameTask with id:{gameTaskId}, but has no permission", user.Id, gameTaskId);
                 return View("CustomError", viewMessageOnNoTask);
@@ -378,13 +380,15 @@ namespace C_bool.WebApp.Controllers
                 var messageToSend = new Message(user.Id, user.UserName,
                     $"Zadanie {task.GameTask.Name} zaliczone! Zdobyłeś {task.GameTask.Points} punktów!", HtmlRenderer.CheckTaskPhoto(task));
 
+                messageToSend.Type = MessageType.SubmissionApproval;
+
                 _userService.PostMessage(userToApproveId, messageToSend);
 
                 var viewMessageOk = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Task approved",
-                    Message = "You approved user submission!",
+                    Title = "Zadanie zaliczone!",
+                    Message = "Zatwierdziłeś rozwiązanie tego zadania!",
                     Type = CustomErrorModel.MessageType.Success
                 };
                 return View("CustomError", viewMessageOk);
@@ -393,8 +397,8 @@ namespace C_bool.WebApp.Controllers
             var viewMessageOnError = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "No task to approve",
-                Message = "No task to approve with given criteria or you have no permission to approve this task"
+                Title = "Brak zadania do zaliczenia",
+                Message = "Zadanie nie zostało znalezione"
             };
             return View("CustomError", viewMessageOnError);
         }
@@ -451,7 +455,7 @@ namespace C_bool.WebApp.Controllers
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId();
                 _gameTaskService.Add(gameTaskModel);
 
-                ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {gameTaskModel.Name}", StatusMessage.Status.INFO);
+                ViewBag.Message = new StatusMessage($"Dodano nowe zadanie: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
             }
             catch (Exception ex)
@@ -527,8 +531,8 @@ namespace C_bool.WebApp.Controllers
                     var error = new CustomErrorModel
                     {
                         RequestId = Request.Headers["RequestId"],
-                        Title = "Something went wrong...",
-                        Message = $"No photo submitted or photo is in wrong format, try again: {photoMessage}"
+                        Title = "Nieprawidłowe zdjęcie...",
+                        Message = $"Nie wstawiłeś zdjęcia z rozwiązaniem lub zdjęcie ma nieprawidłowy format: {photoMessage}"
                     };
                     return View("CustomError", error);
                 }
@@ -543,6 +547,8 @@ namespace C_bool.WebApp.Controllers
                         $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}",
                         HtmlRenderer.CheckTaskPhoto(userGameTask));
 
+                    messageToSend.Type = MessageType.SubmissionRequest;
+
                     _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
 
                     _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
@@ -554,7 +560,7 @@ namespace C_bool.WebApp.Controllers
                     var error = new CustomErrorModel
                     {
                         RequestId = Request.Headers["RequestId"],
-                        Title = "Task not completed...",
+                        Title = "Zadanie nie zaliczone...",
                         Message = message
                     };
                     return View("CustomError", error);
@@ -566,7 +572,7 @@ namespace C_bool.WebApp.Controllers
                 var error = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Exception occured...",
+                    Title = "Coś poszło nie tak...",
                     Message = ex.Message
                 };
                 _logger.LogError("Error while trying to set task as done for UserGameTask id:{gameTaskId}: {exceptionMessage.Message}", gameTaskId, ex);
@@ -605,8 +611,8 @@ namespace C_bool.WebApp.Controllers
                 var viewMessageOk = new CustomErrorModel
                 {
                     RequestId = Request.Headers["RequestId"],
-                    Title = "Task status changed",
-                    Message = $"You changed task status to {(active ? "active, other users can join now." : "inactive, from now no one can complete this task.")}",
+                    Title = "Zmieniłeś status aktywności zadania",
+                    Message = $"Zmieniłeś status zadania na {(active ? "aktywny, inni użytkownicy mogą teraz do niego przystąpić." : "nieaktywny, od teraz żaden użytkownik nie może go zaliczyć.")}",
                     Type = CustomErrorModel.MessageType.Success
                 };
                 return View("CustomError", viewMessageOk);
@@ -614,8 +620,8 @@ namespace C_bool.WebApp.Controllers
             var viewMessageOnError = new CustomErrorModel
             {
                 RequestId = Request.Headers["RequestId"],
-                Title = "No task to change",
-                Message = "No task to change with given criteria or you have no permission to change this task"
+                Title = "Nie znaleziono zadania",
+                Message = "Zadanie nie zostało znalezione lub nie masz uprawnień do zmiany tego zadania"
             };
             return View("CustomError", viewMessageOnError);
         }

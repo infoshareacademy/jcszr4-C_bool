@@ -7,11 +7,23 @@
 
 @{
     ViewData["Title"] = "Zadania";
+    var actionId = Context.Request.Query["actionId"];
 }
 
 
 <!--search & filter form-->
 <form asp-action="Index" method="get">
+    <!--filters button-->
+    <div class="btn-group-lg mb-4" role="group" aria-label="Basic outlined example">
+        <a asp-action="Index" asp-route-actionId="nearby" asp-route-sortBy="distance" asp-route-onlyActive="true" asp-route-onlyNotdone="true" asp-route-range="5000" role="button" class="btn @(actionId == "nearby" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-compass"></span> W pobliżu</a>
+        <a asp-action="Index" asp-route-all="true" asp-route-actionId="all" asp-route-sortBy="distance" role="button" class="btn @(actionId == "all" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-trophy"></span> Wszystkie</a>
+        <a asp-action="Index" asp-route-actionId="active" asp-route-sortBy="distance" asp-route-onlyActive="true" role="button" class="btn @(actionId == "active" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-check"></span> Aktywne</a>
+        <a asp-action="Index" asp-route-actionId="newest" asp-route-onlyNotDone="true" asp-route-onlyActive="true" asp-route-sortBy="create_date" asp-route-sortOrder="true" role="button" class="btn @(actionId == "newest" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-clock"></span> Najnowsze</a>
+        <a asp-action="Index" asp-route-actionId="todo" asp-route-onlyNotDone="true" asp-route-onlyUserFavs="true" asp-route-sortBy="distance" role="button" class="btn @(actionId == "todo" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-star"></span> Na twojej liście</a>
+        <a asp-action="Index" asp-route-actionId="completed" asp-route-completed="true" role="button" class="btn @(actionId == "completed" ? "btn-primary" : "btn-outline-primary")"><span class="fa fa-flag-checkered"></span> Zaliczone</a>
+        <a asp-action="Index" asp-route-actionId="my" asp-route-userCreated="true" role="button" class="btn @(actionId == "my" ? "btn-primary" : "btn-outline-secondary") mx-3"><span class="fa fa-user"></span> Stworzone przeze mnie</a>
+    </div>
+
     <div class="input-group input-group-lg border-0 shadow mb-3 sticky-top">
         <span class="input-group-text">
             <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
@@ -23,15 +35,10 @@
                 </li>
             </ul>
         </span>
-        <span class="input-group-text">
-            <input class="form-check-input" id="favCheckbox" name="onlyUserFavs" type="checkbox" asp-for="@ViewData["onlyUserFavs"]" aria-label="Checkbox for following text input">
-            <br />
-            <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"></label>
-        </span>
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterMenu" aria-controls="filterMenu">Więcej filtrów</button>
         <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie zadania" value="@ViewData["searchString"]" aria-describedby="button-addon2">
         <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
-        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit"/>
     </div>
 
 
@@ -117,6 +124,12 @@
                             Nie wykonane
                         </label>
                     </div>
+                    <div class="form-check mx-4">
+                        <input class="form-check-input" name="completed" type="checkbox" asp-for="@ViewData["completed"]" id="completedId">
+                        <label class="form-check-label" for="completedId">
+                            Zaliczone
+                        </label>
+                    </div>
                     <div class="form-check">
                         <input class="form-check-input" name="onlyActive" type="checkbox" asp-for="@ViewData["onlyActive"]" id="onlyActiveId">
                         <label class="form-check-label" for="onlyActiveId">
@@ -132,7 +145,7 @@
                 </div>
             </div>
 
-            <input class="btn btn-lg btn-primary" value="Zastosuj filtry" type="submit" />
+            <input class="btn btn-lg btn-primary" value="Zastosuj filtry" type="submit"/>
         </div>
     </div>
 </form>

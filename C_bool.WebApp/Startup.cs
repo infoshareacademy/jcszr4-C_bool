@@ -134,7 +134,7 @@ namespace C_bool.WebApp
             app.UseSerilogUi();
 
             //Error handler middleware
-            app.UseMiddleware<ErrorHandlerMiddleware>();
+            //app.UseMiddleware<ErrorHandlerMiddleware>();
 
             dataContext.Database.Migrate();
 

@@ -24,21 +24,114 @@
             </ul>
         </span>
         <span class="input-group-text">
-            <input class="form-check-input" id="favCheckbox" name="SearchOnlyFavs" type="checkbox" asp-for="@ViewData["OnlyFavs"]" aria-label="Checkbox for following text input">
+            <input class="form-check-input" id="tasksCheckbox" name="onlyWithTasks" type="checkbox" asp-for="@ViewData["onlyWithTasks"]" aria-label="Checkbox for following text input">
             <br />
-            <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"></label>
+            <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px"><span class="fas fa-trophy"></span> Z zadaniami</label>
         </span>
         <span class="input-group-text">
-            <input class="form-check-input" id="tasksCheckbox" name="SearchOnlyWithTasks" type="checkbox" asp-for="@ViewData["OnlyTask"]" aria-label="Checkbox for following text input">
+            <input class="form-check-input" id="favCheckbox" name="onlyUserFavs" type="checkbox" asp-for="@ViewData["onlyUserFavs"]" aria-label="Checkbox for following text input">
             <br />
-            <label for="tasksCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="fas fa-trophy"></label>
+            <label for="favCheckbox" style="margin-left: 15px; margin-bottom: 0px" class="bi-heart"> Ulubione</label>
         </span>
-        <select class="form-select" asp-items="SelectListItems.PlaceSearchRange" name="Range" asp-for="@ViewData["CurrentRange"]" id="inputGroupSelectRange"></select>
-        <input type="text" class="form-control" name="SearchString" placeholder="Wszystkie miejsca" value="@ViewData["CurrentFilter"]" aria-describedby="button-addon2">
-        @*<a asp-action="Index" class="btn btn-outline-secondary" role="button">Wyczyść</a>*@
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterMenu" aria-controls="filterMenu">Więcej filtrów</button>
+        <input type="text" class="form-control" name="searchString" placeholder="Wszystkie miejsca" value="@ViewData["searchString"]" aria-describedby="button-addon2">
         <button class="btn btn-outline-secondary" value="Szukaj!" type="submit"><a class="text-decoration-none" asp-action="Index">Wyczyść</a></button>
         <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
     </div>
+
+
+    <!--Offcanvas filter menu-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="filterMenu" aria-labelledby="filterMenuLabel">
+        <div class="offcanvas-header">
+            <h5 id="filterMenuLabel">Filtry</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="card mb-4">
+                <div class="card-header bg-gray-200">
+                    Odległość
+                </div>
+                <div class="card-body">
+                    <input name="range" asp-for="@ViewData["range"]" id="pointsInput" class="form-range" type="range" min="100" step="100" max="40000000" oninput="amount.value=pointsInput.value / 1000">
+
+                    <h1 class="mb-0">
+                        <b>
+                            @{
+                                var initRange = (double)ViewData["range"] / 1000;
+                            }
+                            <output name="amount" id="amount" for="pointsInput">@initRange</output>
+                        </b> km
+                    </h1>
+
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header bg-gray-200">
+                    Sortowanie według
+                </div>
+                <div class="card-body">
+                    <select name="sortBy" class="form-select mb-2" asp-for="@ViewData["sortBy"]" aria-label=".form-select-lg example">
+                        <option value="0">Brak</option>
+                        <option value="name">Nazwy</option>
+                        <option value="distance">Odległości</option>
+                        <option value="type">Typu</option>
+                        <option value="create_date">Daty utworzenia</option>
+                    </select>
+
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input asp-for="@ViewData["sortOrder"]" type="radio" class="btn-check" name="sortOrder" id="sortOrderAsc" value="false">
+                        <label class="btn btn-outline-primary" for="sortOrderAsc">Rosnąco</label>
+                        <input asp-for="@ViewData["sortOrder"]" type="radio" class="btn-check" name="sortOrder" id="sortOrderDesc" value="true">
+                        <label class="btn btn-outline-primary" for="sortOrderDesc">Malejąco</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-gray-200">
+                    Status
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" name="onlyUserFavs" type="checkbox" asp-for="@ViewData["onlyUserFavs"]" id="onlyUserFavsId">
+                        <label class="form-check-label" for="onlyUserFavsId">
+                            W Twoich ulubionych
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" name="onlyNotDone" type="checkbox" asp-for="@ViewData["onlyWithTasks"]" id="onlyWithTasksId">
+                        <label class="form-check-label" for="onlyWithTasksId">
+                            Zawierające zadania
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" name="userCreated" type="checkbox" asp-for="@ViewData["userCreated"]" id="userCreatedId">
+                        <label class="form-check-label" for="userCreatedId">
+                            Stworzone przez ciebie
+                        </label>
+                    </div>
+                    <p><b>Typ miejsca:</b></p>
+                    <div class="form-check">
+                        <input class="form-check-input" name="userPlace" type="checkbox" asp-for="@ViewData["userPlace"]" id="userPlaceId">
+                        <label class="form-check-label" for="userPlaceId">
+                            Stworzone ręcznie
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" name="googlePlace" type="checkbox" asp-for="@ViewData["googlePlace"]" id="googlePlace">
+                        <label class="form-check-label" for="googlePlace">
+                            Z Google Maps
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <input class="btn btn-lg btn-primary" value="Zastosuj filtry" type="submit" />
+        </div>
+    </div>
+
+
 </form>
 <!-- Tab Content 1) Places -->
 <div>
@@ -56,7 +149,7 @@
                     <div class="alert alert-dismissible alert-warning" style="margin: 10px">
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         <h4 class="alert-heading">Nie bangla!</h4>
-                        <p class="mb-0">Wygląda na to, że nie ma takich miejsc w bazie...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz wyszukać tysiące nowych miejsc w menu <b>Dodaj w pobliżu</b> lub <b>Dodaj po nazwie</b>, lub dodać swoje własne miejsce wybierając opcję <b>Dodaj nowe</b></p>
+                        <p class="mb-0">Wygląda na to, że nie ma miejsc pasujących do Twojego wyszukiwania...<br>Zmień parametry wyszukiwania aby spróbować jeszcze raz, możesz także wyszukać tysiące nowych miejsc z bazy Google Maps w menu <b>Dodaj w pobliżu</b> lub <b>Dodaj po nazwie</b>, lub stworzyć swoje własne miejsce wybierając opcję <b>Dodaj nowe</b></p>
                     </div>
                 }
             </div>
