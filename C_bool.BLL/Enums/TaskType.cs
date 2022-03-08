@@ -2,15 +2,16 @@
 
 namespace C_bool.BLL.Enums
 {
-    public enum MessageType
+    public enum TaskType
     {
-        [Display(Name = "Komentarz")]
-        Comment,
-        [Display(Name = "Alert")]
-        Alert,
-        [Display(Name = "Prośba")]
-        SubmissionRequest,
-        [Display(Name = "Zaliczone")]
-        SubmissionApproval
+        //FirstComeFirstServed,
+        [Display(Name = "Zrób zdjęcie")]
+        TakeAPhoto,
+        [Display(Name = "Odwiedź miejsce")]
+        CheckInToALocation,
+        [Display(Name = "Wydarzenie")]
+        Event,
+        [Display(Name = "Podaj hasło")]
+        TextEntry
     }
 }
