@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace C_bool.API.DAL.Context
 {
-    public class ApiDbContext : DbContext
+    public class ReportDbContext : DbContext
     {
         public DbSet<Place> Places { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<GameTask> GameTasks { get; set; }
         public DbSet<UserGameTaskReport> UserGameTask { get; set; }
-        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options) { }
+        public ReportDbContext(DbContextOptions<ReportDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

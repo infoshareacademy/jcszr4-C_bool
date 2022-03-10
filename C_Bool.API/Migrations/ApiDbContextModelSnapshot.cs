@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace C_Bool.API.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(ReportDbContext))]
     partial class ApiDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -35,14 +35,14 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("GameTaskId")
                         .HasColumnType("int");
 
+                    b.Property<string>("GameTaskName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDoneLimited")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlaceId")
                         .HasColumnType("int");
@@ -74,11 +74,11 @@ namespace C_Bool.API.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GameTaskId")
-                        .HasColumnType("int");
-
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUserCreated")
                         .HasColumnType("bit");
@@ -89,11 +89,11 @@ namespace C_Bool.API.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PlaceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PlaceName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Types")
                         .HasColumnType("nvarchar(max)");
@@ -125,12 +125,15 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserGameTask", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserGameTaskReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,11 +149,8 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("GameTaskId")
                         .HasColumnType("int");
 
-                    b.Property<string>("GameTaskName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GameTaskType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("GameTaskType")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDone")
                         .HasColumnType("bit");
@@ -158,14 +158,8 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("PlaceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PlaceName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

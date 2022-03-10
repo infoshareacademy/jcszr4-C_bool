@@ -140,7 +140,6 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        [HttpPost]
         public IActionResult Edit(int id)
         {
             var userId = _userService.GetCurrentUserId();

@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using C_bool.BLL.Config;
+using Microsoft.Net.Http.Headers;
 
 namespace C_bool.WebApp
 {
@@ -58,6 +59,7 @@ namespace C_bool.WebApp
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IReportService, ReportService>();
             services.AddTransient<DatabaseSeeder>();
 
 
@@ -75,7 +77,8 @@ namespace C_bool.WebApp
             {
                 client.BaseAddress = new Uri("https://localhost:44349/");
                 client.Timeout = new TimeSpan(0, 0, 30);
-                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(
+                    HeaderNames.Accept, "application/json");
             });
 
             //automapper

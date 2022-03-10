@@ -32,8 +32,10 @@ namespace C_Bool.API
         {
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddDbContext<ApiDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
+            services.AddDbContext<ReportDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
+            
             services.AddTransient<IApiReportService, ApiReportService>();
+            services.AddTransient<IUserGameTaskReportService, UserGameTaskReportService>();
 
             services.AddControllers();
 
@@ -48,7 +50,7 @@ namespace C_Bool.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApiDbContext dataContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ReportDbContext dataContext)
         {
             if (env.IsDevelopment())
             {

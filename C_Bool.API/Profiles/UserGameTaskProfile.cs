@@ -8,7 +8,7 @@ namespace C_Bool.API.Profiles
     {
         public UserGameTaskProfile()
         {
-            CreateMap<UserGameTaskReport, UserGameTaskWriteDto>();
+            CreateMap<UserGameTaskReportCreateDto, UserGameTaskReport>().ReverseMap();
         }
     }
 }

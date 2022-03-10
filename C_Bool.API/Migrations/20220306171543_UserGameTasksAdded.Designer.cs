@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace C_Bool.API.Migrations
 {
-    [DbContext(typeof(ApiDbContext))]
+    [DbContext(typeof(ReportDbContext))]
     [Migration("20220306171543_UserGameTasksAdded")]
     partial class UserGameTasksAdded
     {

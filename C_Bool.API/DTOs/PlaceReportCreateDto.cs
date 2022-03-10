@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Security.AccessControl;
+﻿using System;
 
-namespace C_Bool.API.DAL.Entities
+namespace C_Bool.API.DTOs
 {
-    public class Place : Entity
+    public class PlaceReportCreateDto
     {
         public int PlaceId { get; set; }
         public string PlaceName { get; set; }
@@ -14,6 +13,8 @@ namespace C_Bool.API.DAL.Entities
         public string Address { get; set; }
         public bool IsUserCreated { get; set; }
         public int CreatedById { get; set; }
+        public string CreatedByName { get; set; }
         public bool IsActive { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

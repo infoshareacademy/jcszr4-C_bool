@@ -9,9 +9,9 @@ namespace C_bool.API.Repositories
 {
     public class Repository <T> : IRepository<T> where T: class, IEntity
     {
-        private readonly ApiDbContext _context;
+        private readonly ReportDbContext _context;
         private readonly DbSet<T> _entities;
-        public Repository(ApiDbContext context)
+        public Repository(ReportDbContext context)
         {
             this._context = context;
             _entities = context.Set<T>();

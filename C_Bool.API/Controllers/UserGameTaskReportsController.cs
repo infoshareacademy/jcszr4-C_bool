@@ -20,12 +20,12 @@ namespace C_Bool.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<UserGameTaskReport> AddUserGameTask([FromBody] UserGameTaskWriteDto userGameTaskWriteDto)
+        public ActionResult<UserGameTaskReport> AddUserGameTask([FromBody] UserGameTaskReportCreateDto userGameTaskReportCreateDto)
         {
-            var userGameTask = _mapper.Map<UserGameTaskReport>(userGameTaskWriteDto);
-            _userGameTaskReportService.AddUserGameTask(userGameTask);
+            var userGameTaskReport = _mapper.Map<UserGameTaskReport>(userGameTaskReportCreateDto);
+            _userGameTaskReportService.AddUserGameTask(userGameTaskReport);
 
-            return Created($"reports/{userGameTask.Id}", userGameTask);
+            return Ok(); //Created($"reports/{userGameTask.Id}", userGameTask);
         }
 
     }

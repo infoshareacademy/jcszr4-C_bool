@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using C_Bool.API.Enums;
+using C_bool.BLL.Enums;
 
-namespace C_Bool.API.DAL.Entities
+namespace C_bool.BLL.DTOs
 {
-    public class UserGameTaskReport : Entity
+    public class UserGameTaskReportCreateDto : IEntityReportDto
     {
         public int UserId { get; set; }
         public int GameTaskId { get; set; }
@@ -13,5 +11,6 @@ namespace C_Bool.API.DAL.Entities
         public int PlaceId { get; set; }
         public bool IsDone { get; set; }
         public DateTime DoneOn { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }
