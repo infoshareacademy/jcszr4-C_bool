@@ -14,6 +14,7 @@ using System;
 using System.Net;
 using System.Net.Mail;
 using C_bool.BLL.Config;
+using Microsoft.Net.Http.Headers;
 using C_bool.WebApp.Middleware;
 using Serilog.Ui.MsSqlServerProvider;
 using Serilog.Ui.Web;
@@ -63,6 +64,7 @@ namespace C_bool.WebApp
             services.AddTransient<IGooglePlaceService, GooglePlaceService>();
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IReportService, ReportService>();
 
             services.AddTransient<IEmailSenderService, EmailSenderService>();
 
@@ -86,6 +88,15 @@ namespace C_bool.WebApp
                 client.BaseAddress = new Uri("https://maps.googleapis.com/");
                 client.Timeout = new TimeSpan(0, 0, 30);
                 client.DefaultRequestHeaders.Clear();
+            });
+
+            //Report API Http client
+            services.AddHttpClient("ReportClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44349/");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Add(
+                    HeaderNames.Accept, "application/json");
             });
 
             //automapper

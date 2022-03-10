@@ -2,6 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Entities;
@@ -27,6 +32,7 @@ namespace C_bool.WebApp.Controllers
         private readonly IPlaceService _placesService;
         private readonly IUserService _userService;
         private readonly IGameTaskService _gameTaskService;
+        private readonly IReportService _reportService;
         private readonly IEmailSenderService _emailSenderService;
 
 
@@ -38,6 +44,7 @@ namespace C_bool.WebApp.Controllers
             IPlaceService placesService,
             IUserService usersService,
             IGameTaskService gameTaskService,
+            IReportService reportService
             IEmailSenderService emailSenderService
             )
         {
@@ -46,6 +53,7 @@ namespace C_bool.WebApp.Controllers
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
+            _reportService = reportService;
             _emailSenderService = emailSenderService;
         }
 
@@ -512,7 +520,7 @@ namespace C_bool.WebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
+        public async Task<ActionResult> Participate(int gameTaskId, GameTaskParticipateModel model, IFormFile file)
         {
             try
             {
@@ -551,6 +559,10 @@ namespace C_bool.WebApp.Controllers
 
                     _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
 
+                _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
+
+                return View("AfterDone/WaitForApproval");
+            }
                     _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
                     return View("AfterDone/WaitForApproval");
                 }
@@ -579,6 +591,9 @@ namespace C_bool.WebApp.Controllers
                 return View("CustomError", error);
             }
 
+            await _reportService.UpdateUserGameTaskReportEntry(userGameTask);
+
+            return RedirectToAction("TaskDone", new { gameTaskId = userGameTask.GameTask.Id });
         }
 
         [Authorize]
@@ -626,6 +641,20 @@ namespace C_bool.WebApp.Controllers
             return View("CustomError", viewMessageOnError);
         }
 
+        [Authorize]
+        [HttpPost]
+        public IActionResult AddToFavs([FromBody] ReturnString request)
+        {
+            var gameTask = _gameTaskService.GetById(int.Parse(request.Id));
+            if (_userService.AddTaskToUser(gameTask))
+            {
+               var userGameTask = _gameTaskService.GetUserGameTaskByIds(_userService.GetCurrentUserId(), gameTask.Id);
+               _reportService.CreateUserGameTaskReportEntry(userGameTask);
+
+               return Json(new { success = true, responseText = "Dodano do twoich zadań!", isAdded = true });
+            }
+            return Json(new { success = true, responseText = "Te zadanie jest już w Twojej kolejce!", isAdded = true });
+        }
         #region private methods
 
         private async Task AssignViewModelProperties(GameTaskViewModel model)

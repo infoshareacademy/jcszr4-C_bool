@@ -25,7 +25,9 @@ namespace C_bool.BLL.DAL.Context
                 table.PlaceId
             });
 
-            modelBuilder.Entity<UserGameTask>().HasKey(table => new {
+            modelBuilder.Entity<UserGameTask>()
+                .HasKey(table => new {
+                table.Id,
                 table.UserId,
                 table.GameTaskId
             });
