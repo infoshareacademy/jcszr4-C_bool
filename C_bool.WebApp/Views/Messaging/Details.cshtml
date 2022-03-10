@@ -10,6 +10,14 @@
                 <h1 class="mb-0">@Model.Title</h1>
                 <p class="mb-0">Od: <b>@Model.CreatedByName</b></p>
             </div>
+            <div class="col text-end">
+                <div>
+                    <a asp-action="Index"
+                       class="btn btn-lg btn-primary d-inline-flex align-items-center mb-3 mb-md-0">
+                        <span class="fa fa-chevron-left"></span> Wróć do powiadomień
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-body">

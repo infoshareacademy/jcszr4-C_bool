@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using C_bool.BLL.Enums;
 
 namespace C_bool.BLL.DAL.Entities
 {
@@ -16,6 +17,8 @@ namespace C_bool.BLL.DAL.Entities
         public string Title { get; set; }
         public string Body { get; set; }
         public bool IsViewed { get; set; }
+        public bool IsBanned { get; set; }
+        public MessageType Type { get; set; }
 
         public Message(int createdById, string createdByName, string title, string body)
         {

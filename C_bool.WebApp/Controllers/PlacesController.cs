@@ -14,6 +14,7 @@ using C_bool.BLL.Services;
 using C_bool.WebApp.Config;
 using C_bool.WebApp.Helpers;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.GameTask;
 using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -45,21 +46,41 @@ namespace C_bool.WebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, bool searchOnlyFavs, bool searchOnlyWithTasks, double range)
+        public async Task<IActionResult> Index(
+            string searchString,
+            string[] category,
+            string sortBy,
+            bool sortOrder,
+            bool onlyUserFavs,
+            bool userCreated,
+            bool onlyWithTasks,
+            bool userPlace,
+            bool googlePlace,
+            double range)
         {
             var user = _userService.GetCurrentUser();
             ViewBag.Latitude = user.Latitude;
             ViewBag.Longitude = user.Longitude;
 
-            if (range == 0) range = 100000;
+            if (range == 0) range = 40000000;
 
             ViewBag.Range = range / 1000;
 
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["OnlyFavs"] = searchOnlyFavs;
-            ViewData["OnlyTask"] = searchOnlyWithTasks;
             ViewData["CurrentRange"] = range;
             ViewData["MapZoom"] = range;
+
+            ViewData["searchString"] = searchString;
+            ViewData["category"] = category;
+            ViewData["sortBy"] = sortBy;
+            ViewData["sortOrder"] = sortOrder;
+            ViewData["onlyUserFavs"] = onlyUserFavs;
+            ViewData["userCreated"] = userCreated;
+            ViewData["onlyWithTasks"] = onlyWithTasks;
+            ViewData["userPlace"] = userPlace;
+            ViewData["googlePlace"] = googlePlace;
+            ViewData["range"] = range;
+            ViewData["MapZoom"] = range;
+            ViewData["IsInPlaceView"] = false;
 
             var places = _placesService.GetNearbyPlacesQueryable(user.Latitude, user.Longitude, range);
 
@@ -69,9 +90,7 @@ namespace C_bool.WebApp.Controllers
                 places = places.Where(p => p.Name.Contains(searchString) || p.Address.Contains(searchString) || p.ShortDescription.Contains(searchString));
             }
 
-            var favPlacesId = await places.Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToListAsync();
-
-            if (searchOnlyFavs)
+            if (onlyUserFavs)
             {
                 if (user.FavPlaces != null)
                 {
@@ -79,20 +98,63 @@ namespace C_bool.WebApp.Controllers
                 }
             }
 
-            if (searchOnlyWithTasks)
+            if (onlyWithTasks)
             {
                 places = places.Where(p => p.Tasks.Any());
             }
 
-            var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
+            if (userCreated)
+            {
+                places = places.Where(p => p.CreatedById == user.Id);
+            }
 
-            //mark model items as favorite
-            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            if (userPlace && !googlePlace)
+            {
+                places = places.Where(p => p.IsUserCreated);
+            }
+
+            if (googlePlace && !userPlace)
+            {
+                places = places.Where(p => !p.IsUserCreated);
+            }
+
+            // sort order
+            places = sortBy switch
+            {
+                "name" => places.OrderBy(s => s.Name),
+                "active" => places.OrderBy(s => s.IsActive),
+                "create_date" => places.OrderBy(s => s.CreatedOn),
+                "type" => places.OrderBy(s => s.IsUserCreated),
+                _ => places.OrderBy(s => s.IsActive)
+            };
+
+            var model = _mapper.Map<List<PlaceViewModel>>(places.AsNoTracking().Include(x => x.Tasks));
+            await AssignViewModelProperties(model);
+
+            model = sortBy switch
+            {
+                "distance" => model.OrderBy(x => x.DistanceFromUser).ToList(),
+                _ => model
+            };
+
+            if (sortOrder) model.Reverse();
+
 
             ViewBag.PlacesCount = places.Count();
 
             ViewBag.Message = new StatusMessage($"Znaleziono {model.ToList().Count} pasujących miejsc", StatusMessage.Status.INFO);
             return View(model);
+        }
+
+        private async Task AssignViewModelProperties(List<PlaceViewModel> model)
+        {
+            var user = _userService.GetCurrentUser();
+            var favPlacesId = await _placesService.GetAllQueryable().Where(p => _userService.GetFavPlaces().Contains(p)).Select(x => x.Id).ToListAsync();
+
+            // mark model items as favorite
+            model.Where(item => favPlacesId.Contains(item.Id)).ToList().ForEach(x => x.IsUserFavorite = true);
+            // add distance to model
+            model.ForEach(x => x.DistanceFromUser = SearchNearbyPlaces.DistanceBetweenPlaces(x.Latitude, x.Longitude, user.Latitude, user.Longitude));
         }
 
         [Authorize]
@@ -104,8 +166,8 @@ namespace C_bool.WebApp.Controllers
             {
                 return Json(new { success = true, responseText = "Dodano do ulubionych!", isAdded = true });
             }
-            _userService.RemoveFavPlace(place);
-            return Json(new { success = true, responseText = "Usunięto z ulubionych!", isAdded = false });
+            var status = _userService.RemoveFavPlace(place);
+            return Json(new { success = status, responseText = "Usunięto z ulubionych!", isAdded = false });
         }
 
 
@@ -113,31 +175,13 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Details(int id)
         {
             var model = _placesService.GetAllQueryable().Where(x => x.Id == id).Include(x => x.Tasks).SingleOrDefault();
+            var modelMapped = _mapper.Map<PlaceViewModel>(model);
+
             ViewBag.IsUserFavorite = _userService.GetFavPlaces().Any(x => x.Id.Equals(id));
             ViewBag.HasAnyActiveTasks = model != null && model.Tasks.Any();
-            return View(model);
+            return View(modelMapped);
         }
 
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         [Authorize]
         public IActionResult Edit(int id)
@@ -167,6 +211,7 @@ namespace C_bool.WebApp.Controllers
                 {
                     return View(model);
                 }
+
                 place = _mapper.Map<PlaceEditModel, Place>(model, place);
                 if (file != null) { place.Photo = ImageConverter.ConvertImage(file, out string message); }
                 _placesService.Update(place);

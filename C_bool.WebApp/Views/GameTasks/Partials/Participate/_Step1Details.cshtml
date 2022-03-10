@@ -4,86 +4,8 @@
 
 <div class="row">
     <div class="col-5 mb-4">
-        <div class="card border-0 shadow mb-4">
-            <div class="card-header">
-                <h1>@Model.Name</h1>
-                <h4>
-                    <small class="text-muted">
-                        <span class="badge bg-secondary">@SearchNearbyPlaces.ReadableDistance(SearchNearbyPlaces.DistanceBetweenPlaces(ViewBag.Latitude, ViewBag.Longitude, Model.Place.Latitude, Model.Place.Longitude)) od Ciebie</span>
-                        <a asp-action="Details" asp-controller="Places" asp-route-id="@Model.Place.Id" class="text-decoration-none">@Html.DisplayFor(modelItem => Model.Place.Name)</a>
-                    </small>
-                </h4>
-            </div>
-            <div class="card-body">
-                <!-- Task points to get -->
-                <div class="card border-0 mb-2" style="background-color: #ebfff6">
-                    <div class="card-body">
-                        <div class="row d-block d-xl-flex align-items-center">
-                            <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                <div class="icon-shape icon-sm icon-shape-success rounded me-3">
-                                    <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="col-12 col-xl-7 px-xl-0">
-                                <div class="d-none d-sm-block">
-                                    <h3 class="fw-extrabold mb-2">@Model.Points cebul do zdobycia!</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--Task valid thru information if any-->
-                @if (@Model.ValidFrom != DateTime.MinValue || @Model.ValidThru != DateTime.MinValue)
-                {
-                    <div class="card border-0 mb-2" style="background-color: #ebfff6">
-                        <div class="card-body">
-                            <div class="row d-block d-xl-flex align-items-center">
-                                <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                    <div class="icon-shape icon-sm icon-shape-success rounded me-3">
-                                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-xl-7 px-xl-0">
-                                    <div class="d-none d-sm-block">
-                                        <!-- Display the countdown timer in an element -->
-                                        <h3 class="fw-extrabold mb-2">Pozostało <span id="countdownTimer"></span></h3>
-                                    </div>
-                                    <small class="text-gray-500">Dostępne od: @Model.ValidFrom</small>
-                                    <small class="text-gray-500"> do: @Model.ValidThru</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                <!-- Task is done limited information -->
-                @if (@Model.IsDoneLimited)
-                {
-                    <div class="card border-0 mb-2" style="background-color: #ebfff6">
-                        <div class="card-body">
-                            <div class="row d-block d-xl-flex align-items-center">
-                                <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                    <div class="icon-shape icon-sm icon-shape-success rounded me-3">
-                                        <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-xl-7 px-xl-0">
-                                    <div class="d-none d-sm-block">
-                                        <h3 class="fw-extrabold mb-2">Zostało @Model.LeftDoneAttempts miejsc!</h3>
-                                    </div>
-                                    <small class="text-gray-500">Zadanie ma ogranicząną liczbę użytkowników. Pośpiesz się, zanim inni zgarną twoje punkty!</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+        <partial name="GameTasks/_TasksCard"/>
+
     </div>
     <div class="col-7 mb-4">
         @if (!Model.ShortDescription.IsNullOrEmpty())
@@ -130,6 +52,11 @@
                 </div>
             </div>
         }
+        
+        <button class="btn btn-lg btn-secondary" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">Wykonuję zadanie! <span class="fa fa-chevron-right"></span>
+        </button>
+
     </div>
 </div>
 

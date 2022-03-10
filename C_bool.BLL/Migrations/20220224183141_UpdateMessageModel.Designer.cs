@@ -4,14 +4,16 @@ using C_bool.BLL.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace C_bool.BLL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220224183141_UpdateMessageModel")]
+    partial class UpdateMessageModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,16 +126,10 @@ namespace C_bool.BLL.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UserGameTaskGameTaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserGameTaskId")
                         .HasColumnType("int");
 
                     b.Property<int?>("UserGameTaskUserId")
@@ -150,7 +146,7 @@ namespace C_bool.BLL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserGameTaskId", "UserGameTaskUserId", "UserGameTaskGameTaskId");
+                    b.HasIndex("UserGameTaskUserId", "UserGameTaskGameTaskId");
 
                     b.ToTable("Messages");
                 });
@@ -305,11 +301,6 @@ namespace C_bool.BLL.Migrations
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -334,11 +325,9 @@ namespace C_bool.BLL.Migrations
                     b.Property<string>("TextCriterion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "UserId", "GameTaskId");
+                    b.HasKey("UserId", "GameTaskId");
 
                     b.HasIndex("GameTaskId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UsersGameTasks");
                 });
@@ -520,7 +509,7 @@ namespace C_bool.BLL.Migrations
 
                     b.HasOne("C_bool.BLL.DAL.Entities.UserGameTask", null)
                         .WithMany("Messages")
-                        .HasForeignKey("UserGameTaskId", "UserGameTaskUserId", "UserGameTaskGameTaskId");
+                        .HasForeignKey("UserGameTaskUserId", "UserGameTaskGameTaskId");
                 });
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>

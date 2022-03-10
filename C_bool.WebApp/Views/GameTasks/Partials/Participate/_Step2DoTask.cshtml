@@ -114,30 +114,34 @@
             {
                 @await Html.PartialAsync("Partials/Participate/TaskTypes/_TakeAPhoto", new GameTaskParticipateModel())
             }
+            @{
+                var disabled = "";
+                if (!Model.IsActive || Model.IsOverdue || Model.IsUserCompleted) disabled = "disabled";
+            }
 
-            <div class="form-group">
-                <input type="submit" value="Wykonaj zadanie!" class="btn btn-success btn-lg d-block" style="margin-top: 15px;" />
-            </div>
+            <button class="btn btn-lg btn-secondary" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <span class="fa fa-chevron-left"></span> Cofnij do szczegółów
+            </button>
+
+            <button class="btn btn-lg btn-primary" type="submit" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <span class="fa fa-check"></span> Prześlij odpowiedź!
+            </button>
 
         </form>
     </div>
 </div>
 
 <script>
-
-    // Set the date we're counting down to
     var countDownDate = new Date('@Model.ValidThru.ToString("yyyy-MM-ddTHH:mm:ss")');
 
-// Update the count down every 1 second
     var x = setInterval(function() {
 
-        // Get today's date and time
         var now = new Date().getTime();
 
-        // Find the distance between now and the count down date
         var distance = countDownDate - now;
 
-        // Time calculations for days, hours, minutes and seconds
         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));

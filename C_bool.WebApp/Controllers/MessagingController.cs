@@ -19,26 +19,25 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly ILogger<MessagingController> _logger;
         private readonly IUserService _userService;
+        private readonly IMessagingService _messagingService;
         private readonly IMapper _mapper;
 
         public MessagingController(
             ILogger<MessagingController> logger,
             IMapper mapper,
-            IUserService userService, IRepository<User> usersRepository)
+            IUserService userService, IRepository<User> usersRepository, 
+            IMessagingService messagingService)
         {
             _logger = logger;
             _mapper = mapper;
             _userService = userService;
+            _messagingService = messagingService;
         }
         // GET: MessagingController
         public ActionResult Index()
         {
             var user = _userService.GetCurrentUser();
-            var model = (_userService.GetAllQueryable()
-                    .Where(x => x.Id == user.Id)
-                    .Select(x => x.Messages)
-                    .AsNoTracking()
-                    .SingleOrDefault() ?? new List<Message>())
+            var model = _messagingService.GetUserMessages(user.Id)
                 .OrderByDescending(x => x.CreatedOn)
                 .ToList();
 
@@ -48,72 +47,35 @@ namespace C_bool.WebApp.Controllers
         // GET: MessagingController/Details/5
         public ActionResult Details(int id)
         {
-            var user = _userService.GetCurrentUser();
-            var model = _userService.GetAllQueryable().Where(x => x.Id == user.Id).SelectMany(x => x.Messages).SingleOrDefault(x => x.Id == id);
+            var model = _messagingService.GetMessageById(id);
+            _messagingService.MarkAsRead(model, true);
             return View(model);
         }
 
-        // GET: MessagingController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: MessagingController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MessagingController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: MessagingController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MessagingController/Delete/5
+        [HttpGet]
         public ActionResult Delete(int id)
         {
-            return View();
+            var message = _messagingService.GetMessageById(id);
+            if (message == null) RedirectToAction(nameof(Index));
+            _messagingService.Delete(message);
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: MessagingController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [HttpGet]
+        public ActionResult DeleteAll()
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var user = _userService.GetCurrentUser();
+            _messagingService.DeleteAll(user.Id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public ActionResult MarkAsRead(int id)
+        {
+            var message = _messagingService.GetMessageById(id);
+            if (message == null) return RedirectToAction(nameof(Index));
+            _messagingService.MarkAsRead(message, !message.IsViewed);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @inject UserManager<User> UserManager
-@model UserGameTask;
+@model C_bool.WebApp.Models.GameTask.UserGameTaskViewModel;
 
 @{
 
@@ -96,14 +96,7 @@
     </symbol>
 </svg>
 
-<canvas id="custom_canvas" style="position: fixed; width: 100%; height: 100%; top: 0px; left: 0px; z-index: 1000; pointer-events: none;" width="779" height="941"></canvas>
-
-<div class="row mb-4 px-4">
-
-    <h1>Jesteś Zwycięzcą!</h1>
-    <p>Udało Ci się wykonać zadanie!</p>
-
-</div>
+<div class="mb-4"></div>
 
 <!-- three steps to get task done - accordion buttons with kind-a-like progress bar-->
 <div class="accordion accordion-flush mb-4 px-4" id="accordionExample">
@@ -141,87 +134,10 @@
     <!-- step contents-->
     <div>
         <!-- step 1 - task details-->
-        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-            <div class="row">
-                <div class="col-5 mb-4">
-                    <div class="card border-0 shadow mb-4">
-                        <div class="card-header">
-                            <h1>@Model.GameTask.Name</h1>
-                            <h4>
-                                <small class="text-muted">
-                                    <a asp-action="Details" asp-controller="Places" asp-route-id="@Model.GameTask.Place.Id" class="text-decoration-none">@Html.DisplayFor(modelItem => Model.GameTask.Place.Name)</a>
-                                </small>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <!-- Task points to get -->
-                            <div class="card border-0 mb-2" style="background-color: #ebfff6">
-                                <div class="card-body">
-                                    <div class="row d-block d-xl-flex align-items-center">
-                                        <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                            <div class="icon-shape icon-sm icon-shape-success rounded me-3">
-                                                <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-xl-7 px-xl-0">
-                                            <div class="d-none d-sm-block">
-                                                <h3 class="fw-extrabold mb-2">@Model.GameTask.Points cebul do zdobycia!</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-7 mb-4">
-                    @if (!Model.GameTask.ShortDescription.IsNullOrEmpty())
-                    {
-                        <div class="card border-0 shadow mb-4">
-                            <div class="card-header">
-                                <h4>Opis zadania</h4>
-                            </div>
-                            <div class="card-body">
 
-                                <div>
-                                    <p class="card-text">@Model.GameTask.ShortDescription</p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    <!--Task description - short and full, if exist-->
-                    @if (!Model.GameTask.ShortDescription.IsNullOrEmpty())
-                    {
-                        <div class="card border-0 shadow mb-4">
-                            <div class="card-header">
-                                <h4>Szczegóły zadania</h4>
-                            </div>
-                            <div class="card-body">
-
-                                @if (!Model.GameTask.Description.IsNullOrEmpty())
-                                {
-                                    <div>
-                                        @Html.Raw(Model.GameTask.Description)
-                                    </div>
-                                }
-                                else
-                                {
-
-                                    <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
-                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
-                                        <div>
-                                            To zadanie nie posiada rozszerzonego opisu
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <partial name="Partials/Participate/_Step1Details" model="Model.GameTask" />
             </div>
-        </div>
         <!-- step 2 - task criteria validation (based on task type) -->
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
         </div>
@@ -230,7 +146,10 @@
             <div class="row">
                 <div class="col-5 mb-4">
                     <div class="card border-0 shadow mb-4">
-                        <div class="card-header">
+                        
+                        <div class="card-body">
+                            <div class ="d-flex align-content-center align-items-center">
+                            <!-- Task points to get -->
                             <div class="tick" data-value="0" data-did-init="handleTickInit">
 
                                 <div data-layout="horizontal" data-repeat="true" data-transform="arrive(9, .0001) -> round -> pad('   ') -> split -> delay(rtl, 100, 150)">
@@ -240,31 +159,9 @@
                                 </div>
                             </div>
                             <br/>
-                            <h4>
-                                <small class="text-muted">
-                                    Zgarniętych cebulek!
-                                </small>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <!-- Task points to get -->
-                            <div class="card border-0 mb-2" style="background-color: #ebfff6">
-                                <div class="card-body">
-                                    <div class="row d-block d-xl-flex align-items-center">
-                                        <div class="col-2 col-xl-2 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                            <div class="icon-shape icon-sm icon-shape-success rounded me-3">
-                                                <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-xl-7 px-xl-0">
-                                            <div class="d-none d-sm-block">
-                                                <h3 class="fw-extrabold mb-2">@Model.GameTask.Points cebul do zdobycia!</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <h3 class ="m-2">
+                                Zgarniętych cebulek!
+                            </h3>
                             </div>
                         </div>
                     </div>

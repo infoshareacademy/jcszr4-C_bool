@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Identity
 @inject IOptionsSnapshot<GoogleAPISettings> _appSettings;
 @inject UserManager<User> UserManager
-@model C_bool.BLL.DAL.Entities.Place
+@model C_bool.WebApp.Models.Place.PlaceViewModel
 
 @{
     ViewData["Title"] = "Szczegóły miejsca";
@@ -32,85 +32,33 @@
 <div class="row">
 
     <div class="col-12 col-xl-8">
-        <!--Game Task list-->
-        @if (hasAnyActiveTasks)
-        {
-            <div class="accordion accordion-flush border-0 shadow mb-4">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingTwo">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                            <h2>Zadania</h2>
-                        </button>
-                    </h2>
-                    <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            @foreach (var task in Model.Tasks)
-                            {
-
-                                <!--gametask list-->
-                                <div class="card mb-4">
-                                    <a asp-controller="GameTasks" asp-action="Details" asp-route-gameTaskId="@task.Id" class="stretched-link"></a>
-                                    <div class="card-header bg-gray-100">
-                                        <div class="d-flex align-items-center me-5">
-                                            <div class="icon-shape icon-md icon-shape-success rounded me-3">
-                                                @if (task.Photo is not null)
-                                                {
-                                                    <img src="data:image;base64,@Html.Raw(task.Photo)" height="100%" preserveAspectRatio="xMidYMid slice" style="object-fit: cover" alt="Place photo">
-                                                }
-                                                else
-                                                {
-                                                    <svg data-darkreader-inline-fill="" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-
-                                                }
-                                            </div>
-                                            <div class="d-block">
-                                                <h3 class="mb-0">@task.Name</h3>
-                                                <h5 class="mb-0"><b>@task.Points</b> cebul do zdobycia!</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        @if (!task.ShortDescription.IsNullOrEmpty())
-                                        {
-                                            <div>
-                                                <p class="card-text">@task.ShortDescription</p>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-secondary d-flex align-items-center mb-4" role="alert">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
-                <div>
-                    To miejsce nie posiada aktywnych zadań. Kliknij przycisk <b><l class="bi bi-plus-circle"> Zadanie</l></b> aby utworzyć nowe
-                </div>
-            </div>
-        }
         <!--Place description - short and full, if exist-->
         @if (!Model.ShortDescription.IsNullOrEmpty())
         {
             <div class="accordion accordion-flush border-0 shadow mb-4">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="flush-headingOne">
-                        <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
-                            <p class="fw-normal">@Html.DisplayFor(model => model.ShortDescription)</p>
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
+                            <div class="d-flex align-items-center me-5">
+                                <div class="d-block">
+                                    <p class="fw-normal">@Html.DisplayFor(model => model.ShortDescription)</p>
+                                    @if (!Model.Description.IsNullOrEmpty())
+                                    {
+                                        <span class="badge badge-lg bg-primary">Rozwiń opis</span>
+
+                                    }
+                                </div>
+                            </div>
                         </button>
                     </h2>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                         <div class="accordion-body">
                             @if (!Model.Description.IsNullOrEmpty())
                             {
                                 <div>
                                     @Html.Raw(Model.Description)
                                 </div>
+
                             }
                             else
                             {
@@ -134,6 +82,40 @@
                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
                 <div>
                     To miejsce nie posiada opisu
+                </div>
+            </div>
+        }
+        <!--Game Task list-->
+        @if (hasAnyActiveTasks)
+        {
+            <div class="accordion accordion-flush border-0 shadow mb-4">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingTwo">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                            <h2>Zadania</h2>
+                        </button>
+                    </h2>
+                    <div id="flush-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            <div class="card-group task-card-group">
+                                @foreach (var task in Model.Tasks)
+                                {
+                                    <partial name="GameTasks/_TasksCard" model="task" />
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-secondary d-flex align-items-center mb-4" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                <div>
+                    To miejsce nie posiada aktywnych zadań. Kliknij przycisk <b><l class="bi bi-plus-circle"> Zadanie</l></b> aby utworzyć nowe
                 </div>
             </div>
         }

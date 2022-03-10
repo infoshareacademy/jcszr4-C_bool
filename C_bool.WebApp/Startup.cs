@@ -1,9 +1,9 @@
+using C_bool.BLL.Config;
 using C_bool.BLL.DAL.Context;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Helpers;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
-using C_bool.WebApp.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Net;
+using System.Net.Mail;
 using C_bool.BLL.Config;
 using Microsoft.Net.Http.Headers;
+using C_bool.WebApp.Middleware;
+using Serilog.Ui.MsSqlServerProvider;
+using Serilog.Ui.Web;
 
 namespace C_bool.WebApp
 {
@@ -60,7 +65,20 @@ namespace C_bool.WebApp
             services.AddTransient<IGameTaskService, GameTaskService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IReportService, ReportService>();
+
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
+
+            services.AddTransient<IMessagingService, MessagingService>();
+
             services.AddTransient<DatabaseSeeder>();
+
+            services.AddSerilogUi(options => options
+                .EnableAuthorization(authOptions =>
+                {
+                    authOptions.AuthenticationType = AuthenticationType.Cookie;
+                    authOptions.Roles = new[] { "Admin" };
+                })
+                .UseSqlServer(Configuration.GetConnectionString("Database"), "Logs"));
 
 
 
@@ -85,6 +103,20 @@ namespace C_bool.WebApp
             var profileAssembly = typeof(Startup).Assembly;
             services.AddAutoMapper(profileAssembly);
 
+            //FluentEmail
+            services
+                .AddFluentEmail(Configuration["SmtpClient:UserName"])
+                .AddSmtpSender(new SmtpClient()
+                {
+                    Host = Configuration["SmtpClient:Host"],
+                    Port = int.Parse(Configuration["SmtpClient:Port"]),
+                    EnableSsl = true,
+                    UseDefaultCredentials = false,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Credentials = new NetworkCredential(
+                        Configuration["SmtpClient:UserName"],
+                        Configuration["SmtpClient:Password"])
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,6 +141,11 @@ namespace C_bool.WebApp
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSerilogUi();
+
+            //Error handler middleware
+            //app.UseMiddleware<ErrorHandlerMiddleware>();
 
             dataContext.Database.Migrate();
 
