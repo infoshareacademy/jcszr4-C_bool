@@ -29,6 +29,7 @@ namespace C_bool.WebApp.Controllers
         private readonly ILogger<PlacesController> _logger;
         private readonly IUserService _userService;
         private readonly IPlaceService _placesService;
+        private readonly IReportService _reportService;
 
         private readonly IMapper _mapper;
 
@@ -36,13 +37,13 @@ namespace C_bool.WebApp.Controllers
             ILogger<PlacesController> logger,
             IMapper mapper,
             IPlaceService placesService,
-            IUserService userService
-        )
+            IUserService userService, IReportService reportService)
         {
             _logger = logger;
             _mapper = mapper;
             _placesService = placesService;
             _userService = userService;
+            _reportService = reportService;
         }
 
         [Authorize]
@@ -215,6 +216,7 @@ namespace C_bool.WebApp.Controllers
                 place = _mapper.Map<PlaceEditModel, Place>(model, place);
                 if (file != null) { place.Photo = ImageConverter.ConvertImage(file, out string message); }
                 _placesService.Update(place);
+                _reportService.UpdatePlaceReportEntry(place);
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -13,7 +13,6 @@ namespace C_Bool.API.DTOs
         public string Address { get; set; }
         public bool IsUserCreated { get; set; }
         public int CreatedById { get; set; }
-        public string CreatedByName { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
     }

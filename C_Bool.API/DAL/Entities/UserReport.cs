@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace C_Bool.API.DAL.Entities
 {
-    public class User : Entity
+    public class UserReport : Entity
     {
         public int UserId { get; set; }
         public string UserName { get; set; }

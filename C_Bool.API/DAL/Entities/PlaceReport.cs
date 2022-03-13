@@ -3,7 +3,7 @@ using System.Security.AccessControl;
 
 namespace C_Bool.API.DAL.Entities
 {
-    public class Place : Entity
+    public class PlaceReport : Entity
     {
         public int PlaceId { get; set; }
         public string PlaceName { get; set; }

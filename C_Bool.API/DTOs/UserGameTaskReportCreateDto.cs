@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Security.AccessControl;
 using C_Bool.API.Enums;
 
 namespace C_Bool.API.DTOs
 {
     public class UserGameTaskReportCreateDto
     {
+        public int UserGameTaskId { get; set; }
         public int UserId { get; set; }
         public int GameTaskId { get; set; }
         public TaskType GameTaskType { get; set; }

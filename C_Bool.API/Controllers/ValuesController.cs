@@ -32,12 +32,12 @@ namespace C_Bool.API.Controllers
 
         // GET: api/<ValuesController>
         [HttpGet("GetAllPlaces")]
-        public IEnumerable<Place> Get()
+        public IEnumerable<PlaceReport> Get()
         {
             return _apiReportService.GetPlaces();
         }
         [HttpGet("ListOfUsers")]
-        public IEnumerable<User> GetUsers()
+        public IEnumerable<UserReport> GetUsers()
         {
             return _apiReportService.GetUser();
         }
@@ -47,7 +47,7 @@ namespace C_Bool.API.Controllers
             return _apiReportService.NumberOfActiveUsers();
         }
         [HttpGet("GetAllGameTask")]
-        public IEnumerable<GameTask> GetGameTasks()
+        public IEnumerable<GameTaskReport> GetGameTasks()
         {
             return _apiReportService.GetGameTasks();
         }
@@ -70,27 +70,27 @@ namespace C_Bool.API.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("DisplayPlacesBySelected{id}")]
-        public ActionResult<Place> Get(int id)
+        public ActionResult<PlaceReport> Get(int id)
         {
             var place = _apiReportService.GetPlace(id);
             return Ok(place);
         }
 
         // POST api/<ValuesController>
-        [HttpPost("place")]
-        public void Post([FromBody] Place place)
+        [HttpPost("placeReport")]
+        public void Post([FromBody] PlaceReport placeReport)
         {
-            _apiReportService.AddPlace(place);
+            _apiReportService.AddPlace(placeReport);
         }
-        [HttpPost("user")]
-        public void Post([FromBody] User user)
+        [HttpPost("userReport")]
+        public void Post([FromBody] UserReport userReport)
         {
-            _apiReportService.AddUser(user);
+            _apiReportService.AddUser(userReport);
         }
-        [HttpPost("gameTask")]
-        public void Post([FromBody] GameTask gameTask)
+        [HttpPost("gameTaskReport")]
+        public void Post([FromBody] GameTaskReport gameTaskReport)
         {
-            _apiReportService.AddGameTask(gameTask);
+            _apiReportService.AddGameTask(gameTaskReport);
         }
 
         // PUT api/<ValuesController>/5

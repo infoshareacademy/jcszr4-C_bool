@@ -11,19 +11,19 @@ namespace C_Bool.API.Services
     public interface IApiReportService
     {
         //PLACE
-        public IEnumerable<Place> GetPlaces();
-        public void AddPlace(Place place);
-        public Place GetPlace(int id);
+        public IEnumerable<PlaceReport> GetPlaces();
+        public void AddPlace(PlaceReport placeReport);
+        public PlaceReport GetPlace(int id);
         public IEnumerable<string> TopListPlaces(int seats);
 
         //USER
-        public IEnumerable<User> GetUser();
-        public void AddUser(User user);
+        public IEnumerable<UserReport> GetUser();
+        public void AddUser(UserReport userReport);
         public int NumberOfActiveUsers();
 
         //GAME TASK
-        public IEnumerable<GameTask> GetGameTasks();
-        public void AddGameTask(GameTask gameTask);
+        public IEnumerable<GameTaskReport> GetGameTasks();
+        public void AddGameTask(GameTaskReport gameTaskReport);
         public string TheMostPopularTypeOfTask();
         public IEnumerable<KeyValuePair<int, int>> TopListPlacesWithTheMostTask(int seats);
         public IEnumerable<int> Proba(int seats);

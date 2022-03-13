@@ -13,14 +13,14 @@ namespace C_Bool.API.Services
 {
     public class ApiReportService : IApiReportService
     {
-        private readonly IRepository<Place> _placeRepository;
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<GameTask> _gameTaskRepository;
+        private readonly IRepository<PlaceReport> _placeRepository;
+        private readonly IRepository<UserReport> _userRepository;
+        private readonly IRepository<GameTaskReport> _gameTaskRepository;
 
         public ApiReportService(
-            IRepository<Place> placeRepository, 
-            IRepository<User> useRepository, 
-            IRepository<GameTask> gameTaskRepository
+            IRepository<PlaceReport> placeRepository, 
+            IRepository<UserReport> useRepository, 
+            IRepository<GameTaskReport> gameTaskRepository
         )
         {
             _placeRepository = placeRepository;
@@ -29,17 +29,17 @@ namespace C_Bool.API.Services
         }
         // TODO: Dodać zakres czasowy do raportów
         // PLACE 
-        public IEnumerable<Place> GetPlaces()
+        public IEnumerable<PlaceReport> GetPlaces()
         {
             return _placeRepository.GetAll();
         }
 
-        public void AddPlace(Place place)
+        public void AddPlace(PlaceReport placeReport)
         {
-            _placeRepository.Add(place);
+            _placeRepository.Add(placeReport);
         }
 
-        public Place GetPlace(int id)
+        public PlaceReport GetPlace(int id)
         {
             return _placeRepository.GetById(id);
         }
@@ -58,14 +58,14 @@ namespace C_Bool.API.Services
         }
 
         //USER
-        public IEnumerable<User> GetUser()
+        public IEnumerable<UserReport> GetUser()
         {
             return _userRepository.GetAll();
         }
 
-        public void AddUser(User user)
+        public void AddUser(UserReport userReport)
         {
-            _userRepository.Add(user);
+            _userRepository.Add(userReport);
         }
 
         public int NumberOfActiveUsers()
@@ -75,14 +75,14 @@ namespace C_Bool.API.Services
         }
 
         //GAME TASK
-        public IEnumerable<GameTask> GetGameTasks()
+        public IEnumerable<GameTaskReport> GetGameTasks()
         {
             return _gameTaskRepository.GetAll();
         }
 
-        public void AddGameTask(GameTask gameTask)
+        public void AddGameTask(GameTaskReport gameTaskReport)
         {
-            _gameTaskRepository.Add(gameTask);
+            _gameTaskRepository.Add(gameTaskReport);
         }
 
         public string TheMostPopularTypeOfTask()

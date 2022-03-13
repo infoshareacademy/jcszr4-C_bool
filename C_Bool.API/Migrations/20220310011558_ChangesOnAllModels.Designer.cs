@@ -21,7 +21,7 @@ namespace C_Bool.API.Migrations
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.GameTask", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.GameTaskReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,7 +60,7 @@ namespace C_Bool.API.Migrations
                     b.ToTable("GameTasks");
                 });
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.Place", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.PlaceReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +105,7 @@ namespace C_Bool.API.Migrations
                     b.ToTable("Places");
                 });
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.User", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

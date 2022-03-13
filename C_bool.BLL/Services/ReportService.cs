@@ -61,10 +61,10 @@ namespace C_bool.BLL.Services
             await UpdateReportEntry(gameTaskReportUpdateDto, GameTaskReportUri, gameTask.Id);
         }
 
-        public void CreateUserGameTaskReportEntry(UserGameTask userGameTask)
+        public async Task CreateUserGameTaskReportEntry(UserGameTask userGameTask)
         {
             var userGameTaskReportCreateDto = _mapper.Map<UserGameTaskReportCreateDto>(userGameTask);
-            CreateReportEntry(userGameTaskReportCreateDto, UserGameTaskReportUri);
+            await CreateReportEntry(userGameTaskReportCreateDto, UserGameTaskReportUri);
         }
 
         public async Task UpdateUserGameTaskReportEntry(UserGameTask userGameTask)
