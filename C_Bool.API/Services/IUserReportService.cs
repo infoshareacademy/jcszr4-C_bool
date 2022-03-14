@@ -7,5 +7,6 @@ namespace C_Bool.API.Services
         void CreateReportEntry(UserReport userReport);
         void UpdateReportEntry(UserReport userReport);
         UserReport GetReportEntryByUserId(int userId);
+        public int NumberOfActiveUsers();
     }
 }

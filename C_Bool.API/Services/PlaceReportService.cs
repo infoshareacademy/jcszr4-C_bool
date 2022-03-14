@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using C_Bool.API.DAL.Entities;
 using C_bool.API.Repositories;
+using MoreLinq.Extensions;
 
 namespace C_Bool.API.Services
 {
@@ -12,10 +15,8 @@ namespace C_Bool.API.Services
         {
             _placeReportRepository = placeReportRepository;
         }
-
         public void CreateReportEntry(PlaceReport placeReport)
         {
-
             _placeReportRepository.Add(placeReport);
         }
 
@@ -29,6 +30,19 @@ namespace C_Bool.API.Services
             return _placeReportRepository
                 .GetAllQueryable()
                 .SingleOrDefault(e => e.PlaceId == placeId);
+        }
+
+        public IEnumerable<string> TopListPlaces(int x)
+        {
+            var mostCommonAddress = _placeReportRepository.GetAll()
+                .GroupBy(x => x)
+                .Select(x => x.Key)
+                .OrderBy(x => x.Address)
+                .CountBy(x => x.Address)
+                .Take(x)
+                .Select(x => x.Key);
+
+            return mostCommonAddress;
         }
     }
 }
