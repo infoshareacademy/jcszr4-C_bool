@@ -15,7 +15,6 @@ namespace C_Bool.API.Services
 
         public void CreateReportEntry(UserReport userReport)
         {
-
             _userReportRepository.Add(userReport);
         }
 
@@ -29,6 +28,12 @@ namespace C_Bool.API.Services
             return _userReportRepository
                 .GetAllQueryable()
                 .SingleOrDefault(e => e.UserId == userId);
+        }
+
+        public int NumberOfActiveUsers()
+        {
+            var numberOfActiveUsers = _userReportRepository.GetAll().Count(x => x.IsActive == true);
+            return numberOfActiveUsers;
         }
     }
 }

@@ -18,7 +18,11 @@ namespace C_Bool.API.Controllers
             _userReportService = userReportService;
             _mapper = mapper;
         }
-
+        [HttpGet("/ActiveUsers")]
+        public int GetNumberOfUser()
+        {
+            return _userReportService.NumberOfActiveUsers();
+        }
         [HttpPost]
         public ActionResult<UserReport> CreateUserReportEntry([FromBody] UserReportCreateDto userReportCreateDto)
         {

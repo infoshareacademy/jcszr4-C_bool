@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using C_Bool.API.DAL.Entities;
 using C_Bool.API.DTOs;
 using C_Bool.API.Services;
@@ -17,6 +18,17 @@ namespace C_Bool.API.Controllers
         {
             _gameTaskReportService = gameTaskReportService;
             _mapper = mapper;
+        }
+        [HttpGet("/PopularGameTask")]
+        public string MostPopularGameTask()
+        {
+            return _gameTaskReportService.TheMostPopularTypeOfTask();
+        }
+
+        [HttpGet("top")]
+        public IEnumerable<KeyValuePair<int, int>> TopXPlaceWithTasks([FromQuery] int x)
+        {
+            return _gameTaskReportService.TopListPlacesWithTheMostTask(x);
         }
 
         [HttpPost]
