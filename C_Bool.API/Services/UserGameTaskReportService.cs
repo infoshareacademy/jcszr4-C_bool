@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using C_Bool.API.DAL.Entities;
 using C_bool.API.Repositories;
 
@@ -6,16 +6,29 @@ namespace C_Bool.API.Services
 {
     public class UserGameTaskReportService : IUserGameTaskReportService
     {
-        private readonly IRepository<UserGameTaskReport> _userGameTaskRepository;
+        private readonly IRepository<UserGameTaskReport> _userGameTaskReportRepository;
 
-        public UserGameTaskReportService(IRepository<UserGameTaskReport> userGameTaskRepository)
+        public UserGameTaskReportService(IRepository<UserGameTaskReport> userGameTaskReportRepository)
         {
-            _userGameTaskRepository = userGameTaskRepository;
+            _userGameTaskReportRepository = userGameTaskReportRepository;
         }
 
-        public void AddUserGameTask(UserGameTaskReport userGameTaskReport)
+        public void CreateReportEntry(UserGameTaskReport userGameTaskReport)
         {
-            _userGameTaskRepository.Add(userGameTaskReport);
+            
+            _userGameTaskReportRepository.Add(userGameTaskReport);
+        }
+
+        public void UpdateReportEntry(UserGameTaskReport userGameTaskReport)
+        {
+            _userGameTaskReportRepository.Update(userGameTaskReport);
+        }
+
+        public UserGameTaskReport GetReportEntryByUserGameTaskId(int userGameTaskId)
+        {
+            return _userGameTaskReportRepository
+                .GetAllQueryable()
+                .SingleOrDefault(e => e.UserGameTaskId == userGameTaskId);
         }
     }
 }

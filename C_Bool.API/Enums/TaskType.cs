@@ -4,7 +4,6 @@ namespace C_Bool.API.Enums
 {
     public enum TaskType
     {
-        //FirstComeFirstServed,
         [Display(Name = "Zrób zdjęcie")]
         TakeAPhoto,
         [Display(Name = "Odwiedź miejsce")]

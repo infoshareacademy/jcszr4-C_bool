@@ -20,13 +20,46 @@ namespace C_Bool.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<UserGameTaskReport> AddUserGameTask([FromBody] UserGameTaskReportCreateDto userGameTaskReportCreateDto)
+        public ActionResult<UserGameTaskReport> CreateUserGameTaskReportEntry([FromBody] UserGameTaskReportCreateDto userGameTaskReportCreateDto)
         {
-            var userGameTaskReport = _mapper.Map<UserGameTaskReport>(userGameTaskReportCreateDto);
-            _userGameTaskReportService.AddUserGameTask(userGameTaskReport);
 
-            return Ok(); //Created($"reports/{userGameTask.Id}", userGameTask);
+            var userGameTaskReport = _mapper.Map<UserGameTaskReport>(userGameTaskReportCreateDto);
+            _userGameTaskReportService.CreateReportEntry(userGameTaskReport);
+
+            return CreatedAtAction(
+                nameof(GetUserGameTaskReportEntryByUserGameTaskId),
+                new {userGameTaskId = userGameTaskReport.UserGameTaskId},
+                userGameTaskReport
+            );
         }
 
+        [HttpGet("{userGameTaskId}")]
+        public ActionResult<UserGameTaskReport> GetUserGameTaskReportEntryByUserGameTaskId([FromRoute] int userGameTaskId)
+        {
+            var userGameTaskReport = _userGameTaskReportService.GetReportEntryByUserGameTaskId(userGameTaskId);
+
+            if (userGameTaskReport == null)
+            {
+                return BadRequest($"Cannot get UserGameTaskReport entry because UserGameTaskId = {userGameTaskId} not exists.");
+            }
+
+            return Ok(userGameTaskReport);
+        }
+
+        [HttpPut ("{userGameTaskId}")]
+        public ActionResult<UserGameTaskReport> UpdateUserGameTaskReportEntry([FromRoute] int userGameTaskId, [FromBody] UserGameTaskReportUpdateDto userGameTaskReportUpdateDto)
+        {
+            var userGameTaskReport = _userGameTaskReportService.GetReportEntryByUserGameTaskId(userGameTaskId);
+            userGameTaskReport = _mapper.Map(userGameTaskReportUpdateDto, userGameTaskReport);
+
+            if (userGameTaskReport == null)
+            {
+                return BadRequest($"Cannot update UserGameTaskReport entry because UserGameTaskId = {userGameTaskId} not exists.");
+            }
+
+            _userGameTaskReportService.UpdateReportEntry(userGameTaskReport);
+
+            return NoContent();
+        }
     }
 }

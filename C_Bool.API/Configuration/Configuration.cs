@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace C_bool.API.Configuration
 {
-    public class PlaceConfiguration : IEntityTypeConfiguration<Place>
+    public class PlaceConfiguration : IEntityTypeConfiguration<PlaceReport>
     {
-        public void Configure(EntityTypeBuilder<Place> builder)
+        public void Configure(EntityTypeBuilder<PlaceReport> builder)
         {
 
             builder.Property(e => e.Types).HasConversion(new TypeValueConverter());

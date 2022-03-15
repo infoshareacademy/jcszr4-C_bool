@@ -19,7 +19,7 @@ namespace C_Bool.API.Migrations
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.GameTask", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.GameTaskReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace C_Bool.API.Migrations
                     b.ToTable("GameTasks");
                 });
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.Place", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.PlaceReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +103,43 @@ namespace C_Bool.API.Migrations
                     b.ToTable("Places");
                 });
 
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.User", b =>
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserGameTaskReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DoneOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameTaskType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlaceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserGameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserGameTask");
+                });
+
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,39 +167,6 @@ namespace C_Bool.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserGameTaskReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DoneOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GameTaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GameTaskType")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PlaceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserGameTask");
                 });
 #pragma warning restore 612, 618
         }

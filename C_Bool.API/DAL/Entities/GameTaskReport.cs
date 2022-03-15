@@ -4,7 +4,7 @@ using C_Bool.API.Enums;
 
 namespace C_Bool.API.DAL.Entities
 {
-    public class GameTask : Entity
+    public class GameTaskReport : Entity
     {
         public int GameTaskId { get; set; }
         public string GameTaskName { get; set; }

@@ -35,7 +35,10 @@ namespace C_Bool.API
             services.AddDbContext<ReportDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Database")));
             
             services.AddTransient<IApiReportService, ApiReportService>();
+            services.AddTransient<IGameTaskReportService, GameTaskReportService>();
             services.AddTransient<IUserGameTaskReportService, UserGameTaskReportService>();
+            services.AddTransient<IUserReportService, UserReportService>();
+            services.AddTransient<IPlaceReportService, PlaceReportService>();
 
             services.AddControllers();
 

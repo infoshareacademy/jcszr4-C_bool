@@ -4,6 +4,8 @@ namespace C_Bool.API.Services
 {
     public interface IUserGameTaskReportService
     {
-        void AddUserGameTask(UserGameTaskReport userGameTask);
+        void CreateReportEntry(UserGameTaskReport userGameTaskReport);
+        void UpdateReportEntry(UserGameTaskReport userGameTaskReport);
+        UserGameTaskReport GetReportEntryByUserGameTaskId(int userGameTaskId);
     }
 }

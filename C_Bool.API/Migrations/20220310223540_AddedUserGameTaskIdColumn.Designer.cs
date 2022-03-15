@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C_Bool.API.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    [Migration("20220223211659_init")]
-    partial class init
+    [Migration("20220310223540_AddedUserGameTaskIdColumn")]
+    partial class AddedUserGameTaskIdColumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,14 +37,14 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("GameTaskId")
                         .HasColumnType("int");
 
+                    b.Property<string>("GameTaskName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDoneLimited")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlaceId")
                         .HasColumnType("int");
@@ -76,11 +76,11 @@ namespace C_Bool.API.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GameTaskId")
-                        .HasColumnType("int");
-
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUserCreated")
                         .HasColumnType("bit");
@@ -91,11 +91,11 @@ namespace C_Bool.API.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PlaceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PlaceName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Types")
                         .HasColumnType("nvarchar(max)");
@@ -127,9 +127,48 @@ namespace C_Bool.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("C_Bool.API.DAL.Entities.UserGameTaskReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DoneOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("GameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameTaskType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlaceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserGameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserGameTask");
                 });
 #pragma warning restore 612, 618
         }
