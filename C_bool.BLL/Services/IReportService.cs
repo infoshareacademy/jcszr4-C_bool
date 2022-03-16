@@ -13,5 +13,6 @@ namespace C_bool.BLL.Services
         Task UpdateGameTaskReportEntry(GameTask gameTask); 
         Task CreateUserGameTaskReportEntry(UserGameTask userGameTask);
         Task UpdateUserGameTaskReportEntry(UserGameTask userGameTask);
+        Task TheMostPopularGameTaskReport();
     }
 }

@@ -1,4 +1,5 @@
-﻿using C_bool.BLL.DAL.Entities;
+﻿using System;
+using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
@@ -14,6 +15,7 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
+        private readonly ReportService _reportService;
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
@@ -22,12 +24,12 @@ namespace C_bool.WebApp.Controllers
         public AdminPanelController(
             IRepository<User> userRepository,
             IUserService userService,
-            UserManager<User> userManager
-            )
+            UserManager<User> userManager, ReportService reportService1)
         {
             _userRepository = userRepository;
             _userService = userService;
             _userManager = userManager;
+            _reportService = reportService1;
         }
 
         public ActionResult UsersList()
@@ -96,6 +98,12 @@ namespace C_bool.WebApp.Controllers
             {
                 return NotFound();
             }
+        }
+        [HttpGet]
+        public async ActionResult TheMostPopularTaskType(DateTime validFrom)
+        {
+            var mostPopularGameTask = _reportService.TheMostPopularGameTaskReport();
+            return mostPopularGameTask;
         }
     }
 }

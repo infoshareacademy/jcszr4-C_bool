@@ -1,10 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.DTOs;
+using C_bool.BLL.Enums;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Services
@@ -71,6 +73,26 @@ namespace C_bool.BLL.Services
         {
             var userGameTaskReportUpdateDto = _mapper.Map<UserGameTaskReportUpdateDto>(userGameTask);
             await UpdateReportEntry(userGameTaskReportUpdateDto, UserGameTaskReportUri, userGameTask.Id);
+        }
+
+        public async Task TheMostPopularGameTaskReport(DateTime ValidFrom)
+        {
+            var gameTaskReportPopularTaskDto = _mapper.Map<GameTaskReportPopularTaskDto>(ValidFrom);
+            await TheMostPopularTypeOfTask(gameTaskReportPopularTaskDto, GameTaskReportUri);
+        }
+
+
+        private async Task TheMostPopularTypeOfTask(IEntityReportDto entityReportDto, string relativeUri)
+        {
+            var content = new StringContent(
+                JsonConvert.SerializeObject(entityReportDto),
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json
+                );
+
+            using var theMostPopularTypeOfTask =
+                await _httpClient.GetAsync(relativeUri);
+            theMostPopularTypeOfTask.EnsureSuccessStatusCode();
         }
 
         private async Task CreateReportEntry(IEntityReportDto entityReportDto, string relativeUri)
