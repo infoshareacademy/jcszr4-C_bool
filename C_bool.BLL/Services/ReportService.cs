@@ -75,9 +75,9 @@ namespace C_bool.BLL.Services
             await UpdateReportEntry(userGameTaskReportUpdateDto, UserGameTaskReportUri, userGameTask.Id);
         }
 
-        public async Task TheMostPopularGameTaskReport(DateTime ValidFrom)
+        public async Task TheMostPopularGameTaskReport()
         {
-            var gameTaskReportPopularTaskDto = _mapper.Map<GameTaskReportPopularTaskDto>(ValidFrom);
+            var gameTaskReportPopularTaskDto = _mapper.Map<GameTaskReportPopularTaskDto>(_httpClient);
             await TheMostPopularTypeOfTask(gameTaskReportPopularTaskDto, GameTaskReportUri);
         }
 

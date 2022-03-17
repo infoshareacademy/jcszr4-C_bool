@@ -6,6 +6,7 @@ using C_bool.WebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace C_bool.WebApp.Controllers
@@ -99,11 +100,13 @@ namespace C_bool.WebApp.Controllers
                 return NotFound();
             }
         }
+
         [HttpGet]
-        public async ActionResult TheMostPopularTaskType(DateTime validFrom)
+        public ActionResult TheMostPopularTaskType()
         {
             var mostPopularGameTask = _reportService.TheMostPopularGameTaskReport();
-            return mostPopularGameTask;
+           return View(mostPopularGameTask);
         }
+
     }
 }
