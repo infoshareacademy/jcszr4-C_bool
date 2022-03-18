@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using C_Bool.API.DAL.Entities;
 using C_Bool.API.DTOs;
@@ -19,12 +20,7 @@ namespace C_Bool.API.Controllers
             _placeReportService = placeReportService;
             _mapper = mapper;
         }
-        // GET api/<ApiPlaceController>/5
-        [HttpGet("/Top{x}Places")]
-        public IEnumerable<string> TopListPlace(int x)
-        {
-            return _placeReportService.TopListPlaces(x);
-        }
+       
         [HttpPost]
         public ActionResult<PlaceReport> CreatePlaceReportEntry([FromBody] PlaceReportCreateDto placeReportCreateDto)
         {
@@ -66,6 +62,19 @@ namespace C_Bool.API.Controllers
             _placeReportService.UpdateReportEntry(placeReport);
 
             return NoContent();
+        }
+        [HttpGet("mostPopularByGameTask")]
+        public ActionResult<GetCountByDto> GetPlacesWithHighestGameTypeCount([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo, [FromQuery] int limit)
+        {
+            var topPlacesWithHighestGameTaskCount = _placeReportService.GetMostPopularByGameTask(dateFrom, dateTo, limit);
+            return Ok(topPlacesWithHighestGameTaskCount);
+        }
+
+        [HttpGet("countWithoutGameTask")]
+        public ActionResult<GetPartialCountDto> GetPlacesCountWithoutGameTask()
+        {
+            var placesCountWithoutGameTask = _placeReportService.GetWithoutGameTask();
+            return Ok(placesCountWithoutGameTask);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using C_Bool.API.DAL.Entities;
+using C_Bool.API.DTOs;
 using C_bool.API.Repositories;
 using MoreLinq.Extensions;
 
@@ -31,38 +32,55 @@ namespace C_Bool.API.Services
                 .GetAllQueryable()
                 .SingleOrDefault(e => e.GameTaskId == gameTaskId);
         }
-        // TODO: Dodać zakres czasowy do raportów
-        public string TheMostPopularTypeOfTask()
+
+        public List<GetCountByDto> GetCountByType(DateTime? dateFrom, DateTime? dateTo)
         {
-            var grouped = _gameTaskReportRepository
-                .GetAll()
-                .ToLookup(x => x);
-
-            var maxRepetitions = grouped
-                .Max(x => x.Count());
-
-            var maxRepeatedItems = grouped
-                .Where(x => x.Count() == maxRepetitions)
-                .Select(x => x.Key)
-                .Select(x => x.Type);
-
-            var maxRepeatedItem = maxRepeatedItems
-                .GroupBy(x => x)
-                .MaxBy(x => x.Count())
-                .First().Key;
-
-            return maxRepeatedItem.ToString();
+            if (!_gameTaskReportRepository.GetAllQueryable().Any())
+            {
+                return new List<GetCountByDto>();
+            }
+            dateFrom ??= _gameTaskReportRepository.GetAllQueryable().Min(e => e.CreatedOn);
+            dateTo ??= _gameTaskReportRepository.GetAllQueryable().Max(e => e.CreatedOn);
+            var gameTaskTypeList = _gameTaskReportRepository
+                .GetAllQueryable()
+                .Where(e => e.CreatedOn >= dateFrom && e.CreatedOn <= dateTo)
+                .Select(e => new
+                {
+                    TypeName = e.Type
+                })
+                .ToList();
+            var gameTaskReportCountByType = gameTaskTypeList
+                .CountBy(e => e.TypeName.ToString())
+                .Select(kv => new GetCountByDto
+                {
+                    Name = kv.Key,
+                    Count = kv.Value
+                })
+                .OrderByDescending(e => e.Count)
+                .ThenBy(e => e.Name)
+                .ToList();
+            return gameTaskReportCountByType;
         }
 
-        public IEnumerable<KeyValuePair<int, int>> TopListPlacesWithTheMostTask(int x)
+        public GetAverageDto GetPointsAverage(DateTime? dateFrom, DateTime? dateTo)
         {
-            var topListPlacesWithTheMostTask = _gameTaskReportRepository.GetAllQueryable()
-                .Where(x => x.GameTaskId > 0).AsEnumerable()
-                .CountBy(x => x.PlaceId)
-                .OrderByDescending(x => x.Value)
-                .Take(x).ToList();
+            if (!_gameTaskReportRepository.GetAllQueryable().Any())
+            {
+                return new GetAverageDto();
+            }
+            dateFrom ??= _gameTaskReportRepository.GetAllQueryable().Min(e => e.CreatedOn);
+            dateTo ??= _gameTaskReportRepository.GetAllQueryable().Max(e => e.CreatedOn);
 
-            return topListPlacesWithTheMostTask;
+            var pointsAverage = _gameTaskReportRepository
+                .GetAllQueryable()
+                .Where(e => e.CreatedOn >= dateFrom && e.CreatedOn <= dateTo)
+                .Average(e => e.Points);
+
+            var getAverageDto = new GetAverageDto
+            {
+                Average = Math.Round(pointsAverage)
+            };
+            return getAverageDto;
         }
     }
 }

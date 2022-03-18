@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using C_Bool.API.DAL.Entities;
 using C_Bool.API.DTOs;
+using C_Bool.API.Enums;
 using C_Bool.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,17 +20,6 @@ namespace C_Bool.API.Controllers
         {
             _gameTaskReportService = gameTaskReportService;
             _mapper = mapper;
-        }
-        [HttpGet("/PopularGameTask")]
-        public string MostPopularGameTask()
-        {
-            return _gameTaskReportService.TheMostPopularTypeOfTask();
-        }
-
-        [HttpGet("top")]
-        public IEnumerable<KeyValuePair<int, int>> TopXPlaceWithTasks([FromQuery] int x)
-        {
-            return _gameTaskReportService.TopListPlacesWithTheMostTask(x);
         }
 
         [HttpPost]
@@ -72,6 +63,22 @@ namespace C_Bool.API.Controllers
             _gameTaskReportService.UpdateReportEntry(gameTaskReport);
 
             return NoContent();
+        }
+
+        [HttpGet("taskTypeCount")]
+        public ActionResult<GetCountByDto> GetTaskTypeCount([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
+        {
+            var gameTaskReportCountByTaskList = _gameTaskReportService.GetCountByType(dateFrom, dateTo);
+
+            return Ok(gameTaskReportCountByTaskList);
+        }
+
+        [HttpGet("pointsAverage")]
+        public ActionResult<GetAverageDto> GameTasksWithTopPlaceCount([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
+        {
+            var gameTaskPointsAverage = _gameTaskReportService.GetPointsAverage(dateFrom, dateTo);
+
+            return Ok(gameTaskPointsAverage);
         }
     }
 }

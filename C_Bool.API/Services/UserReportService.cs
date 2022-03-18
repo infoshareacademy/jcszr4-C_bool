@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using C_Bool.API.DAL.Entities;
+using C_Bool.API.DTOs;
 using C_bool.API.Repositories;
 
 namespace C_Bool.API.Services
@@ -30,10 +31,20 @@ namespace C_Bool.API.Services
                 .SingleOrDefault(e => e.UserId == userId);
         }
 
-        public int NumberOfActiveUsers()
+        public GetPartialCountDto ActiveUsersCount()
         {
-            var numberOfActiveUsers = _userReportRepository.GetAll().Count(x => x.IsActive == true);
-            return numberOfActiveUsers;
+            var activeUsersCount = _userReportRepository
+                .GetAllQueryable()
+                .Count(x => x.IsActive);
+
+            var totalUsersCount = _userReportRepository
+                .GetAllQueryable()
+                .Count();
+            return new GetPartialCountDto
+            {
+                PartialCount = activeUsersCount,
+                TotalCount = totalUsersCount
+            };
         }
     }
 }

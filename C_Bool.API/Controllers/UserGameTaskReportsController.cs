@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using C_Bool.API.DAL.Entities;
 using C_Bool.API.DTOs;
 using C_Bool.API.Services;
@@ -60,6 +61,37 @@ namespace C_Bool.API.Controllers
             _userGameTaskReportService.UpdateReportEntry(userGameTaskReport);
 
             return NoContent();
+        }
+        [HttpGet("mostPopularByUsers")]
+        public ActionResult<GetCountByDto> GetGameTasksWithHighestUsersCount([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo, [FromQuery] int limit)
+        {
+            var mostPopularGameTaskByUsers = _userGameTaskReportService.GetMostPopularByUsers(dateFrom, dateTo, limit);
+
+            return Ok(mostPopularGameTaskByUsers);
+        }
+
+        [HttpGet("mostActiveUsers")]
+        public ActionResult<GetCountByDto> GetMostActiveUsers([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo, [FromQuery] int limit)
+        {
+            var mostActiveUsers = _userGameTaskReportService.GetMostActiveUsers(dateFrom, dateTo, limit);
+
+            return Ok(mostActiveUsers);
+        }
+
+        [HttpGet("doneCount")]
+        public ActionResult<GetPartialCountDto> GetDoneGameTaskCount()
+        {
+            var doneGameTaskCount = _userGameTaskReportService.GetDoneGameTaskCount();
+
+            return Ok(doneGameTaskCount);
+        }
+
+        [HttpGet("averageDoneTime")]
+        public ActionResult<GetPartialCountDto> GetAverageGameTaskDoneTime()
+        {
+            var averageDoneTime = _userGameTaskReportService.GetAverageTimeBetweenCreatingAndDone();
+
+            return Ok(averageDoneTime);
         }
     }
 }
