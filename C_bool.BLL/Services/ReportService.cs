@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -7,6 +9,7 @@ using AutoMapper;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.DTOs;
 using C_bool.BLL.Enums;
+using C_bool.BLL.Models.Reports;
 using Newtonsoft.Json;
 
 namespace C_bool.BLL.Services
@@ -75,26 +78,86 @@ namespace C_bool.BLL.Services
             await UpdateReportEntry(userGameTaskReportUpdateDto, UserGameTaskReportUri, userGameTask.Id);
         }
 
-        public async Task TheMostPopularGameTaskReport()
+        public async Task<ActiveUsersCount> GetActiveUsersCount()
         {
-            var gameTaskReportPopularTaskDto = _mapper.Map<GameTaskReportPopularTaskDto>(_httpClient);
-            await TheMostPopularTypeOfTask(gameTaskReportPopularTaskDto, GameTaskReportUri);
+            var response = await _httpClient.GetAsync(UserReportUri + "/activeUsersCount");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ActiveUsersCount>(responseBody);
         }
 
-
-        private async Task TheMostPopularTypeOfTask(IEntityReportDto entityReportDto, string relativeUri)
+        public async Task<GameTaskPointsAverage> GetGameTaskPointsAverage()
         {
-            var content = new StringContent(
-                JsonConvert.SerializeObject(entityReportDto),
-                Encoding.UTF8,
-                MediaTypeNames.Application.Json
-                );
+            var response = await _httpClient.GetAsync(GameTaskReportUri + "/pointsAverage");
+            var responseBody = await response.Content.ReadAsStringAsync();
 
-            using var theMostPopularTypeOfTask =
-                await _httpClient.GetAsync(relativeUri);
-            theMostPopularTypeOfTask.EnsureSuccessStatusCode();
+            return JsonConvert.DeserializeObject<GameTaskPointsAverage>(responseBody);
         }
 
+        public async Task<List<GameTaskTypeClassification>> GetGameTaskTypeClassification(DateTime? dateFrom, DateTime? dateTo, int limit)
+        {
+            var requestUri =
+                $"{GameTaskReportUri}/taskTypeCount?dateFrom={dateFrom}&dateTo={dateTo}&limit={limit}";
+            var response = await _httpClient.GetAsync(requestUri);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<GameTaskTypeClassification>>(responseBody).ToList();
+        }
+
+        public async Task<List<PlaceByGameTasksClassification>> GetPlaceByGameTasksClassification(DateTime? dateFrom, DateTime? dateTo, int limit)
+        {
+            var requestUri =
+                $"{PlaceReportUri}/mostPopularByGameTask?dateFrom={dateFrom}&dateTo={dateTo}&limit={limit}";
+            var response = await _httpClient.GetAsync(requestUri);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<PlaceByGameTasksClassification>>(responseBody);
+        }
+
+        public async Task<PlaceWithoutGameTasksCount> GetPlacesWithoutGameTasksCount()
+        {
+            var response = await _httpClient.GetAsync(PlaceReportUri + "/countWithoutGameTask");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<PlaceWithoutGameTasksCount>(responseBody);
+        }
+
+        public async Task<List<UserGameTaskByUsersClassification>> GetUserGameTaskByUsersClassification(DateTime? dateFrom, DateTime? dateTo, int limit)
+        {
+            var requestUri =
+                $"{UserGameTaskReportUri}/mostPopularByUsers?dateFrom={dateFrom}&dateTo={dateTo}&limit={limit}";
+            var response = await _httpClient.GetAsync(requestUri);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<UserGameTaskByUsersClassification>>(responseBody);
+        }
+
+        public async Task<List<UserGameTaskMostActiveUsersClassification>> GetUserGameTaskMostActiveUsersClassification(DateTime? dateFrom, DateTime? dateTo, int limit)
+        {
+            var requestUri =
+                $"{UserGameTaskReportUri}/mostActiveUsers?dateFrom={dateFrom}&dateTo={dateTo}&limit={limit}";
+            var response = await _httpClient.GetAsync(requestUri);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<UserGameTaskMostActiveUsersClassification>>(responseBody);
+        }
+
+        public async Task<UserGameTaskDoneTimeAverage> GetUserGameTaskDoneTimeAverage()
+        {
+            var response = await _httpClient.GetAsync(UserGameTaskReportUri + "/averageDoneTime");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UserGameTaskDoneTimeAverage>(responseBody);
+        }
+
+        public async Task<UserGameTaskDoneCount> GetUserGameTaskDoneCount()
+        {
+            var response = await _httpClient.GetAsync(UserGameTaskReportUri + "/doneCount");
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UserGameTaskDoneCount>(responseBody);
+        }
+        
         private async Task CreateReportEntry(IEntityReportDto entityReportDto, string relativeUri)
         {
             var content = new StringContent(

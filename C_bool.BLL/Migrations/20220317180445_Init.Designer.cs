@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C_bool.BLL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220119012112_AddedNewPropToGameTaskAndUserGameTask")]
-    partial class AddedNewPropToGameTaskAndUserGameTask
+    [Migration("20220317180445_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,8 +31,8 @@ namespace C_bool.BLL.Migrations
                     b.Property<string>("AfterDoneMessage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
 
                     b.Property<string>("CreatedByName")
                         .HasColumnType("nvarchar(max)");
@@ -86,6 +86,77 @@ namespace C_bool.BLL.Migrations
                     b.ToTable("GameTasks");
                 });
 
+            modelBuilder.Entity("C_bool.BLL.DAL.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsViewed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PlaceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RootId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserGameTaskGameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserGameTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserGameTaskUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameTaskId");
+
+                    b.HasIndex("PlaceId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserGameTaskId", "UserGameTaskUserId", "UserGameTaskGameTaskId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.Place", b =>
                 {
                     b.Property<int>("Id")
@@ -96,8 +167,8 @@ namespace C_bool.BLL.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -107,6 +178,9 @@ namespace C_bool.BLL.Migrations
 
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsUserCreated")
                         .HasColumnType("bit");
@@ -233,6 +307,11 @@ namespace C_bool.BLL.Migrations
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -241,9 +320,6 @@ namespace C_bool.BLL.Migrations
 
                     b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("BonusPoints")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -260,9 +336,11 @@ namespace C_bool.BLL.Migrations
                     b.Property<string>("TextCriterion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "GameTaskId");
+                    b.HasKey("Id", "UserId", "GameTaskId");
 
                     b.HasIndex("GameTaskId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UsersGameTasks");
                 });
@@ -428,6 +506,25 @@ namespace C_bool.BLL.Migrations
                     b.Navigation("Place");
                 });
 
+            modelBuilder.Entity("C_bool.BLL.DAL.Entities.Message", b =>
+                {
+                    b.HasOne("C_bool.BLL.DAL.Entities.GameTask", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("GameTaskId");
+
+                    b.HasOne("C_bool.BLL.DAL.Entities.Place", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("PlaceId");
+
+                    b.HasOne("C_bool.BLL.DAL.Entities.User", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("C_bool.BLL.DAL.Entities.UserGameTask", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("UserGameTaskId", "UserGameTaskUserId", "UserGameTaskGameTaskId");
+                });
+
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>
                 {
                     b.HasOne("C_bool.BLL.DAL.Entities.GameTask", "GameTask")
@@ -519,12 +616,16 @@ namespace C_bool.BLL.Migrations
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.GameTask", b =>
                 {
+                    b.Navigation("Messages");
+
                     b.Navigation("UserGameTasks");
                 });
 
             modelBuilder.Entity("C_bool.BLL.DAL.Entities.Place", b =>
                 {
                     b.Navigation("FavPlaces");
+
+                    b.Navigation("Messages");
 
                     b.Navigation("Tasks");
                 });
@@ -533,7 +634,14 @@ namespace C_bool.BLL.Migrations
                 {
                     b.Navigation("FavPlaces");
 
+                    b.Navigation("Messages");
+
                     b.Navigation("UserGameTasks");
+                });
+
+            modelBuilder.Entity("C_bool.BLL.DAL.Entities.UserGameTask", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

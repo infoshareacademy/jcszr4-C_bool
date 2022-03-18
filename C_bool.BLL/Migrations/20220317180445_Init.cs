@@ -74,7 +74,8 @@ namespace C_bool.BLL.Migrations
                     UserRatingsTotal = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsUserCreated = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedById = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -205,8 +206,11 @@ namespace C_bool.BLL.Migrations
                     ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ValidThru = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedById = table.Column<int>(type: "int", nullable: false),
                     CreatedByName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TextCriterion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDoneLimited = table.Column<bool>(type: "bit", nullable: false),
+                    LeftDoneAttempts = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -225,7 +229,8 @@ namespace C_bool.BLL.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    PlaceId = table.Column<int>(type: "int", nullable: false)
+                    PlaceId = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -248,14 +253,20 @@ namespace C_bool.BLL.Migrations
                 name: "UsersGameTasks",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     GameTaskId = table.Column<int>(type: "int", nullable: false),
                     IsDone = table.Column<bool>(type: "bit", nullable: false),
-                    DoneOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DoneOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TextCriterion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersGameTasks", x => new { x.UserId, x.GameTaskId });
+                    table.PrimaryKey("PK_UsersGameTasks", x => new { x.Id, x.UserId, x.GameTaskId });
                     table.ForeignKey(
                         name: "FK_UsersGameTasks_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -268,6 +279,59 @@ namespace C_bool.BLL.Migrations
                         principalTable: "GameTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedById = table.Column<int>(type: "int", nullable: false),
+                    CreatedByName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RootId = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsViewed = table.Column<bool>(type: "bit", nullable: false),
+                    IsBanned = table.Column<bool>(type: "bit", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    GameTaskId = table.Column<int>(type: "int", nullable: true),
+                    PlaceId = table.Column<int>(type: "int", nullable: true),
+                    UserGameTaskGameTaskId = table.Column<int>(type: "int", nullable: true),
+                    UserGameTaskId = table.Column<int>(type: "int", nullable: true),
+                    UserGameTaskUserId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_GameTasks_GameTaskId",
+                        column: x => x.GameTaskId,
+                        principalTable: "GameTasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_Places_PlaceId",
+                        column: x => x.PlaceId,
+                        principalTable: "Places",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_UsersGameTasks_UserGameTaskId_UserGameTaskUserId_UserGameTaskGameTaskId",
+                        columns: x => new { x.UserGameTaskId, x.UserGameTaskUserId, x.UserGameTaskGameTaskId },
+                        principalTable: "UsersGameTasks",
+                        principalColumns: new[] { "Id", "UserId", "GameTaskId" },
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -315,9 +379,34 @@ namespace C_bool.BLL.Migrations
                 column: "PlaceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Messages_GameTaskId",
+                table: "Messages",
+                column: "GameTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_PlaceId",
+                table: "Messages",
+                column: "PlaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_UserGameTaskId_UserGameTaskUserId_UserGameTaskGameTaskId",
+                table: "Messages",
+                columns: new[] { "UserGameTaskId", "UserGameTaskUserId", "UserGameTaskGameTaskId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_UserId",
+                table: "Messages",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UsersGameTasks_GameTaskId",
                 table: "UsersGameTasks",
                 column: "GameTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersGameTasks_UserId",
+                table: "UsersGameTasks",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsersPlaces_PlaceId",
@@ -343,7 +432,7 @@ namespace C_bool.BLL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "UsersGameTasks");
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "UsersPlaces");
@@ -352,10 +441,13 @@ namespace C_bool.BLL.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "GameTasks");
+                name: "UsersGameTasks");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "GameTasks");
 
             migrationBuilder.DropTable(
                 name: "Places");

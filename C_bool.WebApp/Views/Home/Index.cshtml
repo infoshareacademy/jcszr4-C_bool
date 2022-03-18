@@ -76,7 +76,7 @@
                         </div>
                         <small class="d-flex align-items-center text-gray-500">Najpopularniejsze: </small>
                         <div class="small d-flex mt-1">
-                            <a asp-controller="Places" asp-action="Details" asp-route-id="@lastAddedPlace.Id" class="text-decoration-none"><div>Ostatnio dodane: <span class="text-danger fw-bolder">@Html.Raw(lastAddedPlace?.Name)</span></div></a>
+                            <a asp-controller="Places" asp-action="Details" asp-route-id="@lastAddedPlace?.Id" class="text-decoration-none"><div>Ostatnio dodane: <span class="text-danger fw-bolder">@Html.Raw(lastAddedPlace?.Name)</span></div></a>
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                         </div>
                         <small class="d-flex align-items-center text-gray-500">Najpopularniejsze: </small>
                         <div class="small d-flex mt-1">
-                            <a asp-controller="GameTasks" asp-action="Details" asp-route-gameTaskId="@lastAddedGameTask.Id" class="text-decoration-none"><div>Ostatnio dodane: <span class="text-danger fw-bolder">@Html.Raw(lastAddedGameTask?.Name)</span></div></a>
+                            <a asp-controller="GameTasks" asp-action="Details" asp-route-gameTaskId="@lastAddedGameTask?.Id" class="text-decoration-none"><div>Ostatnio dodane: <span class="text-danger fw-bolder">@Html.Raw(lastAddedGameTask?.Name)</span></div></a>
                         </div>
                     </div>
                 </div>

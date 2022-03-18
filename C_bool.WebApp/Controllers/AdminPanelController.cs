@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using C_bool.BLL.DTOs;
+using C_bool.WebApp.Models.Reports;
 using Microsoft.AspNetCore.Authorization;
 
 namespace C_bool.WebApp.Controllers
@@ -16,7 +18,7 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
-        private readonly ReportService _reportService;
+        private readonly IReportService _reportService;
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
@@ -25,7 +27,7 @@ namespace C_bool.WebApp.Controllers
         public AdminPanelController(
             IRepository<User> userRepository,
             IUserService userService,
-            UserManager<User> userManager, ReportService reportService1)
+            UserManager<User> userManager, IReportService reportService1)
         {
             _userRepository = userRepository;
             _userService = userService;
@@ -79,6 +81,28 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> Reports(DateTime? dateFrom, DateTime? dateTo, int limit)
+        {
+            var model = new ReportViewModel();
+
+            model.ActiveUsersCount = await _reportService.GetActiveUsersCount();
+            model.GameTaskPointsAverage = await _reportService.GetGameTaskPointsAverage();
+            model.GameTaskTypeClassification =
+                await _reportService.GetGameTaskTypeClassification(dateFrom, dateTo, limit);
+            model.PlaceByGameTasksClassification =
+                await _reportService.GetPlaceByGameTasksClassification(dateFrom, dateTo, limit);
+            model.PlaceWithoutGameTasksCount = await _reportService.GetPlacesWithoutGameTasksCount();
+            model.UserGameTaskByUsersClassification =
+                await _reportService.GetUserGameTaskByUsersClassification(dateFrom, dateTo, limit);
+            model.UserGameTaskDoneCount = await _reportService.GetUserGameTaskDoneCount();
+            model.UserGameTaskDoneTimeAverage = await _reportService.GetUserGameTaskDoneTimeAverage();
+            model.UserGameTaskMostActiveUsersClassification =
+                await _reportService.GetUserGameTaskMostActiveUsersClassification(dateFrom, dateTo, limit);
+
+            return View(model);
+        }
+
         public ActionResult UserDetails(int id)
         {
             var model = _userRepository.GetById(id);
@@ -100,13 +124,5 @@ namespace C_bool.WebApp.Controllers
                 return NotFound();
             }
         }
-
-        [HttpGet]
-        public ActionResult TheMostPopularTaskType()
-        {
-            var mostPopularGameTask = _reportService.TheMostPopularGameTaskReport();
-           return View(mostPopularGameTask);
-        }
-
     }
 }
