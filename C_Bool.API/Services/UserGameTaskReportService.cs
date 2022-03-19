@@ -134,7 +134,10 @@ namespace C_Bool.API.Services
         {
             var doneUserGameTaskCount = _userGameTaskReportRepository
                 .GetAllQueryable()
-                .Count(e => e.IsDone);
+                .Where(e => e.IsDone)
+                .Select(e => e.PlaceId)
+                .Distinct()
+                .Count();
 
             var totalUserGameTask = _userGameTaskReportRepository.GetAllQueryable().Count();
 

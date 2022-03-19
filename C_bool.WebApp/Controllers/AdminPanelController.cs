@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using C_bool.BLL.DTOs;
 using C_bool.WebApp.Models.Reports;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 
 namespace C_bool.WebApp.Controllers
@@ -82,23 +83,27 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Reports(DateTime? dateFrom, DateTime? dateTo, int limit)
+        public async Task<ActionResult> Reports(string dateFrom, string dateTo, int limit)
         {
+            ViewData["dateFrom"] = dateFrom;
+            ViewData["dateTo"] = dateTo;
             var model = new ReportViewModel();
-
+            DateTime dateFromParsed = DateTime.TryParse(dateFrom, out dateFromParsed) ? dateFromParsed : DateTime.MinValue;
+            DateTime dateToParsed = DateTime.TryParse(dateTo, out dateToParsed) ? dateToParsed : DateTime.MaxValue;
+            limit = 5;
             model.ActiveUsersCount = await _reportService.GetActiveUsersCount();
             model.GameTaskPointsAverage = await _reportService.GetGameTaskPointsAverage();
             model.GameTaskTypeClassification =
-                await _reportService.GetGameTaskTypeClassification(dateFrom, dateTo, limit);
+                await _reportService.GetGameTaskTypeClassification(dateFromParsed, dateToParsed, limit);
             model.PlaceByGameTasksClassification =
-                await _reportService.GetPlaceByGameTasksClassification(dateFrom, dateTo, limit);
+                await _reportService.GetPlaceByGameTasksClassification(dateFromParsed, dateToParsed, limit);
             model.PlaceWithoutGameTasksCount = await _reportService.GetPlacesWithoutGameTasksCount();
             model.UserGameTaskByUsersClassification =
-                await _reportService.GetUserGameTaskByUsersClassification(dateFrom, dateTo, limit);
+                await _reportService.GetUserGameTaskByUsersClassification(dateFromParsed, dateToParsed, limit);
             model.UserGameTaskDoneCount = await _reportService.GetUserGameTaskDoneCount();
             model.UserGameTaskDoneTimeAverage = await _reportService.GetUserGameTaskDoneTimeAverage();
             model.UserGameTaskMostActiveUsersClassification =
-                await _reportService.GetUserGameTaskMostActiveUsersClassification(dateFrom, dateTo, limit);
+                await _reportService.GetUserGameTaskMostActiveUsersClassification(dateFromParsed, dateToParsed, limit);
 
             return View(model);
         }
