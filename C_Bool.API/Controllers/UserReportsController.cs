@@ -50,7 +50,7 @@ namespace C_Bool.API.Controllers
         public ActionResult<UserReport> UpdateUserEntry([FromRoute] int userId, [FromBody] UserReportUpdateDto userReportUpdateDto)
         {
             var userReport = _userReportService.GetReportEntryByUserId(userId);
-            userReport = _mapper.Map(userReport, userReport);
+            userReport = _mapper.Map(userReportUpdateDto, userReport);
 
             if (userReport == null)
             {

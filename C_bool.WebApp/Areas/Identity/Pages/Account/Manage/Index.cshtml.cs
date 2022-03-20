@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using C_bool.BLL.DAL.Entities;
+﻿using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
 using C_bool.BLL.Repositories;
-using C_bool.WebApp.Helpers;
-using Microsoft.AspNetCore.Http;
+using C_bool.BLL.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Threading.Tasks;
 
 namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
 {
@@ -19,15 +15,18 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IRepository<User> _userRepository;
+        private readonly IReportService _reportService;
 
-        public IndexModel(
+        public IndexModel
+        (
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IRepository<User> userRepository)
+            IRepository<User> userRepository, IReportService reportService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userRepository = userRepository;
+            _reportService = reportService;
         }
 
         public string Username { get; set; }
@@ -100,6 +99,8 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
             if (Input.Username != userName)
             {
                 var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                var updatedUser = await _userManager.GetUserAsync(HttpContext.User);
+                await _reportService.UpdateUserReportEntry(updatedUser);
                 if (!setUserNameResult.Succeeded)
                 {
                     StatusMessage = "Coś poszło nie tak, spróbuj podać inną nazwę.";

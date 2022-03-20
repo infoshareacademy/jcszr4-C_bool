@@ -52,7 +52,7 @@ namespace C_Bool.API.Services
                 .GetAllQueryable()
                 .Where(e => e.CreatedOn >= dateFrom && e.CreatedOn <= dateTo)
                 .AsEnumerable()
-                .CountBy(e => e.UserId)
+                .CountBy(e => e.GameTaskId)
                 .Select(e => new
                 {
                     GameTaskId = e.Key,
@@ -134,10 +134,7 @@ namespace C_Bool.API.Services
         {
             var doneUserGameTaskCount = _userGameTaskReportRepository
                 .GetAllQueryable()
-                .Where(e => e.IsDone)
-                .Select(e => e.PlaceId)
-                .Distinct()
-                .Count();
+                .Count(e => e.IsDone);
 
             var totalUserGameTask = _userGameTaskReportRepository.GetAllQueryable().Count();
 
@@ -152,7 +149,7 @@ namespace C_Bool.API.Services
 
         public GetAverageDto GetAverageTimeBetweenCreatingAndDone()
         {
-            if (!_userGameTaskReportRepository.GetAllQueryable().Any())
+            if (!_userGameTaskReportRepository.GetAllQueryable().Any(e => e.IsDone))
             {
                 return new GetAverageDto();
             }

@@ -43,7 +43,7 @@ namespace C_Bool.API.Services
             }
             dateFrom ??= _gameTaskReportRepository.GetAllQueryable().Min(e => e.CreatedOn);
             dateTo ??= _gameTaskReportRepository.GetAllQueryable().Max(e => e.CreatedOn);
-            limit = (limit < 1) ? 10 : limit;
+            limit = limit < 1 ? 10 : limit;
             var gameTaskCountByPlaces = _gameTaskReportRepository.GetAllQueryable()
                 .Where(e => e.CreatedOn >= dateFrom && e.CreatedOn <= dateTo)
                 .AsEnumerable()

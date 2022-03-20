@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace C_bool.BLL.DAL.Entities
 {
@@ -25,6 +26,8 @@ namespace C_bool.BLL.DAL.Entities
         public Place()
         {
             Messages = new List<Message>();
+            IsActive = true;
+            CreatedOn = DateTime.UtcNow;
         }
     }
 }
