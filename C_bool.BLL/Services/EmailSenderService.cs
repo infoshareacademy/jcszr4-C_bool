@@ -17,15 +17,14 @@ namespace C_bool.BLL.Services
             _userRepository = userRepository;
         }
 
-        public async Task SendCheckPhotoEmail(UserGameTask userGameTask, Message message)
+        public async Task SendCheckPhotoEmail(UserGameTask userGameTask, string title, string body)
         {
             var receiver = _userRepository.GetById(userGameTask.GameTask.CreatedById);
-
             var newEmail = _email
                 .SetFrom("cbool.contact@gmail.com", "C_bool Team")
                 .To(receiver.Email, receiver.UserName)
-                .Subject(message.Title)
-                .Body(message.Body, true);
+                .Subject(title)
+                .Body(body, true);
 
             await newEmail.SendAsync();
 
