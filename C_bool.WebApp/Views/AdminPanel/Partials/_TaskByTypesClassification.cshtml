@@ -11,11 +11,11 @@
     <div class="card border-0 shadow">
         <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
             <div class="d-block">
-                <div class="h6 fw-normal text-gray mb-2">Kategorie zadań</div>
+                <div class="h4 fw-normal text-gray mb-2">Kategorie zadań</div>
+                <div class="h6 fw-normal text-gray mb-2">Ilość stworzonych zadań z podziałem na kategorie</div>
             </div>
         </div>
-        <div class="d-block ms-auto">
-        </div>
+       
         <div class="card-body p-2">
         <div>
             <canvas id="popularGameTaskChart"></canvas>
@@ -30,7 +30,7 @@
     const data = {
         labels: labels,
         datasets: [{
-            label: 'Popularne typy zadań',
+            label: '',
             data: @Html.Raw(data),
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -48,7 +48,12 @@
     const config = {
         type: 'bar',
         data: data,
-        options: {}
+        options: {
+            plugins:{
+                legend: {
+                    display: false
+                }
+            }}
     };
     </script>
 

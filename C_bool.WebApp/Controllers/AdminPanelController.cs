@@ -113,13 +113,26 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ChangeUserStatus(int id, [FromBody] UserStatusModel newStatus)
+        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] UserStatusModel newStatus)
         {
-            
-            _userService.ChangeUserStatus(id, newStatus.newStatus);
 
-            return Ok();
+            var parsedNewStatus = bool.Parse(newStatus.NewStatus);
+            _userService.ChangeUserStatus(id, parsedNewStatus);
+
+            if (!parsedNewStatus)
+            {
+                return Json(new
+                {
+                    success = true,
+                    responseText = "Użytkownik został zablokowany"
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                responseText = "Użytkownik został aktywowany"
+            });
         }
     }
 }

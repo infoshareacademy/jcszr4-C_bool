@@ -129,11 +129,11 @@
                     <a asp-action="UserDetails" asp-route-id="@item.Id">Pokaż szczegóły</a> |
                     @if (item.IsActive)
                     {
-                        <a asp-action="UsersList" onclick="changeUserStatus('AdminPanel', 'ChangeUserStatus', '@item.Id', 'false')">Zablokuj</a>
+                        <a onclick="changeUserStatus('AdminPanel', 'ChangeUserStatus', '@item.Id', 'false')">Zablokuj</a>
                     }
                     else
                     {
-                        <a asp-action="UsersList" onclick="changeUserStatus('AdminPanel', 'ChangeUserStatus', '@item.Id', 'true')">Aktwywuj</a>
+                        <a onclick="changeUserStatus('AdminPanel', 'ChangeUserStatus', '@item.Id', 'true')">Aktwywuj</a>
                     }
                 </td>
             </tr>
@@ -145,7 +145,7 @@
 <script>
     function changeUserStatus(controller, view, id, status) {
         var postData = {
-            newStatus: status
+            "NewStatus" : status
         };
 
         $.ajax(
@@ -154,7 +154,12 @@
                 url: '/' + controller + '/' + view + '/' + id,
                 contentType: "application/json; charset=utf-8;",
                 dataType: "json",
-                data: JSON.stringify(postData)
+                data: JSON.stringify(postData),
+                success: function (data) {
+                    location.reload();
+                }
             });
     };
 </script>
+
+
