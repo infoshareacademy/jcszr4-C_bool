@@ -32,6 +32,59 @@
 <div class="row">
 
     <div class="col-12 col-xl-8">
+        <!--Place description - short and full, if exist-->
+        @if (!Model.ShortDescription.IsNullOrEmpty())
+        {
+            <div class="accordion accordion-flush border-0 shadow mb-4">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
+                            <div class="d-flex align-items-center me-5">
+                                <div class="d-block">
+                                    <p class="fw-normal">@Html.DisplayFor(model => model.ShortDescription)</p>
+                                    @if (!Model.Description.IsNullOrEmpty())
+                                    {
+                                        <span class="badge badge-lg bg-primary">Rozwiń opis</span>
+
+                                    }
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            @if (!Model.Description.IsNullOrEmpty())
+                            {
+                                <div>
+                                    @Html.Raw(Model.Description)
+                                </div>
+
+                            }
+                            else
+                            {
+
+                                <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                                    <div>
+                                        To miejsce nie posiada rozszerzonego opisu
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+
+            <div class="alert alert-secondary d-flex align-items-center mb-4" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+                <div>
+                    To miejsce nie posiada opisu
+                </div>
+            </div>
+        }
         <!--Game Task list-->
         @if (hasAnyActiveTasks)
         {
@@ -63,49 +116,6 @@
                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
                 <div>
                     To miejsce nie posiada aktywnych zadań. Kliknij przycisk <b><l class="bi bi-plus-circle"> Zadanie</l></b> aby utworzyć nowe
-                </div>
-            </div>
-        }
-        <!--Place description - short and full, if exist-->
-        @if (!Model.ShortDescription.IsNullOrEmpty())
-        {
-            <div class="accordion accordion-flush border-0 shadow mb-4">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingOne">
-                        <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="true" aria-controls="flush-collapseOne">
-                            <p class="fw-normal">@Html.DisplayFor(model => model.ShortDescription)</p>
-                        </button>
-                    </h2>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            @if (!Model.Description.IsNullOrEmpty())
-                            {
-                                <div>
-                                    @Html.Raw(Model.Description)
-                                </div>
-                            }
-                            else
-                            {
-
-                                <div class="alert alert-secondary d-flex align-items-center mb-0" role="alert">
-                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
-                                    <div>
-                                        To miejsce nie posiada rozszerzonego opisu
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-
-            <div class="alert alert-secondary d-flex align-items-center mb-4" role="alert">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
-                <div>
-                    To miejsce nie posiada opisu
                 </div>
             </div>
         }

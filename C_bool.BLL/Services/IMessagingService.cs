@@ -19,7 +19,9 @@ namespace C_bool.BLL.Services
         public Message GetParentMessage(Message message);
         public List<Message> GetRootMessages(Message message);
         public void MarkAsRead(Message message, bool isViewed);
+        public void MarkAllAsRead(int id);
         public void Update(Message message);
         public void Delete(Message message);
+        public void DeleteAll(int id);
     }
 }

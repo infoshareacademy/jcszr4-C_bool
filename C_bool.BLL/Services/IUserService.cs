@@ -16,7 +16,7 @@ namespace C_bool.BLL.Services
         Task<List<string>> GetUserRoles();
         Task<List<string>> GetUserRoles(int id);
         int GetRankingPlace();
-        void ChangeUserStatus(int userId);
+        void ChangeUserStatus(int userId, bool newStatus);
 
         bool AddFavPlace(Place place);
         bool RemoveFavPlace(Place place);

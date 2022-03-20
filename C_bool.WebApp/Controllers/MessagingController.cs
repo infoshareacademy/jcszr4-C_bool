@@ -37,14 +37,6 @@ namespace C_bool.WebApp.Controllers
         public ActionResult Index()
         {
             var user = _userService.GetCurrentUser();
-            //var model = (_userService.GetAllQueryable()
-            //        .Where(x => x.Id == user.Id)
-            //        .Select(x => x.Messages)
-            //        .AsNoTracking()
-            //        .SingleOrDefault() ?? new List<Message>())
-            //    .OrderByDescending(x => x.CreatedOn)
-            //    .ToList();
-
             var model = _messagingService.GetUserMessages(user.Id)
                 .OrderByDescending(x => x.CreatedOn)
                 .ToList();
@@ -55,78 +47,35 @@ namespace C_bool.WebApp.Controllers
         // GET: MessagingController/Details/5
         public ActionResult Details(int id)
         {
-            var user = _userService.GetCurrentUser();
-            var model = _userService.GetAllQueryable().Where(x => x.Id == user.Id).SelectMany(x => x.Messages).SingleOrDefault(x => x.Id == id);
+            var model = _messagingService.GetMessageById(id);
+            _messagingService.MarkAsRead(model, true);
             return View(model);
         }
 
-        // GET: MessagingController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: MessagingController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MessagingController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: MessagingController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-
-        // POST: MessagingController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public ActionResult Delete(int id)
         {
             var message = _messagingService.GetMessageById(id);
-            if (message == null) return Json(new { success = false, responseText = "Nie znaleziono wiadomości" });
+            if (message == null) RedirectToAction(nameof(Index));
             _messagingService.Delete(message);
-            return Json(new { success = true, responseText = "Wiadomość usunięta" });
+            return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
-        [HttpPost]
-        public ActionResult MarkAsRead([FromBody] ReturnString request)
+        [HttpGet]
+        public ActionResult DeleteAll()
         {
-            var message = _messagingService.GetMessageById(int.Parse(request.Id));
-            if (message == null) return Json(new { success = false, responseText = "Nie znaleziono wiadomości"});
-            if (message.IsViewed)
-            {
-                _messagingService.MarkAsRead(message, false);
-                return Json(new { success = true, responseText = "Oznaczono jako nieprzeczytane"});
-            }
-            _messagingService.MarkAsRead(message, true);
-            return Json(new { success = true, responseText = "Oznaczono jako przeczytane" });
+            var user = _userService.GetCurrentUser();
+            _messagingService.DeleteAll(user.Id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public ActionResult MarkAsRead(int id)
+        {
+            var message = _messagingService.GetMessageById(id);
+            if (message == null) return RedirectToAction(nameof(Index));
+            _messagingService.MarkAsRead(message, !message.IsViewed);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@model List<C_bool.BLL.Models.Reports.GameTaskTypeClassification>
+@{
+    var labels = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.TypeName)));
+
+    var data = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.GameTaskCount)));
+}
+
+<div class="col">
+    <div class="card border-0 shadow">
+        <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
+            <div class="d-block">
+                <div class="h4 fw-normal text-gray mb-2">Kategorie zadań</div>
+                <div class="h6 fw-normal text-gray mb-2">Ilość stworzonych zadań z podziałem na kategorie</div>
+            </div>
+        </div>
+       
+        <div class="card-body p-2">
+        <div>
+            <canvas id="popularGameTaskChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <script>
+    const labels = @Html.Raw(labels);
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: '',
+            data: @Html.Raw(data),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+            ],
+
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            plugins:{
+                legend: {
+                    display: false
+                }
+            }}
+    };
+    </script>
+
+    <script>
+        const myChart = new Chart(
+            document.getElementById('popularGameTaskChart'),
+            config
+        );
+    </script>
+</div>
+</div>

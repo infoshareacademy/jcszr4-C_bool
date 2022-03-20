@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@model C_bool.BLL.Models.Reports.ActiveUsersCount
+@{
+    var item = new HtmlString(JsonConvert.SerializeObject(Model.ActiveCount.ToString()));
+    var activeCount = new HtmlString(JsonConvert.SerializeObject(Model.ActiveCount));
+
+    var totalCount = new HtmlString(JsonConvert.SerializeObject(Model.TotalCount));
+}
+
+<div class="col">
+    <div class="card border-0 shadow">
+        <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
+            <div class="d-block">
+                <div class="h6 fw-normal text-gray mb-2">Liczba aktywnych użytkowników</div>
+            </div>
+        </div>
+        <div class="d-block ms-auto">
+        </div>
+        <div class="card-body p-2">
+            <div>
+                <canvas id="activeUsers"></canvas>
+            </div>
+
+        </div>
+
+
+        <script>
+            const itemCount = @Html.Raw(item);
+
+            const dataTotalCount = {
+                labels: itemCount,
+                datasets: [{
+                    label: 'Licza aktywnych użytkowników vs liczba wszystkich użytkowników',
+                    data: @Html.Raw(totalCount),
+                    data: @Html.Raw(activeCount),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+
+                }]
+            };
+
+            const configActiveUsersCount = {
+                type: 'bar',
+                data: dataTotalCount,
+                options: {
+                    plugins:{
+                        legend: {
+                            display: false
+                        }
+                    }}
+            };
+        </script>
+
+        <script>
+            const activeUsersChar = new Chart(
+                document.getElementById('activeUsers'),
+                configActiveUsersCount
+            );
+        </script>
+    </div>
+</div>

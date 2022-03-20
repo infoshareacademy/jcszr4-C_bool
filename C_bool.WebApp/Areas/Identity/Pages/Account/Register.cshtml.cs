@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Enums;
+using C_bool.BLL.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -26,20 +27,21 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<UserRole> _roleManager;
+        private readonly IReportService _reportService;
 
         public RegisterModel(
             UserManager<User> userManager,
             RoleManager<UserRole> roleManager,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender
-            )
+            IEmailSender emailSender, IReportService reportService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _reportService = reportService;
         }
 
         [BindProperty]
@@ -88,6 +90,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account
             {
                 var user = new User { UserName = Input.UserName, Email = Input.Email};
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
                     //TODO: Add user role to every new user
@@ -102,6 +105,7 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
+                    await _reportService.CreateUserReportEntry(user);
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

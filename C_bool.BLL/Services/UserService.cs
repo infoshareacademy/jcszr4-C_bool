@@ -20,6 +20,8 @@ namespace C_bool.BLL.Services
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
         private readonly IRepository<Place> _placeRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
+        private readonly IGameTaskService _gameTaskService;
+        private readonly IReportService _reportService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
 
@@ -30,7 +32,8 @@ namespace C_bool.BLL.Services
             IRepository<Place> placeRepository,
             IRepository<GameTask> gameTaskRepository,
             IHttpContextAccessor httpContextAccessor, 
-            UserManager<User> userManager)
+            UserManager<User> userManager, IReportService reportService,
+            IGameTaskService gameTaskService)
         { 
             _userRepository = userRepository;
             _userGameTaskRepository = userGameTaskRepository;
@@ -39,6 +42,8 @@ namespace C_bool.BLL.Services
             _gameTaskRepository = gameTaskRepository;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _reportService = reportService;
+            _gameTaskService = gameTaskService;
         }
 
         public IQueryable<User> GetAllQueryable()
@@ -82,11 +87,11 @@ namespace C_bool.BLL.Services
             return usersOrderedByPoints.IndexOf(currentUser.Id) + 1;
         }
 
-        public void ChangeUserStatus(int userId)
+        public void ChangeUserStatus(int userId, bool newStatus)
         {
             var user = _userRepository.GetById(userId);
 
-            user.IsActive = !user.IsActive;
+            user.IsActive = newStatus;
 
             _userRepository.Update(user);
         }
@@ -98,6 +103,7 @@ namespace C_bool.BLL.Services
             if (userFavPlaces.Any(x => x.Id.Equals(place.Id))) return false;
             currentUser.FavPlaces.Add(new UserPlace(currentUser, place));
             _userRepository.Update(currentUser);
+            _reportService.CreatePlaceReportEntry(place);
             return true;
         }
 
@@ -135,8 +141,11 @@ namespace C_bool.BLL.Services
             var currentUser = GetCurrentUser();
             var userGameTasks = GetAllTasks();
             if (userGameTasks.Any(x => x.Id.Equals(gameTask.Id))) return false;
-            currentUser.UserGameTasks.Add(new UserGameTask(currentUser, gameTask));
+            var userGameTask = new UserGameTask(currentUser, gameTask);
+            currentUser.UserGameTasks.Add(userGameTask);
             _userRepository.Update(currentUser);
+            var addedUserGameTask = _gameTaskService.GetUserGameTaskByIds(currentUser.Id, gameTask.Id);
+            _reportService.CreateUserGameTaskReportEntry(addedUserGameTask);
             return true;
         }
 

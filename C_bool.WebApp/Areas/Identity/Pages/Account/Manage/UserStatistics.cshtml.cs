@@ -22,12 +22,10 @@ namespace C_bool.WebApp.Areas.Identity.Pages.Account.Manage
 
         public int RankingPlace { get; set; }
         public int Points { get; set; }
-
         public int FavPlacesCount { get; set; }
         public int PendingTasksCount { get; set; }
         public int InProgressTasksCount { get; set; }
         public int DoneTasksCount { get; set; }
-
         public int CreatedPlacesCount { get; set; }
         public int CreatedGameTasksCount { get; set; }
 

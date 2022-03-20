@@ -13,20 +13,23 @@
 <div class="card-group">
     @foreach (var item in Model)
     {
-        <div class="card mb-3 shadow animation-scale" style="min-width:400px; max-width: 600px; margin: 10px;">
+        <div class="card mb-3 shadow animation-scale" style="min-width: 400px; max-width: 600px; margin: 10px;">
+            
+            @{
+                var text = "zadań";
+                text = item.ActiveTaskCount == 1 ? "zadanie" : text;
+                text = item.ActiveTaskCount is > 1 and < 5 ? "zadania" : text;
+            }
 
             @if (item.ActiveTaskCount > 0)
             {
                 <div class="card-header d-sm-flex flex-row align-items-center flex-0 text-truncate" style="background-color: #dbedd2">
                     <div class="d-block" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none"><h3>@Html.DisplayFor(modelItem => item.Name)</h3></a>
+                        <a asp-action="Details" asp-controller="Places" asp-route-id="@item.Id" class="card-title text-decoration-none">
+                            <h3>@Html.DisplayFor(modelItem => item.Name)</h3></a>
                     </div>
                     <div class="d-flex ms-auto">
-                        @*<button class="btn btn-outline-primary">@item.ActiveTaskCount zadań</button>*@
-                        <button type="button" class="btn btn-outline-primary">
-                            Zadań <span class="badge bg-secondary">@item.ActiveTaskCount</span>
-                            <span class="visually-hidden">Zadań do wykonania</span>
-                        </button>
+                        <span class="badge badge-lg bg-info">@item.ActiveTaskCount @text</span>
                     </div>
                 </div>
             }
@@ -65,7 +68,7 @@
                     <div class="btn-group" role="group" aria-label="Basic example" style="margin: 4px;">
                         <a asp-controller="GameTasks" asp-action="ChooseToCreate" asp-route-placeId="@item.Id" class="btn btn-success"><l class="bi bi-plus-circle"> Zadanie</l></a>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mapModal" onclick="initMap(@item.Latitude.ToString(CultureInfo.InvariantCulture), @item.Longitude.ToString(CultureInfo.InvariantCulture))"><l class="bi-map"> Mapa</l></button>
-                        <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-secondary @btnClass" onclick="addToFavs('Places','AddToFavs','@item.Id')"><l class="bi-heart"> Ulubione</l></button>
+                        <button id="@Html.Raw($"favIndicatorId{item.Id}")" type="button" class="btn btn-secondary @btnClass" onclick="addToFavs('Places', 'AddToFavs', '@item.Id')"><l class="bi-heart"> Ulubione</l></button>
                     </div>
                     @if (item.CreatedById != null && UserManager.GetUserId(User) == item.CreatedById)
                     {
@@ -77,14 +80,6 @@
                                 <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><l class="bi-pencil"> Edytuj</l></a></li>
                                 <li><a id="deleteItem" class="dropdown-item deleteItem" data-bs-toggle="modal" data-bs-target="#deleteModal" data-path="@Url.Action("Delete", "Places", new { id = @item.Id })"><l class="bi-trash-fill"> Usuń miejsce</l></a></li>
                             </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="btn">
-                            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="popover" title="Informacja" data-bs-content="Tylko twórca miejsca lub administrator może je edytować.">
-                                <l class="bi-three-dots"></l>
-                            </button>
                         </div>
                     }
                 </form>

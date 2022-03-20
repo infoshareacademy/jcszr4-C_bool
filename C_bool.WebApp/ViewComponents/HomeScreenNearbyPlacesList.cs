@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.WebApp.Models;
@@ -11,7 +12,7 @@ namespace C_bool.WebApp.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync(List<PlaceViewModel> placesList)
         {
-            return View("HomeScreenNearbyPlacesList", placesList);
+            return View("HomeScreenNearbyPlacesList", placesList.Take(5).ToList());
         }
     }
 }

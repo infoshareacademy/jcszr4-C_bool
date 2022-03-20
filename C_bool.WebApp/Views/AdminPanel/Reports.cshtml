@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@model C_bool.WebApp.Models.Reports.ReportViewModel
+@{
+    ViewData["Title"] = "Reports";
+
+    Dictionary<string, string> TaskTypes = new Dictionary<string, string>()
+{
+        {"TakeAPhoto", "Zrób zdjęcie"},
+        {"Event", "Wydarzenie"},
+        {"CheckInToALocation", "Odwiedź miejsce"},
+        {"TextEntry", "Podaj hasło"}
+
+
+    };
+
+
+}
+
+<h1>Reports</h1>
+
+<form asp-action="Reports" method="get">
+    <div class="input-group input-group-lg mb-3 form-actions no-color border-0">
+        <span class="input-group-text">
+            <span class="input-group-text">Od daty</span>
+            <input asp-for="@ViewData["dateFrom"]" class="form-control" id="dateFrom" type="date" name="dateFrom">
+            <span class="input-group-text">Do daty</span>
+            <input asp-for="@ViewData["dateTo"]" class="form-control" id="dateTo" type="date" name="dateTo">
+        </span>
+        <a asp-action="Reports" class="btn btn-outline-secondary">Wyczyść</a>
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+    </div>
+</form>
+
+<div class="row row-cols-4 row-cols-md-3 g-4">
+    <div class="col">
+        <partial name="Partials/_TaskByTypesClassification" model="Model.GameTaskTypeClassification" />
+        <div class="mt-4">
+            <partial name="Partials/_PlaceGameTaskClassificationCount" model="Model.PlaceByGameTasksClassification" />
+        </div>
+            @*<partial name="Partials/_UserClassification" model="Model.UserGameTaskByUsersClassification" />*@
+        </div>
+        <div class="col">
+            <partial name="Partials/_MostActiveUsers" model="Model.UserGameTaskMostActiveUsersClassification" />
+            <div class="mt-4">
+                <partial name="Partials/_AverageTimeAndPoints" model="Model" />
+            </div>
+
+        </div>
+        <div class="col">
+            <partial name="Partials/_OtherGroupOfReports" model="Model" />
+        </div>
+    </div>

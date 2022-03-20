@@ -113,11 +113,11 @@
                     <a asp-action="UserDetails" asp-route-id="@item.Id">Pokaż szczegóły</a> |
                     @if (item.IsActive)
                     {
-                        <a asp-action="UsersList" onclick="changeUserStatus('User','ChangeStatus','@item.Id')">Zablokuj</a>
+                        <a asp-action="UsersList" onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@item.Id', 'false')">Zablokuj</a>
                     }
                     else
                     {
-                        <a asp-action="UsersList" onclick="changeUserStatus('User','ChangeStatus','@item.Id')">Aktwywuj</a>
+                        <a asp-action="UsersList" onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@item.Id', 'true')">Aktwywuj</a>
                     }
                 </td>
             </tr>
@@ -127,14 +127,16 @@
 </div>
 
 <script>
-    function changeUserStatus(controller, view, input) {
-        var postData = { id: input };
+    function changeUserStatus(controller, view, id, status) {
+        var postData = {
+            isActive: status
+        };
 
         $.ajax(
             {
                 type: "POST",
-                url: '/' + controller + '/' + view + '/' + input,
-                contentType: "application/json; charset=utf-8",
+                url: '/' + controller + '/' + view + '/' + id,
+                contentType: "application/json; charset=utf-8; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(postData),
                 success: function (data) {
@@ -142,7 +144,6 @@
                 },
 
                 error: function (xmlhttprequest, textstatus, errorthrown) {
-                    //alert(" conection to the server failed ");
                     showNotif('red', errorthrown);
                 }
             });

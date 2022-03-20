@@ -11,25 +11,31 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
+        private readonly IReportService _reportService;
         private GeoLocation _geoLocation;
 
         public UserController(
             IRepository<User> userRepository,
-            IUserService userService
-        )
+            IUserService userService, IReportService reportService)
         {
             _userRepository = userRepository;
             _userService = userService;
+            _reportService = reportService;
         }
 
         [Authorize(Roles = "Admin, Moderator, User")]
         [HttpPost]
         public IActionResult UpdateUserLocation([FromBody] GeoLocation postData)
         {
+            var user = _userService.GetCurrentUser();
             if (postData.Latitude != 0)
             {
                 _geoLocation = postData;
-                var user = _userService.GetCurrentUser();
+                
+                if (user.Latitude == 0 && user.Longitude == 0)
+                {
+                    _reportService.UpdateUserReportEntry(user);
+                }
                 user.Latitude = _geoLocation.Latitude;
                 user.Longitude = _geoLocation.Longitude;
                 _userRepository.Update(user);

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
+using C_bool.BLL.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,13 @@ namespace C_bool.BLL.Helpers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<UserRole> _roleManager;
+        private readonly IReportService _reportService;
 
-        public DatabaseSeeder(UserManager<User> userManager, RoleManager<UserRole> roleManager)
+        public DatabaseSeeder(UserManager<User> userManager, RoleManager<UserRole> roleManager, IReportService reportService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _reportService = reportService;
         }
 
         public async Task Seed()
@@ -38,6 +41,7 @@ namespace C_bool.BLL.Helpers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(admin, "Admin");
+                    await _reportService.CreateUserReportEntry(admin);
                 }
 
             }

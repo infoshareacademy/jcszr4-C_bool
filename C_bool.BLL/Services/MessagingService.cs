@@ -84,6 +84,16 @@ namespace C_bool.BLL.Services
             _messagesRepository.Update(message);
         }
 
+        public void MarkAllAsRead(int userId)
+        {
+            var messages = GetUserMessages(userId);
+            foreach (var message in messages)
+            {
+                message.IsViewed = true;
+                _messagesRepository.Update(message);
+            }
+        }
+
         public void Update(Message message)
         {
             _messagesRepository.Update(message);
@@ -92,6 +102,15 @@ namespace C_bool.BLL.Services
         public void Delete(Message message)
         {
             _messagesRepository.Delete(message);
+        }
+
+        public void DeleteAll(int userId)
+        {
+            var messages = GetUserMessages(userId);
+            foreach (var message in messages)
+            {
+                _messagesRepository.Delete(message);
+            }
         }
     }
 }

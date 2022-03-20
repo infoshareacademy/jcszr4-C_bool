@@ -2,10 +2,13 @@
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.Reports;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace C_bool.WebApp.Controllers
 {
@@ -14,6 +17,7 @@ namespace C_bool.WebApp.Controllers
     {
         private readonly IRepository<User> _userRepository;
         private readonly IUserService _userService;
+        private readonly IReportService _reportService;
         private static List<User> _searchUser;
         private static SearchUsersModel _searchUsersModel;
 
@@ -22,12 +26,12 @@ namespace C_bool.WebApp.Controllers
         public AdminPanelController(
             IRepository<User> userRepository,
             IUserService userService,
-            UserManager<User> userManager
-            )
+            UserManager<User> userManager, IReportService reportService1)
         {
             _userRepository = userRepository;
             _userService = userService;
             _userManager = userManager;
+            _reportService = reportService1;
         }
 
         public ActionResult UsersList()
@@ -76,6 +80,32 @@ namespace C_bool.WebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> Reports(string dateFrom, string dateTo, int limit)
+        {
+            ViewData["dateFrom"] = dateFrom;
+            ViewData["dateTo"] = dateTo;
+            var model = new ReportViewModel();
+            DateTime dateFromParsed = DateTime.TryParse(dateFrom, out dateFromParsed) ? dateFromParsed : DateTime.MinValue;
+            DateTime dateToParsed = DateTime.TryParse(dateTo, out dateToParsed) ? dateToParsed : DateTime.MaxValue;
+            limit = 5;
+            model.ActiveUsersCount = await _reportService.GetActiveUsersCount();
+            model.GameTaskPointsAverage = await _reportService.GetGameTaskPointsAverage();
+            model.GameTaskTypeClassification =
+                await _reportService.GetGameTaskTypeClassification(dateFromParsed, dateToParsed, limit);
+            model.PlaceByGameTasksClassification =
+                await _reportService.GetPlaceByGameTasksClassification(dateFromParsed, dateToParsed, limit);
+            model.PlaceWithoutGameTasksCount = await _reportService.GetPlacesWithoutGameTasksCount();
+            model.UserGameTaskByUsersClassification =
+                await _reportService.GetUserGameTaskByUsersClassification(dateFromParsed, dateToParsed, limit);
+            model.UserGameTaskDoneCount = await _reportService.GetUserGameTaskDoneCount();
+            model.UserGameTaskDoneTimeAverage = await _reportService.GetUserGameTaskDoneTimeAverage();
+            model.UserGameTaskMostActiveUsersClassification =
+                await _reportService.GetUserGameTaskMostActiveUsersClassification(dateFromParsed, dateToParsed, limit);
+
+            return View(model);
+        }
+
         public ActionResult UserDetails(int id)
         {
             var model = _userRepository.GetById(id);
@@ -83,19 +113,11 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeUserStatus(int id)
+        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] bool newStatus)
         {
-            var oldStatus = _userRepository.GetById(id).IsActive;
-            _userService.ChangeUserStatus(id);
-            var newStatus = _userRepository.GetById(id).IsActive;
-            if (oldStatus != newStatus)
-            {
-                return Ok();
-            }
-            else
-            {
-                return NotFound();
-            }
+            _userService.ChangeUserStatus(id, newStatus);
+
+            return Ok();
         }
     }
 }

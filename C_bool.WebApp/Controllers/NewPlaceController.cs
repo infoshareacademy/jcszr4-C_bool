@@ -16,6 +16,7 @@ using C_bool.WebApp.Models;
 using C_bool.WebApp.Models.Place;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Internal.Account;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -43,8 +44,7 @@ namespace C_bool.WebApp.Controllers
             IPlaceService placesService,
             IUserService userService,
             IGooglePlaceService googlePlaceService,
-            IHttpClientFactory clientFactory
-        )
+            IHttpClientFactory clientFactory, IReportService reportService)
         {
             _logger = logger;
             _mapper = mapper;
@@ -112,7 +112,7 @@ namespace C_bool.WebApp.Controllers
                 placeModel.IsUserCreated = true;
                 placeModel.CreatedById = _usersService.GetCurrentUserId();
                 placeModel.Photo = ImageConverter.ConvertImage(file, out string message);
-                _placesService.Add(placeModel);
+                 _placesService.Add(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", "Places", new { id = placeModel.Id });
             }

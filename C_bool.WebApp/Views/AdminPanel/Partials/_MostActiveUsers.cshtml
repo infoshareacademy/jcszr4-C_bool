@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Newtonsoft.Json
+@model List<C_bool.BLL.Models.Reports.UserGameTaskMostActiveUsersClassification>
+
+@{
+    var userName = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.UserName)));
+
+    var doneGameTaskCount = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.DoneGameTaskCount)));
+}
+
+<div class="col">
+<div class="card border-0 shadow">
+<div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
+    <div class="d-block">
+        <div class="h4 fw-normal text-gray mb-2">Najbardziej aktywni użytkownicy</div>
+        <div class="h6 fw-normal text-gray mb-2">Top 5 użytkowników z największą ilością zakończonych zadań</div>
+    </div>
+</div>
+<div class="d-block ms-auto">
+</div>
+<div class="card-body p-2">
+    <div>
+        <canvas id="userGameTaskCount"></canvas>
+    </div>
+
+</div>
+
+
+    <script>
+        const userName = @Html.Raw(userName);
+
+        const dataTaskCount = {
+            labels: userName,
+            datasets: [{
+                data: @Html.Raw(doneGameTaskCount),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                ],
+
+            }]
+        };
+
+        const configUserTaskCount = {
+            type: 'bar',
+            data: dataTaskCount,
+            options: {
+                plugins:{
+                    legend: {
+                        display: false
+                    }
+                }}
+        };
+    </script>
+
+    <script>
+        const userTaskCountChar = new Chart(
+            document.getElementById('userGameTaskCount'),
+            configUserTaskCount
+        );
+    </script>
+</div>
+</div>

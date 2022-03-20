@@ -42,7 +42,7 @@ namespace C_bool.WebApp.Middleware
                 }
 
                 var result = JsonSerializer.Serialize(new { message = error?.Message });
-                _logger.LogError("Middleware catched exception: {exceptionMessage}", error.Message);
+                _logger.LogError("Middleware caught exception: {exceptionMessage}", error.Message);
                 await response.WriteAsync(result);
             }
         }
