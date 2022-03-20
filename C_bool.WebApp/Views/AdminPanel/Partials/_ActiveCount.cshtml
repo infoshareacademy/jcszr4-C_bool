@@ -2,9 +2,10 @@
 @using Newtonsoft.Json
 @model C_bool.BLL.Models.Reports.ActiveUsersCount
 @{
-    var labels = new HtmlString(JsonConvert.SerializeObject(Model.ActiveCount));
+    var item = new HtmlString(JsonConvert.SerializeObject(Model.ActiveCount.ToString()));
+    var activeCount = new HtmlString(JsonConvert.SerializeObject(Model.ActiveCount));
 
-    var data = new HtmlString(JsonConvert.SerializeObject(Model.TotalCount));
+    var totalCount = new HtmlString(JsonConvert.SerializeObject(Model.TotalCount));
 }
 
 <div class="col">
@@ -25,13 +26,14 @@
 
 
         <script>
-            const labels = @Model.ActiveCount;
+            const itemCount = @Html.Raw(item);
 
-            const data = {
-                labels: labels,
+            const dataTotalCount = {
+                labels: itemCount,
                 datasets: [{
-                    label: 'My First dataset',
-                    data: @Model.TotalCount,
+                    label: 'Licza aktywnych użytkowników vs liczba wszystkich użytkowników',
+                    data: @Html.Raw(totalCount),
+                    data: @Html.Raw(activeCount),
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(255, 159, 64, 0.2)',
@@ -45,17 +47,22 @@
                 }]
             };
 
-            const config = {
-                type: 'pie',
-                data: data,
-                options: {}
+            const configActiveUsersCount = {
+                type: 'bar',
+                data: dataTotalCount,
+                options: {
+                    plugins:{
+                        legend: {
+                            display: false
+                        }
+                    }}
             };
         </script>
 
         <script>
-            const myChart = new Chart(
+            const activeUsersChar = new Chart(
                 document.getElementById('activeUsers'),
-                config
+                configActiveUsersCount
             );
         </script>
     </div>

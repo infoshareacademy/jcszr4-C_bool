@@ -1,40 +1,39 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using Newtonsoft.Json
-@model List<C_bool.BLL.Models.Reports.PlaceByGameTasksClassification>
+@model List<C_bool.BLL.Models.Reports.UserGameTaskByUsersClassification>
 
 @{
-    var placeName = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.PlaceName)));
+    var gameTaskNameLabels = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.GameTaskName)));
 
-    var gameTaskCount = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.GameTaskCount)));
-   
+    var userCount = new HtmlString(JsonConvert.SerializeObject(Model.Select(x => x.UsersCount)));
+
 }
 
 <div class="col">
     <div class="card border-0 shadow">
         <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
             <div class="d-block">
-                <div class="h4 fw-normal text-gray mb-2">Najpopularniejsze miejsca</div>
-                <div class="h6 fw-normal text-gray mb-2">Miejsca z największą ilością zadań</div>
+                <div class="h6 fw-normal text-gray mb-2">liczba zadań utowrzonych przez użytkownika</div>
             </div>
         </div>
         <div class="d-block ms-auto">
         </div>
         <div class="card-body p-2">
             <div>
-                <canvas id="placeGameTaskClassificationCount"></canvas>
+                <canvas id="userGameTaskByUserClassification"></canvas>
             </div>
 
         </div>
 
 
         <script>
-            const placeName = @Html.Raw(placeName);
+            const gameTaskNameLabels = @Html.Raw(gameTaskNameLabels);
 
-            const dataPlaceCount = {
-                labels: placeName,
+            const dataUserCount = {
+                labels: gameTaskNameLabels,
                 datasets: [{
-                    label: 'Popularne miejsca z ilością zadań',
-                    data: @Html.Raw(gameTaskCount),
+                    label: '',
+                    data: @Html.Raw(userCount),
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(255, 159, 64, 0.2)',
@@ -48,9 +47,9 @@
                 }]
             };
 
-            const configPlaceGameTaskCount = {
+            const configUserClassification = {
                 type: 'bar',
-                data: dataPlaceCount,
+                data: dataUserCount,
                 options: {
                     plugins:{
                         legend: {
@@ -61,9 +60,9 @@
         </script>
 
         <script>
-            const placeGameTaskCountChar = new Chart(
-                document.getElementById('placeGameTaskClassificationCount'),
-                configPlaceGameTaskCount
+            const userGameTaskByUserClassificationChar = new Chart(
+                document.getElementById('userGameTaskByUserClassification'),
+                configUserClassification
             );
         </script>
     </div>

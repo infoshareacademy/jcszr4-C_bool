@@ -27,187 +27,27 @@
             <span class="input-group-text">Do daty</span>
             <input asp-for="@ViewData["dateTo"]" class="form-control" id="dateTo" type="date" name="dateTo">
         </span>
-            <a asp-action="Reports" class="btn btn-outline-secondary">Wyczyść</a>
-            <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
+        <a asp-action="Reports" class="btn btn-outline-secondary">Wyczyść</a>
+        <input class="btn btn-outline-secondary" value="Szukaj!" type="submit" />
     </div>
 </form>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-<partial name="Partials/_TaskByTypesClassification" model="Model.GameTaskTypeClassification" />
-<partial name="Partials/_PlaceGameTaskClassificationCount" model="Model.PlaceByGameTasksClassification" />
-    @*<partial name="Partials/_ActiveCount" model="Model.ActiveUsersCount" />*@
+<div class="row row-cols-4 row-cols-md-3 g-4">
     <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xxl-flex align-items-center">
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba aktywnych użytkowników w danym czasie</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.ActiveUsersCount.ActiveCount</h3>
-                    </div>
-                    <div class="row row-cols-2 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba wszystkich aktywnych użytkowników</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.ActiveUsersCount.TotalCount</h3>
-                    </div>
-                </div>
-            </div>
+        <partial name="Partials/_TaskByTypesClassification" model="Model.GameTaskTypeClassification" />
+        <div class="mt-4">
+            <partial name="Partials/_PlaceGameTaskClassificationCount" model="Model.PlaceByGameTasksClassification" />
         </div>
-    </div>
+            @*<partial name="Partials/_UserClassification" model="Model.UserGameTaskByUsersClassification" />*@
+        </div>
+        <div class="col">
+            <partial name="Partials/_MostActiveUsers" model="Model.UserGameTaskMostActiveUsersClassification" />
+            <div class="mt-4">
+                <partial name="Partials/_AverageTimeAndPoints" model="Model" />
+            </div>
 
-
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xl-flex align-items-center">
-                    <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                        <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                            <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd"></path></svg>
-                        </div>
-                        <div class="d-sm-none">
-                            <h2 class="fw-extrabold h5"> Średni czas ukończenia zadania</h2>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-7 px-xl-0">
-                        <div class="d-none d-sm-block">
-                            <h2 class="h6 text-gray-400 mb-0"> Średni czas ukończenia zadania</h2>
-                            @{
-                                var timespan = TimeSpan.FromMilliseconds(Model.UserGameTaskDoneTimeAverage.TimeSpan);
-                            }
-                            <h3 class="fw-extrabold mb-2">@timespan.ToString(@"dd\.hh\:mm\:ss")</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-
-    </div>
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xl-flex align-items-center">
-                    <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                        <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        </div>
-                        <div class="d-sm-none">
-                            <h2 class="fw-extrabold h5"> Średnia ilość punktów na 1 zadanie</h2>
-                            <h3 class="mb-1">50.88%</h3>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-7 px-xl-0">
-                        <div class="d-none d-sm-block">
-                            <h2 class="h6 text-gray-400 mb-0"> Średnia ilość punktów na 1 zadanie</h2>
-                            <h3 class="fw-extrabold mb-2">@Model.GameTaskPointsAverage.PointsAverage</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col">
+            <partial name="Partials/_OtherGroupOfReports" model="Model" />
         </div>
     </div>
-    <div class="col">
-
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xl-flex align-items-center">
-                    @foreach (var modelPlace in Model.PlaceByGameTasksClassification)
-                    {
-                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Miejsca z przydzielonymi zadaniami</h2>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Miejsca z przydzielonymi zadaniami</h2>
-                                @{
-                                    var typeTranslated = "none";
-                                }
-                                <h3 class="fw-extrabold mb-2">@modelPlace.PlaceName</h3>
-                                <h3 class="fw-extrabold mb-2">@modelPlace.GameTaskCount</h3>
-                            </div>
-                        </div>
-                    }
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xxl-flex align-items-center">
-                    <div class="col-12 col-xxl-6 px-xxl-0 mb-3 mb-xxl-0">
-                        <div id="chart-customers"></div>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba miejsc bez zadań</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.PlaceWithoutGameTasksCount.PlacesCountWithoutGameTask</h3>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba wszystkich miejsc</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.PlaceWithoutGameTasksCount.TotalPlacesCount</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xxl-flex align-items-center">
-                @foreach (var modelPlace in Model.PlaceByGameTasksClassification)
-                {
-                    <div class="col-12 col-xxl-6 px-xxl-0 mb-3 mb-xxl-0">
-                        <div id="chart-customers"></div>
-                    </div>
-                    <div class="col-12 col-xxl-6 ps-xxl-4 pe-xxl-0">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Zapytać Andrzeja</h2>
-                        <h3 class="fw-extrabold mb-1">@modelPlace.PlaceName</h3>
-                    </div>
-                }
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xxl-flex align-items-center">
-                    <div class="col-12 col-xxl-6 px-xxl-0 mb-3 mb-xxl-0">
-                        <div id="chart-customers"></div>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Zapytać Andrzeja</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.UserGameTaskMostActiveUsersClassification.Capacity</h3>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba użytkowników z podziałem na role</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.UserGameTaskMostActiveUsersClassification.Count</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card border-0 shadow">
-            <div class="card-body">
-                <div class="row d-block d-xxl-flex align-items-center">
-                    <div class="col-12 col-xxl-6 px-xxl-0 mb-3 mb-xxl-0">
-                        <div id="chart-customers"></div>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba ukończonych zadań</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.UserGameTaskDoneCount.DoneCount</h3>
-                    </div>
-                    <div class="row row-cols-1 row-cols-md-1 g-2">
-                        <h2 class="fs-6 fw-normal mb-1 text-gray-400">Liczba wszystkich zadań</h2>
-                        <h3 class="fw-extrabold mb-1">@Model.UserGameTaskDoneCount.TotalCount</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

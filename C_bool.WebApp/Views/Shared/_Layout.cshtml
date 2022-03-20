@@ -494,110 +494,110 @@
     @RenderSection("Scripts", required: false)
 
     <script>
-    // retrieve geolocation from HTML5 GeoLocation API
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(useLocation, showGeolocationError);
-        } else {
-            ShowErrorMessage("Błąd lokalizacji", "Ta przeglądarka nie wspiera geolokalizacji");
-        }
-    };
+        // retrieve geolocation from HTML5 GeoLocation API
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(useLocation, showGeolocationError);
+            } else {
+                ShowErrorMessage("Błąd lokalizacji", "Ta przeglądarka nie wspiera geolokalizacji");
+            }
+        };
 
-    function useLocation(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
+        function useLocation(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
 
-        var postData = { Latitude: latitude, Longitude: longitude };
-        $.ajax(
-            {
-                type: "POST",
-                url: "@Url.Action("UpdateUserLocation", "User")",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                success: function (data) {
+            var postData = { Latitude: latitude, Longitude: longitude };
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "@Url.Action("UpdateUserLocation", "User")",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function (data) {
 
 
-                    notyf.open({
-                        type: 'info',
-                        message: data.responseText
-                    });
+                        notyf.open({
+                            type: 'info',
+                            message: data.responseText
+                        });
 
-                },
+                    },
 
-                error: function (xmlhttprequest, textstatus, errorthrown) {
-                    notyf.error(errorthrown);
-                }
-            });
-    };
-
-    //post data to controller
-    function postToController(controller, view, input) {
-        var postData = {Id: input};
-
-        $.ajax(
-            {
-                type: "POST",
-                url: '/' + controller + '/' + view,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                success: function(data) {
-                    notyf.success(data.responseText);
-                },
-
-                error: function (xmlhttprequest, textstatus, errorthrown) {
-                    notyf.error(errorthrown);
-                }
-            });
-    };
-
-    function addToFavs(controller, view, input) {
-        var postData = { Id: input };
-
-        $.ajax(
-            {
-                type: "POST",
-                url: '/' + controller + '/' + view,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(postData),
-                success: function (data) {
-                    notyf.success(data.responseText);
-                    var elementId = "favIndicatorId" + input;
-                    var element = document.getElementById(elementId);
-                    if (data.isAdded == true) {
-                        element.classList.add("btn-fav");
-                    } else {
-                        element.classList.remove("btn-fav");
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        notyf.error(errorthrown);
                     }
-                },
+                });
+        };
 
-                error: function (xmlhttprequest, textstatus, errorthrown) {
-                    notyf.error(errorthrown);
-                }
-            });
-    };
+        //post data to controller
+        function postToController(controller, view, input) {
+            var postData = {Id: input};
 
-    function showGeolocationError(error) {
-        switch (error.code) {
-        case error.PERMISSION_DENIED:
-            ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
-            break;
-        case error.TIMEOUT:
-            ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
-            break;
-        case error.UNKNOWN_ERROR:
-            ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
-            break;
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        notyf.success(data.responseText);
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        notyf.error(errorthrown);
+                    }
+                });
+        };
+
+        function addToFavs(controller, view, input) {
+            var postData = { Id: input };
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: '/' + controller + '/' + view,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(postData),
+                    success: function (data) {
+                        notyf.success(data.responseText);
+                        var elementId = "favIndicatorId" + input;
+                        var element = document.getElementById(elementId);
+                        if (data.isAdded == true) {
+                            element.classList.add("btn-fav");
+                        } else {
+                            element.classList.remove("btn-fav");
+                        }
+                    },
+
+                    error: function (xmlhttprequest, textstatus, errorthrown) {
+                        notyf.error(errorthrown);
+                    }
+                });
+        };
+
+        function showGeolocationError(error) {
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+                ShowErrorMessage("Błąd lokalizacji", "Odrzuciłeś prośbę o lokalizację. Nie pograsz :-(");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                ShowErrorMessage("Błąd lokalizacji", "Informacje o lokalizacji są niedostępne");
+                break;
+            case error.TIMEOUT:
+                ShowErrorMessage("Błąd lokalizacji", "Minął czas oczekiwania na określenie lokalizacji");
+                break;
+            case error.UNKNOWN_ERROR:
+                ShowErrorMessage("Błąd lokalizacji", "Nieznany błąd");
+                break;
+            }
         }
-    }
 
-    window.onload = getLocation();
-    @if (ViewBag.Message != null)
+        window.onload = getLocation();
+        @if (ViewBag.Message != null)
     {
         var message = (StatusMessage)ViewBag.Message;
         @Html.Raw(message.MessageParsed);
