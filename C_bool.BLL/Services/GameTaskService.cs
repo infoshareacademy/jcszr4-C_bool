@@ -13,13 +13,15 @@ namespace C_bool.BLL.Services
     {
         private readonly IRepository<UserGameTask> _userGameTaskRepository;
         private readonly IRepository<GameTask> _gameTaskRepository;
+        private readonly IReportService _reportService;
         private readonly ILogger<GameTaskService> _logger;
 
-        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository, ILogger<GameTaskService> logger)
+        public GameTaskService(IRepository<UserGameTask> userGameTaskRepository, IRepository<GameTask> gameTaskRepository, ILogger<GameTaskService> logger, IReportService reportService)
         {
             _userGameTaskRepository = userGameTaskRepository;
             _gameTaskRepository = gameTaskRepository;
             _logger = logger;
+            _reportService = reportService;
         }
 
         public IQueryable<GameTask> GetAllQueryable()
@@ -170,11 +172,13 @@ namespace C_bool.BLL.Services
         public void Add(GameTask gameTask)
         {
             _gameTaskRepository.Add(gameTask);
+            _reportService.CreateGameTaskReportEntry(gameTask);
         }
 
         public void Update(GameTask gameTask)
         {
             _gameTaskRepository.Update(gameTask);
+            _reportService.UpdateGameTaskReportEntry(gameTask);
         }
 
         private void SetUserTaskAsDone(UserGameTask userGameTask)
@@ -192,11 +196,13 @@ namespace C_bool.BLL.Services
                 }
             }
             _userGameTaskRepository.Update(userGameTask);
+            _reportService.UpdateUserGameTaskReportEntry(userGameTask);
         }
 
         public void UpdateUserGameTask(UserGameTask userGameTask)
         {
             _userGameTaskRepository.Update(userGameTask);
+            _reportService.UpdateUserGameTaskReportEntry(userGameTask);
         }
 
         public void AssignPropertiesFromParticipateModel(UserGameTask userGameTask, string textCriterion, string base64Image)

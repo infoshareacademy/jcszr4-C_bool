@@ -33,7 +33,6 @@ namespace C_bool.WebApp.Controllers
         private readonly IPlaceService _placesService;
         private readonly IGooglePlaceService _googlePlaceService;
         private readonly IUserService _usersService;
-        private readonly IReportService _reportService;
 
         private readonly GoogleAPISettings _googleApiSettings = new();
         private readonly GoogleApiAsync _googleApiAsync;
@@ -54,7 +53,6 @@ namespace C_bool.WebApp.Controllers
             _placesService = placesService;
             _usersService = userService;
             _googlePlaceService = googlePlaceService;
-            _reportService = reportService;
             _googleApiAsync = new GoogleApiAsync(clientFactory, _googleApiSettings);
         }
 
@@ -114,8 +112,7 @@ namespace C_bool.WebApp.Controllers
                 placeModel.IsUserCreated = true;
                 placeModel.CreatedById = _usersService.GetCurrentUserId();
                 placeModel.Photo = ImageConverter.ConvertImage(file, out string message);
-                _placesService.Add(placeModel);
-                _reportService.CreatePlaceReportEntry(placeModel);
+                 _placesService.Add(placeModel);
                 ViewBag.Message = new StatusMessage($"Dodano nowe miejsce: {placeModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", "Places", new { id = placeModel.Id });
             }
@@ -157,7 +154,6 @@ namespace C_bool.WebApp.Controllers
                 place.CreatedById = _usersService.GetCurrentUserId();
                 place.Photo = await _googleApiAsync.DownloadImageAsync(googlePlace, "600");
                 _placesService.Add(place);
-                await _reportService.CreatePlaceReportEntry(place);
                 return Json(new { success = true, responseText = "Dodano do bazy!"});
             }
             catch (Exception ex)

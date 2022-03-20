@@ -44,17 +44,15 @@ namespace C_bool.WebApp.Controllers
             IPlaceService placesService,
             IUserService usersService,
             IGameTaskService gameTaskService,
-            IReportService reportService,
-            IEmailSenderService emailSenderService
-            )
+            IEmailSenderService emailSenderService, IReportService reportService)
         {
             _logger = logger;
             _mapper = mapper;
             _placesService = placesService;
             _userService = usersService;
             _gameTaskService = gameTaskService;
-            _reportService = reportService;
             _emailSenderService = emailSenderService;
+            _reportService = reportService;
         }
 
         [Authorize]
@@ -399,9 +397,7 @@ namespace C_bool.WebApp.Controllers
                     Message = "Zatwierdziłeś rozwiązanie tego zadania!",
                     Type = CustomErrorModel.MessageType.Success
                 };
-
-                _reportService.UpdateUserGameTaskReportEntry(task);
-
+                
                 return View("CustomError", viewMessageOk);
 
             }
@@ -465,7 +461,6 @@ namespace C_bool.WebApp.Controllers
                 gameTaskModel.CreatedByName = _userService.GetCurrentUser().UserName;
                 gameTaskModel.CreatedById = _userService.GetCurrentUserId();
                 _gameTaskService.Add(gameTaskModel);
-                _reportService.CreateGameTaskReportEntry(gameTaskModel);
 
                 ViewBag.Message = new StatusMessage($"Dodano nowe zadanie: {gameTaskModel.Name}", StatusMessage.Status.INFO);
                 return RedirectToAction("Details", new { gameTaskId = gameTaskModel.Id });
@@ -511,7 +506,6 @@ namespace C_bool.WebApp.Controllers
                 gameTask = _mapper.Map<GameTaskEditModel, GameTask>(model, gameTask);
                 if (file != null) gameTask.Photo = ImageConverter.ConvertImage(file, out string message);
                 _gameTaskService.Update(gameTask);
-                _reportService.UpdateGameTaskReportEntry(gameTask);
 
                 return RedirectToAction("Details", new { gameTaskId = gameTask.Id });
             }
@@ -535,8 +529,6 @@ namespace C_bool.WebApp.Controllers
                 if (userGameTask == null)
                 {
                     _userService.AddTaskToUser(_gameTaskService.GetById(gameTaskId));
-                    userGameTask = _gameTaskService.GetUserGameTaskByIds(user.Id, gameTaskId);
-                    _reportService.CreateUserGameTaskReportEntry(userGameTask);
                 }
                 var base64Photo = ImageConverter.ConvertImage(file, out string photoMessage);
                 if (userGameTask.GameTask.Type == TaskType.TakeAPhoto && base64Photo.IsNullOrEmpty())
@@ -572,9 +564,6 @@ namespace C_bool.WebApp.Controllers
                     };
                     return View("CustomError", error);
                 }
-
-                _reportService.UpdateUserGameTaskReportEntry(userGameTask);
-
                 return RedirectToAction("AfterDoneSplashScreen", new { gameTaskId = userGameTask.GameTask.Id });
             }
             catch (Exception ex)
@@ -603,7 +592,6 @@ namespace C_bool.WebApp.Controllers
             {
                 gameTask.IsActive = active;
                 _gameTaskService.Update(gameTask);
-                _reportService.UpdateGameTaskReportEntry(gameTask);
 
                 var viewMessageOk = new CustomErrorModel
                 {
@@ -630,10 +618,7 @@ namespace C_bool.WebApp.Controllers
             var gameTask = _gameTaskService.GetById(int.Parse(request.Id));
             if (_userService.AddTaskToUser(gameTask))
             {
-               var userGameTask = _gameTaskService.GetUserGameTaskByIds(_userService.GetCurrentUserId(), gameTask.Id);
-               _reportService.CreateUserGameTaskReportEntry(userGameTask);
-
-               return Json(new { success = true, responseText = "Dodano do twoich zadań!", isAdded = true });
+                return Json(new { success = true, responseText = "Dodano do twoich zadań!", isAdded = true });
             }
             return Json(new { success = true, responseText = "Te zadanie jest już w Twojej kolejce!", isAdded = true });
         }

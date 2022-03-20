@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Logic;
 using C_bool.BLL.Repositories;
@@ -10,11 +11,13 @@ namespace C_bool.BLL.Services
     public class PlaceService : IPlaceService
     {
         private readonly IRepository<Place> _placeRepository;
+        private readonly IReportService _reportService;
 
 
-        public PlaceService(IRepository<Place> placeRepository)
+        public PlaceService(IRepository<Place> placeRepository, IReportService reportService)
         {
             _placeRepository = placeRepository;
+            _reportService = reportService;
         }
 
         public IQueryable<Place> GetAllQueryable()
@@ -51,13 +54,13 @@ namespace C_bool.BLL.Services
         public void Add(Place place)
         {
             if (place.GoogleId != null && _placeRepository.GetAllQueryable().Any(x => place.GoogleId.Equals(x.GoogleId))) return;
-            place.IsActive = true;
-            place.CreatedOn = DateTime.UtcNow;
             _placeRepository.Add(place);
+            _reportService.CreatePlaceReportEntry(place);
         }
         public void Update(Place place)
         {
             _placeRepository.Update(place);
+            _reportService.UpdatePlaceReportEntry(place);
         }
         public void Delete(int placeId)
         {

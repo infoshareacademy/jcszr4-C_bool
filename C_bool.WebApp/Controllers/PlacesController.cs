@@ -216,7 +216,6 @@ namespace C_bool.WebApp.Controllers
                 place = _mapper.Map<PlaceEditModel, Place>(model, place);
                 if (file != null) { place.Photo = ImageConverter.ConvertImage(file, out string message); }
                 _placesService.Update(place);
-                _reportService.UpdatePlaceReportEntry(place);
                 return RedirectToAction(nameof(Index));
             }
             catch

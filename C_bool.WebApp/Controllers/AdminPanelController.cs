@@ -1,16 +1,14 @@
-﻿using System;
-using C_bool.BLL.DAL.Entities;
+﻿using C_bool.BLL.DAL.Entities;
 using C_bool.BLL.Repositories;
 using C_bool.BLL.Services;
 using C_bool.WebApp.Models;
+using C_bool.WebApp.Models.Reports;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using C_bool.BLL.DTOs;
-using C_bool.WebApp.Models.Reports;
-using Castle.Core.Internal;
-using Microsoft.AspNetCore.Authorization;
 
 namespace C_bool.WebApp.Controllers
 {
@@ -115,19 +113,11 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeUserStatus(int id)
+        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] bool newStatus)
         {
-            var oldStatus = _userRepository.GetById(id).IsActive;
-            _userService.ChangeUserStatus(id);
-            var newStatus = _userRepository.GetById(id).IsActive;
-            if (oldStatus != newStatus)
-            {
-                return Ok();
-            }
-            else
-            {
-                return NotFound();
-            }
+            _userService.ChangeUserStatus(id, newStatus);
+
+            return Ok();
         }
     }
 }
