@@ -114,9 +114,24 @@
                 <td>
                     @item.Email
                 </td>
-                <td>
-                    @item.Gender
-                </td>
+                @if (@item.Gender == Gender.Unknown)
+                {
+                    <td>
+                        Wiem, ale nie powiem
+                    </td>
+                }
+                else if (@item.Gender == Gender.Male)
+                {
+                    <td>
+                        Mężczyzna
+                    </td>
+                }
+                else if (@item.Gender == Gender.Female)
+                {
+                    <td>
+                        Kobieta
+                    </td>
+                }
                 @if (item.IsActive)
                 {
                     <td>Aktywny</td>

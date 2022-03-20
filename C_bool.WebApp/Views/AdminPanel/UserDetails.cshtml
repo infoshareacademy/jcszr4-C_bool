@@ -1,4 +1,5 @@
-﻿@model C_bool.BLL.DAL.Entities.User
+﻿@using C_bool.BLL.Enums
+@model C_bool.BLL.DAL.Entities.User
 
 @{
     ViewData["Title"] = "Szczególy użytkownika";
@@ -25,9 +26,25 @@
                 <dt class="col-sm-5">
                     <label asp-for="Gender">Płeć</label>
                 </dt>
-                <dd class="col-sm-7">
-                    @Model.Gender
-                </dd>
+                @if (@Model.Gender == Gender.Unknown)
+                {
+                    <dd class="col-sm-7">
+                        Wiem, ale nie powiem
+                    </dd>
+                }
+                else if (@Model.Gender == Gender.Male)
+                {
+                    <dd class="col-sm-7">
+                        Mężczyzna
+                    </dd>
+                }
+                else if (@Model.Gender == Gender.Female)
+                {
+                    <dd class="col-sm-7">
+                        Kobieta
+                    </dd>
+                }
+                
                 <dt class="col-sm-5">
                     <label asp-for="Email"></label>
                 </dt>
