@@ -92,7 +92,9 @@
 
 <script>
     function changeUserStatus(controller, view, id, status) {
-        var postData = { isActive: status };
+        var postData = {
+            newStatus: status
+        };
 
         $.ajax(
             {

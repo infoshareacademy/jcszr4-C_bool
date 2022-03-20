@@ -113,9 +113,11 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] bool newStatus)
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeUserStatus(int id, [FromBody] UserStatusModel newStatus)
         {
-            _userService.ChangeUserStatus(id, newStatus);
+            
+            _userService.ChangeUserStatus(id, newStatus.newStatus);
 
             return Ok();
         }
