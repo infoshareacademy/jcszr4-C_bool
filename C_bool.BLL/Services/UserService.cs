@@ -90,10 +90,9 @@ namespace C_bool.BLL.Services
         public void ChangeUserStatus(int userId, bool newStatus)
         {
             var user = _userRepository.GetById(userId);
-
             user.IsActive = newStatus;
-
             _userRepository.Update(user);
+            _reportService.UpdateUserReportEntry(user);
         }
 
         public bool AddFavPlace(Place place)
