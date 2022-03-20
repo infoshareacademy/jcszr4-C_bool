@@ -64,8 +64,10 @@
                         else
                         {
                             <div class="alert alert-danger" role="alert">
-                                <h4 class="alert-heading"><svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg> Spóźniłeś się...</h4>
-                                <p>Było minęło, czas na wykonanie zadania upłynął...</p>
+                                <h4 class="alert-heading"><svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg> Spóźniłeś się lub zadanie jeszcze się nie rozpoczęło...</h4>
+                                <p>Zadanie jest aktywne w podanych dniach:</p>
+                                <hr>
+                                <p class="mb-0">Data: @Model.ValidFrom.ToString("dddd, d MMM hh:mm") - @Model.ValidThru.ToString("dddd, d MMM hh: mm")</p>
                             </div>
                         }
                     }
