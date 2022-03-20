@@ -550,8 +550,10 @@ namespace C_bool.WebApp.Controllers
                         $"Zatwierdzenie zadania: {userGameTask.GameTask.Name}",
                         HtmlRenderer.CheckTaskPhoto(userGameTask));
                     messageToSend.Type = MessageType.SubmissionRequest;
-                    _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend);
                     _userService.PostMessage(userGameTask.GameTask.CreatedById, messageToSend);
+
+                    _emailSenderService.SendCheckPhotoEmail(userGameTask, messageToSend.Title, HtmlRenderer.CheckTaskPhotoEmail(userGameTask, messageToSend.Id));
+                    
                     return View("AfterDone/WaitForApproval");
                 }
                 if (status == GameTaskStatus.NotDone)

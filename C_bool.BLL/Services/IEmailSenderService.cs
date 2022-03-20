@@ -5,6 +5,6 @@ namespace C_bool.BLL.Services
 {
     public interface IEmailSenderService
     {
-        Task SendCheckPhotoEmail(UserGameTask userGameTask, Message message);
+        Task SendCheckPhotoEmail(UserGameTask userGameTask, string title, string body);
     }
 }
