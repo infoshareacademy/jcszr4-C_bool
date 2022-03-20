@@ -1,4 +1,5 @@
-﻿@model C_bool.BLL.DAL.Entities.User
+﻿@using C_bool.BLL.Enums
+@model C_bool.BLL.DAL.Entities.User
 
 @{
     ViewData["Title"] = "Szczególy użytkownika";
@@ -25,9 +26,25 @@
                 <dt class="col-sm-5">
                     <label asp-for="Gender">Płeć</label>
                 </dt>
-                <dd class="col-sm-7">
-                    @Model.Gender
-                </dd>
+                @if (@Model.Gender == Gender.Unknown)
+                {
+                    <dd class="col-sm-7">
+                        Wiem, ale nie powiem
+                    </dd>
+                }
+                else if (@Model.Gender == Gender.Male)
+                {
+                    <dd class="col-sm-7">
+                        Mężczyzna
+                    </dd>
+                }
+                else if (@Model.Gender == Gender.Female)
+                {
+                    <dd class="col-sm-7">
+                        Kobieta
+                    </dd>
+                }
+                
                 <dt class="col-sm-5">
                     <label asp-for="Email"></label>
                 </dt>
@@ -66,11 +83,11 @@
         <div>
             @if (Model.IsActive)
             {
-                <a asp-action="UserDetails" asp-route-id="@Model.Id" onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@Model.Id', 'false')">Zablokuj</a>
+                <a onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@Model.Id', 'false')">Zablokuj</a>
             }
             else
             {
-                <a asp-action="UserDetails" asp-route-id="@Model.Id" onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@Model.Id', 'true')">Aktwywuj</a>
+                <a onclick="changeUserStatus('AdminPanel','ChangeUserStatus','@Model.Id', 'true')">Aktwywuj</a>
             } |
             <a asp-action="UsersList">Wróć do listy użytkowników</a>
         </div>
@@ -92,21 +109,19 @@
 
 <script>
     function changeUserStatus(controller, view, id, status) {
-        var postData = { isActive: status };
+        var postData = {
+            "NewStatus" : status
+        };
 
         $.ajax(
             {
                 type: "POST",
                 url: '/' + controller + '/' + view + '/' + id,
-                contentType: "application/json; charset=utf-8",
+                contentType: "application/json; charset=utf-8;",
                 dataType: "json",
                 data: JSON.stringify(postData),
-                success: function (data) {
-                    showNotif('green', 'OK');
-                },
-
-                error: function (xmlhttprequest, textstatus, errorthrown) {
-                    showNotif('red', errorthrown);
+                success: function () {
+                    location.reload();
                 }
             });
     };

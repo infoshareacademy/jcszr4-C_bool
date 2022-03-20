@@ -113,11 +113,26 @@ namespace C_bool.WebApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] bool newStatus)
+        public ActionResult ChangeUserStatus([FromRoute] int id, [FromBody] UserStatusModel newStatus)
         {
-            _userService.ChangeUserStatus(id, newStatus);
 
-            return Ok();
+            var parsedNewStatus = bool.Parse(newStatus.NewStatus);
+            _userService.ChangeUserStatus(id, parsedNewStatus);
+
+            if (!parsedNewStatus)
+            {
+                return Json(new
+                {
+                    success = true,
+                    responseText = "Użytkownik został zablokowany"
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                responseText = "Użytkownik został aktywowany"
+            });
         }
     }
 }
